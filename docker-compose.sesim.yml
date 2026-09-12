@@ -54,6 +54,15 @@ services:
       GOTRUE_SMTP_PASS: ""
       GOTRUE_SMTP_SENDER_NAME: ${SMTP_SENDER_NAME:-SESIM}
       GOTRUE_SMTP_ADMIN_EMAIL: ${SMTP_ADMIN_EMAIL:-admin@sesim.local}
+      # Custom Access Token Hook: agrega el rol de core.perfil como claim de
+      # CONVENIENCIA en el JWT (para que el front lo lea directo, sin la
+      # consulta extra a api.perfil). No cambia la autorizacion real -- ver
+      # el comentario completo en
+      # db/migrations/108_hook_custom_access_token.sql. No se configura
+      # GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_SECRETS: es para hooks HTTP propios,
+      # no para "pg-functions://" como este.
+      GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_ENABLED: "true"
+      GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_URI: "pg-functions://postgres/core/custom_access_token_hook"
     depends_on:
       mailpit:
         condition: service_started

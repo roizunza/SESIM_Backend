@@ -28,16 +28,28 @@ Supabase, y `README.md` para la arquitectura completa.
 
 ### Permisos de `administrador_vip`
 
-Definido por Ismael: **la unica diferencia** de `administrador_vip` frente a
-`administrador` es que solo `administrador_vip` puede dar de alta
-credenciales nuevas (`POST /admin/alta-usuario` en `servicio-procesos`). En
-todo lo demas (ver y editar perfiles existentes) administrador y
-administrador_vip se comportan exactamente igual -- eso no cambio.
+**Actualizado** (Ismael revirtio la definicion original tras probar el
+front -- ver `db/migrations/109_rls_perfil_update_solo_vip.sql`):
+`administrador_vip` no solo es el unico que da de alta credenciales nuevas
+-- tambien es el UNICO que puede ver/editar la pantalla de Gestion de
+usuarios (rol, ambito, dependencia, baja/reactivacion de cualquier perfil).
+Un `administrador` normal ya no edita perfiles existentes; solo ve su
+propia fila y, junto con auditor y administrador_vip, la lista completa de
+perfiles en modo lectura (`perfil_select_todo_administracion`,
+`102_rls_perfil.sql`).
+
+*(Definicion original, ya superada: "la unica diferencia de
+administrador_vip frente a administrador es el alta; en todo lo demas se
+comportan igual" -- esto describia la policy `perfil_update_administracion`
+de `102_rls_perfil.sql`, reemplazada por `perfil_update_solo_vip` en
+`109_rls_perfil_update_solo_vip.sql`.)*
 
 Implementado en `servicio-procesos/main.py` (`_exigir_administrador_vip`):
 valida el JWT de quien llama, busca su perfil, y solo deja pasar si
 `rol = 'administrador_vip'` y esta activo. Un `administrador` normal recibe
-`403`.
+`403`. La edicion de perfiles (UPDATE sobre `core.perfil`, que no pasa por
+`servicio-procesos`) ahora tiene el mismo candado a nivel RLS, ver
+`109_rls_perfil_update_solo_vip.sql`.
 
 ### Convencion de correo de las cuentas semilla
 

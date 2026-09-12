@@ -146,7 +146,7 @@ def health():
 
 @app.post("/admin/alta-usuario", status_code=201)
 def alta_usuario(payload: AltaUsuarioIn, authorization: str | None = Header(default=None)):
-    _exigir_administrador_vip(authorization)
+    id_usuario_actor = _exigir_administrador_vip(authorization)
 
     if payload.rol not in ROLES_VALIDOS:
         raise HTTPException(status_code=422, detail="rol_invalido")
@@ -160,6 +160,15 @@ def alta_usuario(payload: AltaUsuarioIn, authorization: str | None = Header(defa
 
     with _conectar_db() as conn:
         with conn.cursor() as cur:
+            # SET LOCAL app.actor_id: esta conexion es de servicio (psycopg2
+            # directo, sin pasar por PostgREST), asi que auth.uid() NO
+            # resuelve dentro del trigger de bitacora (core.fn_bitacora_perfil,
+            # ver db/migrations/104_schema_core_bitacora.sql). Se deja aqui
+            # explicitamente quien es el administrador_vip que esta dando de
+            # alta, para que la bitacora de cuentas registre el ALTA con su
+            # actor correcto en vez de quedar en null. SET LOCAL: solo dura
+            # la transaccion actual, no se filtra a otras conexiones del pool.
+            cur.execute("select set_config('app.actor_id', %s, true)", (id_usuario_actor,))
             cur.execute(
                 """
                 insert into core.perfil (id_usuario, nombre, rol, ambito, cve_mun, dependencia)
