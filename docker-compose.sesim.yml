@@ -1,0 +1,80 @@
+# Overlay de SESIM sobre la infraestructura vendorizada de Supabase. Se usa
+# "include" (no "-f infra/supabase/docker-compose.yml ...") a proposito:
+#
+# Con "-f archivoA -f archivoB", docker compose fija UN SOLO directorio de
+# proyecto para TODAS las rutas relativas de AMBOS archivos (por defecto,
+# la carpeta del primer -f; forzarlo con --project-directory tampoco sirve,
+# porque entonces pasa lo mismo pero al reves). El resultado es que las
+# rutas relativas de infra/supabase/docker-compose.yml (por ejemplo
+# "./volumes/api/envoy/...") y las de este archivo (por ejemplo "./db")
+# NO PUEDEN estar ambas bien resueltas al mismo tiempo -- una de las dos
+# se rompe. Esto se detecto en la practica: "docker compose up" fallaba al
+# montar infra/supabase/volumes/api/envoy/docker-entrypoint.sh porque se
+# buscaba en la raiz del repo en vez de dentro de infra/supabase/.
+#
+# "include" evita el problema de raiz: cada archivo incluido resuelve SUS
+# PROPIAS rutas relativas contra SU PROPIA carpeta, sin importar desde
+# donde se invoque "docker compose". Por eso este archivo (y no
+# infra/supabase/docker-compose.yml) es el que se pasa con -f -- ver
+# README.md, seccion "Como levantar el entorno", o simplemente:
+#
+#   ./scripts/levantar.sh
+#
+# Aqui solo se agrega/ajusta lo propio de SESIM:
+#   - servicio "db": se construye con nuestra imagen (db/Dockerfile), que
+#     extiende la imagen oficial de Supabase y le agrega las migraciones de
+#     SESIM.
+#   - servicio "servicio-procesos": propio de SESIM (ver ese directorio).
+#   - servicio "mailpit": correo de prueba para desarrollo. El servicio
+#     "auth" (GoTrue) de Supabase se apunta aqui en vez de a un SMTP real,
+#     mientras no haya contrasena de aplicacion de Gmail (ver
+#     docs/decisiones-pendientes.md).
+
+include:
+  - path: infra/supabase/docker-compose.yml
+
+services:
+  db:
+    build: ./db
+    ports:
+      # Solo para desarrollo: poder conectarse con psql/DBeaver desde fuera
+      # de docker. En un ambiente que se exponga de verdad, quitar esto.
+      - "5432:5432"
+
+  auth:
+    environment:
+      # OJO: las variables de contenedor que de verdad lee GoTrue llevan el
+      # prefijo GOTRUE_ (el .env.example de infra/supabase usa nombres sin
+      # prefijo como ${SMTP_HOST} solo como ATAJO para rellenar estas
+      # mismas variables -- pero como aqui las sobreescribimos directo en
+      # el compose, hay que usar el nombre real que ve GoTrue).
+      GOTRUE_SMTP_HOST: mailpit
+      GOTRUE_SMTP_PORT: "1025"
+      GOTRUE_SMTP_USER: ""
+      GOTRUE_SMTP_PASS: ""
+      GOTRUE_SMTP_SENDER_NAME: ${SMTP_SENDER_NAME:-SESIM}
+      GOTRUE_SMTP_ADMIN_EMAIL: ${SMTP_ADMIN_EMAIL:-admin@sesim.local}
+    depends_on:
+      mailpit:
+        condition: service_started
+
+  servicio-procesos:
+    build: ./servicio-procesos
+    depends_on:
+      db:
+        condition: service_healthy
+      auth:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT:-5432}/${POSTGRES_DB:-postgres}
+      JWT_SECRET: ${JWT_SECRET}
+      SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
+      GOTRUE_INTERNAL_URL: http://auth:9999
+    ports:
+      - "8001:8000"
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025" # interfaz web para ver los correos capturados
+      - "1025:1025" # puerto SMTP que usa GoTrue (servicio "auth")

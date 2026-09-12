@@ -1,0 +1,14 @@
+.env
+.env.old
+db_data/
+__pycache__/
+*.pyc
+.venv/
+
+# Datos y volumenes en tiempo de ejecucion de infra/supabase (vendorizado:
+# nunca se edita a mano, pero SI genera datos locales al correr -- ver
+# infra/VENDOR.md).
+infra/supabase/.env
+infra/supabase/volumes/db/data/
+infra/supabase/volumes/storage/
+infra/supabase/volumes/logs/
