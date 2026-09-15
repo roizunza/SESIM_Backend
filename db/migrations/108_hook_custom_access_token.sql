@@ -3,14 +3,14 @@
 --
 -- IMPORTANTE -- que problema resuelve esto y que problema NO resuelve:
 --
--- Ismael pidio que el rol "viajara en el JWT". El riesgo real de eso es que
+-- Rol "viaja en el JWT". El riesgo real de eso es que
 -- si el rol se hornea en el token al iniciar sesion, un cambio de rol o una
 -- baja logica hecha DESPUES no se refleja hasta que ese JWT se refresque
 -- (por default GoTrue emite tokens de 1 hora) -- alguien dado de baja
 -- seguiria "pareciendo" activo para cualquier cosa que confiara ciegamente
 -- en el claim del token.
 --
--- Por eso esto se implementa como hibrido (decision de Ismael, confirmada):
+-- Por eso esto se implementa como hibrido:
 --   - El claim "rol" que agrega este hook es SOLO para que el FRONT lo lea
 --     directo del JWT decodificado (evitar la consulta extra a api.perfil
 --     nada mas para saber que layout mostrar, o evitar el parpadeo de

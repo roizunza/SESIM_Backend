@@ -1,10 +1,5 @@
--- Corrección de una decisión anterior (ver comentario en
--- 102_rls_perfil.sql, policy perfil_update_administracion): se había
--- documentado que "administrador" y "administrador_vip" editan perfiles
--- por igual, y que la única diferencia real era el ALTA de cuentas nuevas.
---
--- Ismael revirtió explícitamente esa decisión (reporte de bug sobre
--- GestionUsuarios.jsx, front): "el de usuario admin puede hacer gestión
+
+-- "el de usuario admin puede hacer gestión
 -- cuando se supone que solo debería admin a nivel VIP" — es decir, la
 -- pantalla y la capacidad completa de gestión de usuarios (ver/editar rol,
 -- ámbito, dependencia, dar de baja/reactivar) son EXCLUSIVAS de
@@ -26,7 +21,7 @@ create policy perfil_update_solo_vip on core.perfil
   using (core.rol_actual() = 'administrador_vip')
   with check (core.rol_actual() = 'administrador_vip');
 
--- Nota para Ismael: aplica esta migración igual que 104-108 (psql manual
+-- Nota: aplica esta migración igual que 104-108 (psql manual
 -- dentro del contenedor, o pegada en el editor SQL de Supabase Studio) —
 -- ver claude/front-consolidacion-react-d-sim-front.md, sección "Importante
 -- — cómo aplicarlas". Después de aplicarla, un administrador normal ya no
