@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Institutional Tokens (PEOTDU Campeche) */
+  --c-guinda:    #9F2241;
+  --c-guinda-dk: #691C32;
+  --c-beige-lt:  #BCA986;
+  --c-beige-dk:  #AB9470;
+  --c-verde:     #235B4E;
+  --c-verde-dk:  #10312B;
+  --c-gray-md:   #888B8D;
+  --c-gray-dk:   #53565A;
+  --c-white:     #FFFFFF;
+  --c-bg:        #F5F4F2;
+  --c-bg-card:   #FFFFFF;
+  --c-text:      #2D2D2D;
+  --c-text-lt:   #53565A;
+
+  /* Typography Original */
+  --font-heading: 'Roboto Slab', Georgia, serif;
+  --font-body:    'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Primary Theme Palette */
+  --bg-color: #F5F4F2;
+  --surface-color: #FFFFFF;
+  --surface-border: #E5E7EB;
+  --text-primary: #2D2D2D;
+  --text-secondary: #53565A;
+  --border-color: #E5E7EB;
+
+  /* Estados */
+  --status-borrador: var(--c-beige-dk);
+  --status-revision: var(--c-verde);
+  --status-aprobado: #10B981; 
+  --status-rechazado: #EF4444;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Effects */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --transition: all 0.2s ease;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; scrollbar-width: none; }
+::-webkit-scrollbar { display: none; width: 0; height: 0; }
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); color: var(--c-guinda-dk); }
+.text-muted { color: var(--text-secondary); font-size: 0.95rem; }
+
+/* =========================================================
+  COMPONENTES NORMALIZADOS 
+   ========================================================= */
+
+/* --- PANELES FLOTANTES GLOBALES --- */
+.floating-panel, 
+.floating-right-panel, 
+.audit-drawer {
+  background: rgba(255, 255, 255, 0.92) !important; /* 92% de opacidad */
+  backdrop-filter: blur(8px); /* Efecto vidrio esmerilado */
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-color);
+}
+
+/* --- TÍTULOS DE PANELES NORMALIZADOS --- */
+.panel-section-title {
+  margin: 0 0 12px 0;
+  font-size: 11px;
+  color: var(--c-guinda-dk); /* Más oscuro como pediste */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+/* --- BOTONES NORMALIZADOS --- */
+.btn-base {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  height: 44px; padding: 0 16px; border-radius: var(--radius-md);
+  font-weight: 600; font-size: 13px; font-family: var(--font-body);
+  cursor: pointer; transition: var(--transition); width: 100%;
+}
+
+.btn-primary { background: var(--c-guinda); color: var(--c-white); border: none; box-shadow: var(--shadow-sm); }
+.btn-primary:hover:not(:disabled) { background: var(--c-guinda-dk); transform: translateY(-1px); }
+.btn-primary:disabled { background: var(--c-gray-md); opacity: 0.6; cursor: not-allowed; }
+
+.btn-secondary { background: transparent; color: var(--c-guinda); border: 1px solid var(--c-guinda); }
+.btn-secondary:hover:not(:disabled) { background: rgba(159, 34, 65, 0.05); }
+
+.btn-tertiary { background: var(--c-bg); color: var(--text-primary); border: 1px solid var(--border-color); }
+.btn-tertiary:hover:not(:disabled) { background: #E5E7EB; color: var(--c-guinda-dk); }
+
+/* 4. Botón Blanco Elevado (Acción Principal de Sidebar en el perfil de Capturista) */
+.btn-white {
+  background: var(--c-white);
+  color: var(--c-guinda);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+.btn-white:hover:not(:disabled) {
+  background: var(--c-bg);
+  transform: translateY(-1px);
+}
+.btn-white:disabled {
+  background: var(--c-bg);
+  color: var(--text-secondary);
+  opacity: 0.6;
+  cursor: not-allowed;
+}

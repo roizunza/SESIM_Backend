@@ -1,0 +1,30 @@
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  height: 100%;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--spacing-lg);
+}
+
+.map-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 740px;
+}
+
+.map-wrapper {
+  flex: 1;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--surface-border);
+  display: flex;
+  flex-direction: column;
+  min-height: 740px;
+}

@@ -1,0 +1,429 @@
+/* Estilos estructurales para el visor administrativo */
+.admin-map-wrapper {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background: var(--c-bg);
+  font-family: var(--font-body);
+}
+
+.admin-sidebar {
+  width: 280px;
+  background: var(--c-guinda);
+  color: var(--c-white);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+  z-index: 1000;
+  position: relative;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-sidebar.collapsed {
+  margin-left: -280px;
+}
+
+/* Boton para colapsar/expandir el panel */
+.admin-sidebar-toggle {
+  position: absolute;
+  top: 24px;
+  right: -36px;
+  width: 36px;
+  height: 36px;
+  background: var(--c-guinda);
+  color: var(--c-white);
+  border: none;
+  border-radius: 0 6px 6px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 3px 0 8px rgba(0,0,0,0.15);
+  z-index: 1001;
+  transition: background 0.2s ease;
+}
+
+.admin-sidebar-toggle:hover {
+  background: var(--c-guinda-dk);
+}
+
+/* --- Perfil de Usuario --- */
+.admin-profile-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.profile-greeting, .user-email {
+  color: rgba(255, 255, 255, 0.8);
+  font-family: var(--font-body);
+}
+
+.profile-greeting {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.profile-role {
+  font-size: 14px;
+  color: var(--c-white);
+  font-family: var(--font-body);
+}
+
+.user-email {
+  font-size: 11px;
+}
+
+/* --- Navegacion Institucional --- */
+.admin-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
+.admin-nav-item {
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-body);
+}
+
+.admin-nav-group {
+  padding: 16px 0;
+}
+
+.admin-nav-header {
+  padding: 0 20px 8px;
+}
+
+.nav-title {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  opacity: 0.7;
+  font-family: var(--font-body);
+  font-weight: 600;
+}
+
+.admin-nav-link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: transparent;
+  border: none;
+  color: var(--c-white);
+  font-size: 14px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.2s;
+}
+
+.admin-nav-link:hover, .admin-nav-link.active {
+  background: rgba(255,255,255,0.1);
+}
+
+.nav-chevron {
+  margin-left: auto;
+}
+
+/* --- Submenu de Acciones --- */
+.admin-nav-submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.admin-nav-submenu.open {
+  max-height: 200px;
+}
+
+.admin-nav-sublink {
+  width: 100%;
+  text-align: left;
+  padding: 10px 20px 10px 50px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 13px;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+}
+
+.admin-nav-sublink:hover {
+  color: var(--c-white);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.text-logout {
+  margin-top: 16px;
+  opacity: 0.8;
+}
+
+.text-logout:hover {
+  opacity: 1;
+}
+
+/* --- Geovisor --- */
+.admin-map-container {
+  flex: 1;
+  position: relative;
+}
+
+.admin-leaflet-map {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* --- Paneles Flotantes --- */
+.floating-panel {
+  position: absolute;
+  top: 24px;
+  z-index: 1000;
+  background: var(--surface-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--surface-border);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100% - 48px);
+  overflow-y: auto;
+  font-family: var(--font-body);
+}
+
+.floating-left {
+  left: 24px;
+  width: 260px;
+}
+
+.floating-right {
+  right: 24px;
+  width: 320px;
+}
+
+/* Elemento arrastrable */
+.drag-handle {
+  cursor: grab;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--c-bg);
+  border-top-left-radius: var(--radius-md);
+  border-top-right-radius: var(--radius-md);
+}
+
+.panel-header h4 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  color: var(--c-guinda-dk);
+}
+
+.panel-content {
+  padding: 16px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+/* --- Acordeones --- */
+.accordion-section {
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.accordion-section:last-child {
+  border-bottom: none;
+}
+
+.accordion-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  font-family: var(--font-body);
+}
+
+.accordion-header:hover {
+  background: var(--c-bg);
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-guinda-dk);
+}
+
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  background: var(--surface-color);
+}
+
+.accordion-content.open {
+  max-height: 400px;
+  padding: 0 16px 16px 16px;
+}
+
+/* --- Mapa Base Grid --- */
+.base-map-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.base-map-btn {
+  padding: 10px;
+  background: var(--c-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.base-map-btn:hover {
+  background: var(--surface-border);
+}
+
+.base-map-btn.active {
+  background: rgba(159, 34, 65, 0.08); /* Fondo guinda tenue */
+  border-color: var(--c-guinda);
+  color: var(--c-guinda);
+  font-weight: 600;
+}
+
+.mock-layer-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+/* --- Diseño responsivo (Mobiles y Tablets pequenas) --- */
+@media (max-width: 768px) {
+  .admin-sidebar {
+    position: absolute;
+    height: 100%;
+    z-index: 1100;
+  }
+  
+  .floating-panel {
+    max-height: 40vh;
+  }
+
+  .floating-left {
+    top: auto;
+    bottom: 24px;
+    left: 12px;
+    width: calc(100% - 24px);
+  }
+
+  .floating-right {
+    top: 24px;
+    right: 12px;
+    width: calc(100% - 24px);
+  }
+}
+
+.attached-toolbar {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  margin-left: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: var(--surface-color);
+  border-radius: 6px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--surface-border);
+  padding: 4px;
+}
+
+.attached-toolbar button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+
+.attached-toolbar button:hover {
+  background: var(--c-bg);
+}
+
+.attached-toolbar button.active {
+  background: rgba(159, 34, 65, 0.1);
+  color: var(--c-guinda);
+}
+
+.measuring-mode .leaflet-container {
+  cursor: crosshair !important;
+}
+
+.measure-dot {
+  background: var(--c-white);
+  border: 2px solid var(--c-guinda);
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.measure-tooltip {
+  background: var(--c-guinda);
+  color: var(--c-white);
+  border: none;
+  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: 12px;
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.leaflet-tooltip.measure-tooltip::before {
+  display: none;
+}

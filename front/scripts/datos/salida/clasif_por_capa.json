@@ -1,0 +1,438 @@
+{
+ "DIt01": {
+  "Tren Maya": 171
+ },
+ "DIt02": {
+  "Ciclovías de Campeche": 53
+ },
+ "DIt03": {
+  "Estaciones del Tren Maya": 11
+ },
+ "DIt04": {
+  "Parcialmente equipado": 29014,
+  "Nulo": 15403,
+  "Verde pero no accesible": 6027,
+  "Completamente equipado": 3929,
+  "Accesible": 3469
+ },
+ "DIt05": {
+  "Lugar de Esparcimiento": 444,
+  "Lugar de Culto": 193,
+  "Cementerio": 118,
+  "Estación de Abastecimiento de Combustible": 83,
+  "Atractivo Turístico": 59,
+  "Escuela de Educación Media": 57,
+  "Centro Deportivo": 46,
+  "Centro Comercial": 34,
+  "Universidad": 33,
+  "Hospital": 21,
+  "Palacio de Gobierno": 19,
+  "Banco": 18,
+  "Centro Cultural": 10,
+  "Biblioteca": 10,
+  "Museo": 9,
+  "Estadio": 9,
+  "Puerto": 9,
+  "Monumento Histórico": 8,
+  "Central Camionera": 8,
+  "Actividades de Campo": 6,
+  "Muelle o Embarcadero": 6,
+  "Instalaciones de Entretenimiento": 4,
+  "Teatro": 4,
+  "Pista Aérea": 4,
+  "Cajero Automático": 4,
+  "Centro de Investigación": 3,
+  "Caseta de Inspección": 3,
+  "Estación de Ferrocarril": 2,
+  "Oficina de Gobierno": 2,
+  "Aeropuerto": 2,
+  "Estación de Pesaje": 1,
+  "Campo de Golf": 1,
+  "Centro de Convenciones": 1,
+  "Hotel o Motel": 1,
+  "Parque Animal": 1,
+  "Zona Industrial": 1
+ },
+ "DIt06": {
+  "N/A": 42523,
+  "Tierra": 6915,
+  "Asfalto y concreto": 6595,
+  "Grava": 474
+ },
+ "DIt07": {
+  "No": 103012,
+  "Vía de cuota": 14989
+ },
+ "DTc01": {
+  "Corredores de Carga": 3
+ },
+ "DTc02": {
+  "Centros comerciales": 34
+ },
+ "DTc03": {
+  "Minisupers": 738,
+  "Al por mayor otros": 550,
+  "Al por mayor alimentos": 267,
+  "Supermercados": 44
+ },
+ "DTc04": {
+  "Transporte de Mercancias": 288
+ },
+ "DTc05": {
+  "Villahermosa -Francisco_Escárcega (1375)": 768,
+  "Campeche Mérida (2162)": 383,
+  "Villahermosa-Ciudad del Carmen (1570)": 379,
+  "Cd Carmen Campeche (1665)": 369,
+  "Francisco Escárcega-Chetumal (744)": 345,
+  "Campeche -Umán (291)": 279,
+  "Francisco Escárcega- Champotón (835)": 221,
+  "Libramiento de Campeche (1935)": 111,
+  "Campeche-Tixmucuy (293)": 69,
+  "Aut. Champotón Campeche (2271)": 25
+ },
+ "DTp01": {
+  "Sin transporte público y > a 2 hrs": 1679,
+  "Mayor a 1.5 hrs y hasta 2 hrs": 499,
+  "de 21 minutos  a una hora": 342,
+  "Menor a 20 minutos": 147,
+  "de 1.1 hr a 1.5 horas": 95
+ },
+ "DTp02": {
+  "Colectivo urbano y suburbano en autobuses de ruta fija": 45,
+  "Colectivo foráneo de pasajeros de ruta fija": 36,
+  "487110": 14,
+  "Otro transporte terrestre de pasajeros": 9,
+  "485510": 7,
+  "485410": 4
+ },
+ "DTts01": {
+  "Localidades rurales": 2729
+ },
+ "DTts02": {
+  "Sin categoría": 25,
+  "Tercer orden": 6,
+  "Primer orden": 2
+ },
+ "E1Det01": {
+  "Estrategias eje 1 (representadas como líneas)": 1019
+ },
+ "E1Det02": {
+  "Estrategia 1 Caminos saca cosecha": 2532
+ },
+ "E1Det03": {
+  "Estrategia Conectividad de Carreteras programa región suroeste": 331
+ },
+ "E1Det04": {
+  "Estrategia Conectividad estaciones del Tren Maya": 11
+ },
+ "E1Det05": {
+  "Estrategia Programa de Movilidad Región Suroeste de Campeche": 1
+ },
+ "E1Det06": {
+  "Mejorar la conectividad urbana": 13,
+  "Mejor.de la conectividad portuaria": 7,
+  "Libramiento Carretero": 6,
+  "Paraderos Seguros Camiones de Carga": 6,
+  "Centro Logístico Multimodal": 4,
+  "Impulsar turismo Nautico": 3,
+  "Corredor Logístico": 3,
+  "Estudio de demanda aeroportuaria": 2,
+  "C. Transferencia de Carga y Pas.": 1,
+  "Mod. del Puerto de Seybaplaya": 1
+ },
+ "E1Det07": {
+  "Estrategia Ejes Carreteros": 3
+ },
+ "E1Det08": {
+  "Estrategia de Carga Tren Maya": 168
+ },
+ "E2Tpp01": {
+  "Estrategia. Modernización del Transporte Público": 115
+ },
+ "E2Tpp02": {
+  "Estrategia Corredor de Transporte Público eléctrico": 2
+ },
+ "E2Tpp03": {
+  "Estrategia Estudios para la dotación de Transprote publico en localidades rurales": 1679
+ },
+ "E2Tpp04": {
+  "Estrategia. Nodo de Transferencia de Pasajeros": 1
+ },
+ "E2Tpp05": {
+  "Plazo inmediato": 5,
+  "Mediano Plazo": 5,
+  "Corto Plazo": 3
+ },
+ "E2Tpp06": {
+  "Mejoramiento de infraestructura de transporte foráneo de pasajeros": 34,
+  "Modernización de las rutas fóraneas de transporte público": 26,
+  "Construcción de equipamientos e infraestructuras de transporte público": 9,
+  "Optimización del Transporte Público": 6,
+  "Impulsar las rutas de transporte fluvial": 5
+ },
+ "E2Tpp07": {
+  "Estrategia. Reestructuración del sistema de rutas urbanas": 36
+ },
+ "E2Tpp08": {
+  "Estrategia. Mejorar la dotación de Transpote público en las Estaciones del Tren Maya": 11
+ },
+ "E2Tpp09": {
+  "Estrategia Programa de Movilidad Región Suroeste de Campeche": 1
+ },
+ "E2Tpp10": {
+  "Estrategia Programa de Transporte Público localidades región suroeste": 1190
+ },
+ "E2Tpp11": {
+  "Estrategia. Consolidar el Transporte de Pasajeros del Tren May": 168
+ },
+ "E3MovAct01": {
+  "Estrategia Calles Completas en Carmen": 6
+ },
+ "E3MovAct02": {
+  "Estrategia Estatal de Movilidad y Seguridad Vial de Campeche. Eje 3 Movilidad activa": 11
+ },
+ "E3MovAct03": {
+  "Corredor de Movilidad activa Escárcega": 2,
+  "Zona Peatonal Cd Carmen": 2
+ },
+ "E3MovAct04": {
+  "Estrategia. Programa de préstamo de bicicletas": 13
+ },
+ "E3MovAct05": {
+  "Estrategia. Programas urbanos de Calles Completas": 13
+ },
+ "E3MovAct06": {
+  "Progr prioritarios movilidad ciclista": 4,
+  "Progr. prioritarios movilidad peatonal": 4
+ },
+ "E3MovAct07": {
+  "Estrategias Movilidad activa Ciudades": 34
+ },
+ "E4SegVial01": {
+  "Con fallecidos": 9
+ },
+ "E4SegVial02": {
+  "Con fallecidos": 10,
+  "Con lesionados": 3
+ },
+ "E4SegVial03": {
+  "Estrategia. Iluminación en vias de riesgo": 2
+ },
+ "E4SegVial04": {
+  "EstrategiaPrograma de atencion a desastres en municipios con inundaciones": 3
+ },
+ "E4SegVial05": {
+  "Estrategia Programa de nomenclatura y señalización": 13
+ },
+ "E4SegVial06": {
+  "Estrategia Propuesta de distribuido vial": 2
+ },
+ "E4SegVial07": {
+  "Adecuación geométrica en puntos conflictivos": 15,
+  "Programa de señalización e iluminación": 13,
+  "Programa de Transporte Seguro": 6,
+  "Programa urbano de seguridad vial": 5,
+  "Señalización de accesos estratégicos": 4,
+  "Infraestructura de Cruces Seguros": 3,
+  "Programa de Señalimiento Vial": 2
+ },
+ "E4SegVial08": {
+  "Estrategia Programa de Seguridad vial en carreteras con alta siniestralidad": 1631
+ },
+ "E5Gen01": {
+  "Estrategia. Mejoramiento de la accesibilidad de la población más aislada": 667
+ },
+ "E5Gen02": {
+  "Estrategia. Adecuar las Estaciones del Tren Maya para grupos vulnerables": 11
+ },
+ "E5Gen03": {
+  "Progr. de Mov para grupos vulnerables por pobreza": 7,
+  "Sin categoría": 6
+ },
+ "E5Gen04": {
+  "Programa de Transporte Público para grupos vulnerables": 13,
+  "Programas de sensibilización de género e inclusión en la movilidad": 13,
+  "Programa de Transporte compartido para grupos vulnerables": 12,
+  "Estudio de percepción de seguridad en el Transporte Público": 10
+ },
+ "E5Gen05": {
+  "Estrategia Programa de movilidad localidades vulnerables Región Suroeste de Campeche": 493
+ },
+ "Inf01": {
+  "00_EstacionesTM_ND_2025": 23
+ },
+ "Inf02": {
+  "Operación": 49,
+  "Sin uso": 13
+ },
+ "Inf03": {
+  "Tren Maya": 65
+ },
+ "Inf04": {
+  "C00_emisor-senal_IMT_INEGI_2024": 86
+ },
+ "Inf05": {
+  "C04002_paraderos-tren-ligero_SEDUMOP_2025": 15
+ },
+ "Inf06": {
+  "Tren Ligero": 1
+ },
+ "Inf07": {
+  "Estaciones del Tren Maya": 11
+ },
+ "Inf08": {
+  "Lugar de Esparcimiento": 444,
+  "Lugar de Culto": 193,
+  "Cementerio": 118,
+  "Estación de Abastecimiento de Combustible": 83,
+  "Atractivo Turístico": 59,
+  "Escuela de Educación Media": 57,
+  "Centro Deportivo": 46,
+  "Centro Comercial": 34,
+  "Universidad": 33,
+  "Hospital": 21,
+  "Palacio de Gobierno": 19,
+  "Banco": 18,
+  "Centro Cultural": 10,
+  "Biblioteca": 10,
+  "Museo": 9,
+  "Estadio": 9,
+  "Puerto": 9,
+  "Monumento Histórico": 8,
+  "Central Camionera": 8,
+  "Actividades de Campo": 6,
+  "Muelle o Embarcadero": 6,
+  "Instalaciones de Entretenimiento": 4,
+  "Teatro": 4,
+  "Pista Aérea": 4,
+  "Cajero Automático": 4,
+  "Centro de Investigación": 3,
+  "Caseta de Inspección": 3,
+  "Estación de Ferrocarril": 2,
+  "Oficina de Gobierno": 2,
+  "Aeropuerto": 2,
+  "Estación de Pesaje": 1,
+  "Campo de Golf": 1,
+  "Centro de Convenciones": 1,
+  "Hotel o Motel": 1,
+  "Parque Animal": 1,
+  "Zona Industrial": 1
+ },
+ "Inf09": {
+  "N/A": 42615,
+  "N/D": 5592,
+  "Estatal": 3656,
+  "Federal": 2862,
+  "Particular": 1490,
+  "Municipal": 283,
+  "Otro": 9
+ },
+ "Inf10": {
+  "Vía de Cuota": 18959
+ },
+ "Inf11": {
+  "Red Carretera regional": 89624
+ },
+ "Inf12": {
+  "C04_acueductos_IMT_INEGI_2024": 391
+ },
+ "Inf13": {
+  "C04_ductos_Champoton_2023": 119
+ },
+ "Inf14": {
+  "C04_eje-calle_IMT_INEGI_2024": 17751
+ },
+ "Inf15": {
+  "C04_linea-transmision_IMT_INEGI_2024": 103
+ },
+ "Inf16": {
+  "Infraestructura de transporte: Puertos, Aeropuertos, Pista Aérea de Campeche": 848
+ },
+ "Lim01": {
+  "Límite internacional": 2
+ },
+ "Lim02": {
+  "Aguascalientes": 1,
+  "Baja California": 1,
+  "Baja California Sur": 1,
+  "Campeche": 1,
+  "Coahuila de Zaragoza": 1,
+  "Colima": 1,
+  "Chiapas": 1,
+  "Chihuahua": 1,
+  "Ciudad de México": 1,
+  "Durango": 1,
+  "Guanajuato": 1,
+  "Guerrero": 1,
+  "Hidalgo": 1,
+  "Jalisco": 1,
+  "México": 1,
+  "Michoacán de Ocampo": 1,
+  "Morelos": 1,
+  "Nayarit": 1,
+  "Nuevo León": 1,
+  "Oaxaca": 1,
+  "Puebla": 1,
+  "Querétaro": 1,
+  "Quintana Roo": 1,
+  "San Luis Potosí": 1,
+  "Sinaloa": 1,
+  "Sonora": 1,
+  "Tabasco": 1,
+  "Tamaulipas": 1,
+  "Tlaxcala": 1,
+  "Veracruz de Ignacio de la Llave": 1,
+  "Yucatán": 1,
+  "Zacatecas": 1
+ },
+ "Lim03": {
+  "Límite del Estado Campeche": 1
+ },
+ "Lim04": {
+  "Límite municipal": 13
+ },
+ "Lim05": {
+  "C04_zonas_estudio_PIMUS_2025": 24
+ },
+ "Loc01": {
+  "Localidades rurales": 478,
+  "Localidades urbanas": 33
+ },
+ "Loc02": {
+  "Localidades puntuales rurales de Campeche": 2729
+ },
+ "Loc03": {
+  "Localidades urbanas del Área de Influencia de Campeche": 72
+ },
+ "Loc04": {
+  "Localidades urbanas Área de Influencia": 590
+ },
+ "Loc05": {
+  "C04_manzanas_IMT_INEGI_2024": 23165
+ },
+ "Nat01": {
+  "Áreas Naturales Protegidas": 65
+ },
+ "Nat02": {
+  "Regiones Prioritarias Terrestres": 20
+ },
+ "Nat03": {
+  "Área Boscosa": 552
+ },
+ "Nat04": {
+  "Corrientes de Agua área": 64
+ },
+ "Nat05": {
+  "Intermitente": 11365,
+  "Red hidrológica": 263
+ },
+ "Nat06": {
+  "Cuerpos de Agua": 10177
+ },
+ "unidad_territorial_localidades": {
+  "localidad": 2772
+ },
+ "unidad_territorial_municipios": {
+  "municipio": 13
+ }
+}

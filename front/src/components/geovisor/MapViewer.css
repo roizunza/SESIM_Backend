@@ -1,0 +1,1045 @@
+.map-container-wrapper {
+  flex: 1;
+  width: 100%;
+  height: calc(100vh - 120px); /* Esto evita que el mapa desaparezca */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.map-custom-controls {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.map-ctrl-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.map-ctrl-btn:hover {
+  background: #f9fafb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: var(--c-guinda);
+}
+
+.capa-base-popover {
+  position: absolute;
+  right: 100%;
+  top: 0;
+  margin-right: 10px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 160px;
+  animation: fadeInRight 0.2s ease;
+}
+
+.capa-base-popover h5 {
+  font-size: 10px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 4px 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.capa-base-option {
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+  background: none;
+  color: #4b5563;
+}
+
+.capa-base-option:hover {
+  background: #f3f4f6;
+}
+
+.capa-base-option.active {
+  background: #e6f4ea;
+  color: #137333;
+  border-color: #a8dab5;
+  font-weight: 700;
+}
+
+.map-ctrl-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(6px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.leaflet-map {
+  flex: 1;
+  width: 100%;
+  z-index: 1;
+}
+
+.map-sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 290px;
+  background: #FFFFFF;
+  border-right: 1px solid var(--surface-border);
+  z-index: 1000;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  text-align: left;
+  box-shadow: 5px 0 15px rgba(0, 0, 0, 0.08);
+  /* Con los controles por capa (opacidad + info) y el Mapa Base también
+     expandible, el contenido supera fácilmente el alto del panel — sin este
+     scroll, todo lo que pasa del borde inferior queda inalcanzable (incluido
+     el panel de leyenda del fondo). */
+  overflow-y: auto;
+}
+
+.map-sidebar.collapsed {
+  transform: translateX(-100%);
+}
+
+.sidebar-toggle-btn {
+  position: absolute;
+  top: 20px;
+  right: -36px;
+  width: 36px;
+  height: 36px;
+  background: #FFFFFF;
+  border: 1px solid var(--surface-border);
+  border-left: none;
+  border-top-right-radius: var(--radius-md);
+  border-bottom-right-radius: var(--radius-md);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 3px 0 10px rgba(0, 0, 0, 0.08);
+  transition: var(--transition);
+  outline: none;
+  z-index: 1001;
+}
+
+.sidebar-toggle-btn:hover {
+  background: var(--primary-blue);
+  color: #ffffff;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.sidebar-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.sidebar-header .header-icon {
+  color: var(--cyan);
+}
+
+.sidebar-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+
+.overlay-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* Switch styling */
+.switch-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  position: relative;
+  user-select: none;
+}
+
+.switch-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.switch-slider {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+  background-color: rgba(15, 23, 42, 0.08);
+  border: 1px solid var(--surface-border);
+  transition: .3s;
+  /* Más cuadrado que redondo — antes 20px (píldora completa). */
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+/* Un solo color de "encendido" para las tres categorías (Mapa Base,
+   Estrategias, Diagnóstico) — antes cada Estrategia pintaba su propio color
+   (naranja, azul, verde…) vía un `style` en línea en MapViewer.jsx; se quitó
+   esa variación a pedido del usuario: un gris oxford neutro basta para
+   indicar "encendida", sin distraer con el color propio de cada capa. */
+.switch-container input:checked + .switch-slider {
+  background-color: #41474C;
+  border-color: #41474C;
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: #ffffff;
+  transition: .3s;
+  /* Cuadrado en vez de círculo, a juego con el slider ya no-píldora. */
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.switch-container input:checked + .switch-slider:before {
+  transform: translateX(18px);
+}
+
+.leaflet-bar {
+  border: 1px solid var(--surface-border) !important;
+  box-shadow: var(--shadow-md) !important;
+  border-radius: var(--radius-md) !important;
+  overflow: hidden;
+}
+
+.leaflet-bar a {
+  background-color: var(--surface-color) !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid var(--surface-border) !important;
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  transition: var(--transition) !important;
+  backdrop-filter: var(--backdrop-blur) !important;
+  -webkit-backdrop-filter: var(--backdrop-blur) !important;
+}
+
+.leaflet-bar a:hover {
+  background-color: var(--primary-blue) !important;
+  color: #ffffff !important;
+}
+
+.leaflet-container .leaflet-control-attribution {
+  background: rgba(11, 15, 25, 0.8) !important;
+  backdrop-filter: var(--backdrop-blur) !important;
+  color: var(--text-secondary) !important;
+  font-size: 0.7rem !important;
+  border-top-left-radius: var(--radius-md);
+}
+
+.leaflet-container .leaflet-control-attribution a {
+  color: var(--cyan) !important;
+}
+
+
+.evolution-panel {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: rgba(15, 23, 42, 0.03);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  transition: all 0.3s ease;
+}
+
+.evolution-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.evolution-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.switch-container.compact .switch-slider {
+  width: 32px;
+  height: 16px;
+}
+
+.switch-container.compact input:checked + .switch-slider:before {
+  transform: translateX(14px);
+}
+
+.switch-container.compact .switch-slider:before {
+  height: 10px;
+  width: 10px;
+  left: 2px;
+  bottom: 2px;
+}
+
+/* Custom Timeline Slider */
+.timeline-container {
+  position: relative;
+  height: 40px;
+  margin: var(--spacing-sm) var(--spacing-md) 0 var(--spacing-md);
+  user-select: none;
+}
+
+.timeline-track {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(15, 23, 42, 0.1);
+  border-radius: 2px;
+}
+
+.timeline-highlight {
+  position: absolute;
+  height: 100%;
+  background: var(--primary-blue);
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.timeline-ticks {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+}
+
+.timeline-tick-wrapper {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transform: translateX(-50%);
+  z-index: 5;
+}
+
+.timeline-tick-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  margin-top: 7px;
+  border: 2px solid var(--surface-color);
+  transition: all 0.2s ease;
+}
+
+.timeline-tick-wrapper:hover .timeline-tick-dot {
+  background: var(--cyan);
+  transform: scale(1.2);
+}
+
+.timeline-tick-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-top: var(--spacing-xs);
+  transition: all 0.2s ease;
+}
+
+/* Active styles */
+.timeline-tick-wrapper.tick-start .timeline-tick-dot {
+  width: 14px;
+  height: 14px;
+  margin-top: 5px;
+  background: #FF5252; /* Orange/Red for start year */
+  border-color: #ffffff;
+  box-shadow: 0 0 8px rgba(255, 82, 82, 0.5);
+}
+
+.timeline-tick-wrapper.tick-end .timeline-tick-dot {
+  width: 14px;
+  height: 14px;
+  margin-top: 5px;
+  background: #0FCE9A; /* Teal for end year */
+  border-color: #ffffff;
+  box-shadow: 0 0 8px rgba(15, 206, 154, 0.5);
+}
+
+.timeline-tick-wrapper.tick-in-range .timeline-tick-dot {
+  background: var(--primary-blue);
+}
+
+.timeline-tick-wrapper.tick-start .timeline-tick-label,
+.timeline-tick-wrapper.tick-end .timeline-tick-label {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Evolution Range Display */
+.evolution-range-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  background: rgba(15, 23, 42, 0.02);
+  border: 1px solid var(--surface-border);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  margin-top: var(--spacing-xs);
+}
+
+.year-badge {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 2px var(--spacing-sm);
+  border-radius: var(--radius-xs);
+}
+
+.year-badge.start {
+  color: #FF5252;
+  background: rgba(255, 82, 82, 0.1);
+}
+
+.year-badge.end {
+  color: #0FCE9A;
+  background: rgba(15, 206, 154, 0.1);
+}
+
+.evolution-range-display .arrow {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+/* Grupos de Ejes Estratégicos */
+.eje-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.eje-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.eje-group-header .switch-container {
+  flex: 1;
+  min-width: 0;
+}
+
+.eje-group-header .switch-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.eje-expand-btn {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+  transition: var(--transition);
+}
+
+.eje-expand-btn:hover {
+  background: rgba(15, 23, 42, 0.06);
+  color: var(--text-primary);
+}
+
+.eje-expand-btn svg {
+  transition: transform 0.2s ease;
+}
+
+.eje-sublayers {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 0 2px 12px;
+  margin-left: 8px;
+  border-left: 2px solid var(--surface-border);
+}
+
+/* Fila de capa (Mapa Base, Estrategias y Diagnóstico): encabezado (switch +
+   nombre + botón de metadatos) arriba, control de opacidad de ancho
+   completo debajo — no al lado del nombre. */
+.capa-fila {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.capa-fila-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.capa-fila .switch-container {
+  flex: 1;
+  min-width: 0;
+}
+
+.capa-fila-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Control de opacidad: etiqueta muy tenue arriba, slider largo (ancho
+   completo) y delgado debajo — alineado bajo el texto del switch, no bajo
+   el propio interruptor. */
+.capa-opacidad-fila {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  /* 32px del switch compacto + 8px de gap: alinea bajo el texto del
+     nombre, no bajo el propio interruptor. */
+  padding-left: 40px;
+}
+
+.capa-opacidad-etiqueta {
+  font-size: 0.62rem;
+  color: var(--text-secondary);
+  opacity: 0.5;
+  letter-spacing: 0.02em;
+}
+
+.capa-opacidad-slider {
+  width: 100%;
+  height: 12px;
+  accent-color: var(--primary-blue, var(--c-guinda));
+  cursor: pointer;
+}
+
+.capa-opacidad-slider::-webkit-slider-runnable-track {
+  height: 3px;
+}
+
+.capa-opacidad-slider::-moz-range-track {
+  height: 3px;
+}
+
+.capa-info-btn {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: var(--radius-xs);
+  flex-shrink: 0;
+}
+
+.capa-info-btn:hover {
+  background: rgba(15, 23, 42, 0.06);
+  color: var(--c-guinda);
+}
+
+/* Simbología de todas las capas activas — cuadro flotante fijo en la
+   esquina inferior derecha del mapa (mismo patrón posicional que
+   `.map-custom-controls`, en la esquina superior derecha). El propio cuadro
+   tiene un alto máximo con scroll (`leyenda-flotante-scroll`) para cuando
+   hay muchas capas activas a la vez; cada capa, además, trae su propia
+   lista de muestras con scroll independiente si trae muchas categorías
+   (`.capa-legend-muestras`, reusada tal cual del panel anterior). */
+.leyenda-flotante {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1000;
+  width: 260px;
+  max-height: 320px;
+  background: var(--surface-color);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.leyenda-flotante-header {
+  flex-shrink: 0;
+  padding: 8px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.leyenda-flotante-scroll {
+  overflow-y: auto;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.leyenda-flotante-capa {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.leyenda-flotante-capa:not(:first-child) {
+  padding-top: 10px;
+  border-top: 1px solid var(--surface-border);
+}
+
+.leyenda-flotante-nombre {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.capa-legend-muestras {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.capa-legend-muestra {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.capa-legend-swatch svg {
+  display: block;
+}
+
+.capa-legend-swatch-plano {
+  width: 22px;
+  height: 14px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.capa-legend-muestra-label {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+/* Modal de metadatos de capa ("monografía") — mismo patrón de drawer que ya
+   usa el flujo de capturista (overlay + panel deslizante desde la derecha). */
+.capa-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 2000;
+  backdrop-filter: blur(2px);
+}
+
+.capa-modal-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+  width: 100%;
+  max-width: 480px;
+  background: var(--surface-color);
+  box-shadow: -4px 0 15px rgba(0, 0, 0, 0.15);
+  z-index: 2001;
+  display: flex;
+  flex-direction: column;
+  animation: capaModalSlideIn 0.25s ease forwards;
+}
+
+@keyframes capaModalSlideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.capa-modal-header {
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--surface-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+}
+
+.capa-modal-header h3 {
+  margin: 0;
+  font-family: var(--font-heading, inherit);
+  color: var(--c-guinda);
+  font-size: 1.1rem;
+}
+
+.capa-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.capa-modal-close:hover {
+  color: var(--c-guinda);
+}
+
+.capa-modal-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.capa-modal-destacados {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.capa-modal-campo-etiqueta {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.capa-modal-campo-valor {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.capa-modal-ver-todo-btn {
+  align-self: flex-start;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--primary-blue, var(--c-guinda));
+  background: none;
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.capa-modal-ver-todo-btn:hover {
+  background: rgba(15, 23, 42, 0.04);
+}
+
+.capa-modal-tabla-wrap {
+  border-top: 1px solid var(--surface-border);
+  padding-top: var(--spacing-md);
+}
+
+.capa-modal-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--spacing-sm);
+  font-size: 0.78rem;
+}
+
+.capa-modal-tabla th {
+  text-align: left;
+  vertical-align: top;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 4px 8px 4px 0;
+  white-space: nowrap;
+  width: 1%;
+}
+
+.capa-modal-tabla td {
+  vertical-align: top;
+  color: var(--text-primary);
+  padding: 4px 0;
+  word-break: break-word;
+}
+
+.capa-modal-tabla tr:nth-child(even) {
+  background: rgba(15, 23, 42, 0.02);
+}
+
+/* Layer Legend Styling */
+.layer-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+  background: rgba(15, 23, 42, 0.02);
+  border-left: 2px solid var(--surface-border);
+  margin-left: 14px;
+  margin-top: 6px;
+  border-radius: 2px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.legend-line {
+  width: 20px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+.legend-line-dashed {
+  width: 20px;
+  height: 0;
+  border-top: 2px dashed #64748B;
+  flex-shrink: 0;
+}
+
+.legend-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Discreet Light Leaflet Attribution (Bottom Right) */
+.leaflet-container .leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  color: #6b7280 !important;
+  font-size: 0.65rem !important;
+  padding: 2px 8px !important;
+  border-top-left-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.leaflet-container .leaflet-control-attribution a {
+  color: var(--c-guinda) !important;
+  text-decoration: none !important;
+}
+
+.leaflet-container .leaflet-control-attribution a:hover {
+  text-decoration: underline !important;
+}
+/* --- Contenedor Arrastrable Maestro --- */
+.draggable-wrapper {
+  position: absolute;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px; 
+}
+
+.external-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; 
+}
+
+.external-toolbar button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--c-white, #ffffff);
+  border: 1px solid var(--c-gray-md, #e5e7eb);
+  border-radius: 8px; 
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+  cursor: pointer;
+  color: var(--c-text, #374151);
+  transition: all 0.2s ease;
+}
+
+.external-toolbar button:hover {
+  background: #f9fafb;
+  color: var(--c-guinda, #6b1428);
+  border-color: var(--c-guinda, #6b1428);
+}
+
+.external-toolbar button.active {
+  background: rgba(107, 20, 40, 0.1);
+  color: var(--c-guinda, #6b1428);
+  border-color: var(--c-guinda, #6b1428);
+}
+
+/* --- Estilos para la herramienta de medición --- */
+.measuring-mode .leaflet-container {
+  cursor: crosshair !important;
+}
+
+.measure-dot {
+  background: #ffffff;
+  border: 2px solid var(--c-guinda, #6b1428);
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.measure-tooltip {
+  background: var(--c-guinda, #6b1428);
+  color: #ffffff;
+  border: none;
+  font-weight: 600;
+  font-size: 12px;
+  border-radius: 4px;
+  padding: 4px 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.leaflet-tooltip.measure-tooltip::before {
+  display: none;
+}
+
+/* Etiqueta de texto permanente sobre el mapa (p. ej. "NOMGEO" de Municipios
+   en Mapa Base, ver `CAMPO_ETIQUETA_POR_CAPA` en MapViewer.jsx) — texto
+   plano centrado en el polígono, sin la burbuja/flecha por defecto del
+   tooltip de Leaflet; el contorno claro (`text-shadow`) lo hace legible
+   sobre cualquier color de fondo del mapa. */
+.capa-etiqueta-mapa {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  font-family: var(--font-body, inherit);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #1f2937;
+  text-shadow:
+    0 1px 2px #fff,
+    0 -1px 2px #fff,
+    1px 0 2px #fff,
+    -1px 0 2px #fff;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.leaflet-tooltip.capa-etiqueta-mapa::before {
+  display: none;
+}
+/* ===================== Arquitectura de datos v2 (catálogo `capa`) ===================== */
+.capa-buscador {
+  display: flex; align-items: center; gap: 6px;
+  margin: 0 16px 12px; padding: 6px 10px;
+  border: 1px solid var(--border-color); border-radius: 6px; background: #fff;
+  color: var(--text-secondary);
+}
+.capa-buscador input { flex: 1; border: none; outline: none; font-size: 12px; font-family: var(--font-body); background: transparent; }
+.capa-buscador button { background: none; border: none; cursor: pointer; color: var(--text-secondary); display: flex; }
+
+.indicador-foco {
+  display: flex; gap: 8px; align-items: flex-start;
+  margin: 0 16px 12px; padding: 10px; border-radius: 6px;
+  background: rgba(159, 34, 65, 0.07); border: 1px solid rgba(159, 34, 65, 0.25); color: var(--c-guinda);
+}
+.indicador-foco > div { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.indicador-foco-titulo { font-size: 12px; font-weight: 700; }
+.indicador-foco-nombre { font-size: 11px; color: var(--text-primary); }
+.indicador-foco-n { font-size: 11px; color: var(--text-secondary); }
+.indicador-foco-n a { color: var(--c-guinda); }
+.indicador-foco button { background: none; border: none; cursor: pointer; color: var(--c-guinda); display: flex; }
+
+.capa-id-chip {
+  display: inline-block; margin-left: 6px; padding: 0 5px; border-radius: 4px;
+  font-size: 9.5px; font-weight: 600; letter-spacing: 0.02em; vertical-align: middle;
+  background: #EEF0F2; color: #53565A; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.capa-borrador-chip {
+  display: inline-block; margin-left: 4px; padding: 0 5px; border-radius: 4px;
+  font-size: 9.5px; font-weight: 600; vertical-align: middle;
+  background: rgba(171, 148, 112, 0.2); color: #7A6440;
+}
+
+.capa-modal-id { font-size: 11px; font-weight: 700; color: var(--c-guinda); text-transform: uppercase; letter-spacing: 0.04em; }
+.capa-modal-elemento { margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-color); }
+.capa-modal-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 10.5px; word-break: break-all; }
+.capa-modal-seccion { margin-top: 18px; display: flex; flex-direction: column; gap: 6px; }
+.capa-modal-seccion .capa-modal-campo-etiqueta { display: flex; align-items: center; gap: 4px; }
+.capa-modal-lista { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; max-height: 220px; overflow-y: auto; }
+.capa-modal-lista a { font-size: 12px; color: var(--text-primary); text-decoration: none; }
+.capa-modal-lista a strong { color: var(--c-guinda); margin-right: 4px; }
+.capa-modal-lista a:hover { text-decoration: underline; }
+.capa-modal-linaje { white-space: pre-wrap; font-size: 12px; max-height: 260px; overflow-y: auto; }

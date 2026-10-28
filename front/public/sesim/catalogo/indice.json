@@ -1,0 +1,18 @@
+{
+ "generado": "2026-10-20T17:39:34",
+ "origen": "SESIM_operativo.xlsx (arquitectura de datos v2.2) + SESIM_tablas.xlsx (capa.estatus/proposito)",
+ "conteos": {
+  "perfil": 4,
+  "eje_tematico": 5,
+  "sector": 31,
+  "fuente_informacion": 17,
+  "instrumento_origen": 6,
+  "matriz_instrumento": 135,
+  "indicador": 113,
+  "indicador_instrumento": 205,
+  "unidad_territorial": 2785,
+  "capa_indicador": 1030,
+  "v_capa_por_municipio": 737,
+  "capa": 87
+ }
+}

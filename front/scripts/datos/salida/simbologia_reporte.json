@@ -1,0 +1,743 @@
+[
+ {
+  "id_capa": "DTp01",
+  "archivo": "04_GACP_CONEVAL_2021",
+  "origen_legado": "C37_04_gacp_coneval_2021_sesim_2026",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "DTp02",
+  "archivo": "C04_Empresas_TPasajeros_DENUE_INEGI_2025",
+  "origen_legado": "c04_empresas_tpasajeros_denue_inegi_2025",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 0.783,
+  "clases_sin_simbolo": [
+   "487110",
+   "485510",
+   "485410"
+  ]
+ },
+ {
+  "id_capa": "DIt01",
+  "archivo": "C00_Ruta_Tren_Maya_PEOT_2023",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "DIt02",
+  "archivo": "C04_Ciclovia_Campeche_INEGI_2020",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "DIt03",
+  "archivo": "C04_EstacionesTM_SEDATU_2024",
+  "origen_legado": "c04_estacionestm_sedatu_2024",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "DIt04",
+  "archivo": "C04_INV_FM_Campeche_INEGI_2020",
+  "origen_legado": "c04_inv_fm_campeche_inegi_2020",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "DIt05",
+  "archivo": "C04_Puntos_Int_IMT_INEGI_2024",
+  "origen_legado": "c04_puntos_int_imt_inegi_2024",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 0.012,
+  "clases_sin_simbolo": [
+   "Lugar de Esparcimiento",
+   "Lugar de Culto",
+   "Cementerio",
+   "Estación de Abastecimiento de Combustible",
+   "Atractivo Turístico",
+   "Escuela de Educación Media",
+   "Centro Deportivo",
+   "Centro Comercial",
+   "Universidad",
+   "Hospital"
+  ]
+ },
+ {
+  "id_capa": "DIt06",
+  "archivo": "C04_Red_Campeche_IMT_INEGI_2024",
+  "origen_legado": "c04_red_campeche_imt_inegi_2024",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 0.247,
+  "clases_sin_simbolo": [
+   "N/A"
+  ]
+ },
+ {
+  "id_capa": "DIt07",
+  "archivo": "C04_Red_Federal_IMT_INEGI_2024",
+  "origen_legado": "c04_red_federal_imt_inegi_2024",
+  "tipo": "categorizedSymbol",
+  "cobertura_exacta": 0.127,
+  "clases_sin_simbolo": [
+   "No"
+  ]
+ },
+ {
+  "id_capa": "DTts01",
+  "archivo": "04_LPR_INEGI_2024",
+  "origen_legado": "C48_04_lpr_inegi_2024_sesim_2026",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "DTts02",
+  "archivo": "04_ZonasUrbanas_SCINCE_INEGI_2020",
+  "origen_legado": "C49_04_zonasurbanas_scince_inegi_2020_sesim_2026",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 0.242,
+  "clases_sin_simbolo": [
+   "Sin categoría"
+  ]
+ },
+ {
+  "id_capa": "DTc01",
+  "archivo": "04_CorredoresCarga_PEOT_2023",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "DTc02",
+  "archivo": "C04_CentrosComerciales_INEGI_2024",
+  "origen_legado": "c04_centroscomerciales_inegi_2024",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "DTc03",
+  "archivo": "C04_ComercioMayor_IMT_INEGI_2024",
+  "origen_legado": "c04_comerciomayor_imt_inegi_2024",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "DTc04",
+  "archivo": "C04_EmpresasCarga_DENUE_INEGI_2025",
+  "origen_legado": "c04_empresascarga_denue_inegi_2025",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "DTc05",
+  "archivo": "C04_ViasdeCarga_IMT_INEGI_2024",
+  "origen_legado": "c04_viasdecarga_imt_inegi_2024",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E4SegVial01",
+  "archivo": "SIN_Carreteras_SICT_IMT_2022",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E4SegVial02",
+  "archivo": "SIN_Municipal_ATUS_INEGI_2023",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E1Det01",
+  "archivo": "C04_Estrategias1_líneas_EEMSV_2025",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E1Det02",
+  "archivo": "C04_Estrategias_1_CamSacacosecha_EEMSV_2025",
+  "origen_legado": "c04_estrategias_1_camsacacosecha_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E1Det03",
+  "archivo": "C04_Estrategias_1_Conect_Progr_RSuroeste_EEMSV_2025",
+  "origen_legado": "c04_estrategias_1_conect_progr_rsuroeste_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E1Det04",
+  "archivo": "C04_Estrategias_1_Poligonos_EEMSV_2025",
+  "origen_legado": "c04_estrategias_1_poligonos_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E1Det05",
+  "archivo": "C04_Estrategias_1_Progr_Mov_Suroeste_EEMSV_2025",
+  "origen_legado": "c04_estrategias_1_progr_mov_suroeste_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E1Det06",
+  "archivo": "C04_Estrategias_1_Puntos_EEMSV_2025",
+  "origen_legado": "c04_estrategias_1_puntos_eemsv_2025",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 0.87,
+  "clases_sin_simbolo": [
+   "Paraderos Seguros Camiones de Carga"
+  ]
+ },
+ {
+  "id_capa": "E1Det07",
+  "archivo": "C04_Estrategias_1_lineas2_EEMSV_2025",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E1Det08",
+  "archivo": "C04_Estrategias_1_lineas3_EEMSV_2025",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E2Tpp01",
+  "archivo": "C04_Empresas_TPasajeros_DENUE_INEGI_2025",
+  "origen_legado": "c04_empresas_tpasajeros_denue_inegi_2025",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 0.0,
+  "clases_sin_simbolo": [
+   "Estrategia. Modernización del Transporte Público"
+  ]
+ },
+ {
+  "id_capa": "E2Tpp02",
+  "archivo": "C04_Estrategias2_Corredor_TP_Electrico_EEMSV_2025",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E2Tpp03",
+  "archivo": "C04_Estrategias2_Est_TP_locRurales_Pto_EEMSV_2025",
+  "origen_legado": "c04_estrategias2_est_tp_locrurales_pto_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E2Tpp04",
+  "archivo": "C04_Estrategias2_NodoTranferenca_Pas_Pol_EEMSV_2025",
+  "origen_legado": "c04_estrategias2_nodotranferenca_pas_pol_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E2Tpp05",
+  "archivo": "C04_Estrategias2_Pol_EEMSV_2025",
+  "origen_legado": "c04_estrategias2_pol_eemsv_2025",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E2Tpp06",
+  "archivo": "C04_Estrategias2_Puntos_EEMSV_2025",
+  "origen_legado": "c04_estrategias2_puntos_eemsv_2025",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E2Tpp07",
+  "archivo": "C04_Estrategias2_Sistema_rutas_urb_lineas_EEMSV_2025",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E2Tpp08",
+  "archivo": "C04_Estrategias2_TP_Est_TM_Pol_EEMSV_2025",
+  "origen_legado": "c04_estrategias2_tp_est_tm_pol_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E2Tpp09",
+  "archivo": "C04_Estrategias_2_Progr_Mov_Suroeste_EEMSV_2025",
+  "origen_legado": "c04_estrategias_2_progr_mov_suroeste_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E2Tpp10",
+  "archivo": "C04_Estrategias_2_TPub_Progr_RSuroeste_EEMSV_2025",
+  "origen_legado": "c04_estrategias_2_tpub_progr_rsuroeste_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E2Tpp11",
+  "archivo": "C04_TPasajeros_Tren_Maya_lineas2_EEMSV_2025",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E3MovAct01",
+  "archivo": "C04_Estrategias3_CCCarmen_Puntos2_EEMSV_2025",
+  "origen_legado": "c04_estrategias3_cccarmen_puntos2_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E3MovAct02",
+  "archivo": "C04_Estrategias3_EstTren_Pol2_EEMSV_2025",
+  "origen_legado": "c04_estrategias3_esttren_pol2_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E3MovAct03",
+  "archivo": "C04_Estrategias3_Movactiva_Pol2_EEMSV_2025",
+  "origen_legado": "c04_estrategias3_movactiva_pol2_eemsv_2025",
+  "tipo": "categorizedSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E3MovAct04",
+  "archivo": "C04_Estrategias3_PPBicicleta_Puntos_EEMSV_2025",
+  "origen_legado": "c04_estrategias3_ppbicicleta_puntos_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E3MovAct05",
+  "archivo": "C04_Estrategias3_ProgCallesComp_Puntos3_EEMSV_2025",
+  "origen_legado": "c04_estrategias3_progcallescomp_puntos3_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E3MovAct06",
+  "archivo": "C04_Estrategias3_ProgMovactiva_Pol1_EEMSV_2025",
+  "origen_legado": "c04_estrategias3_progmovactiva_pol1_eemsv_2025",
+  "tipo": "categorizedSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E3MovAct07",
+  "archivo": "C04_Estrategias3_lineas1_EEMSV_2025",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E4SegVial03",
+  "archivo": "C04_Estrategias4_Iluminacion_Lineas2_EEMSV_2025",
+  "origen_legado": "c04_estrategias4_iluminacion_lineas2_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E4SegVial04",
+  "archivo": "C04_Estrategias4_ProgDesastres_Pol_EEMSV_2025",
+  "origen_legado": "c04_estrategias4_progdesastres_pol_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E4SegVial05",
+  "archivo": "C04_Estrategias4_ProgNomenc_Pol2_EEMSV_2025",
+  "origen_legado": "c04_estrategias4_prognomenc_pol2_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E4SegVial06",
+  "archivo": "C04_Estrategias4_Prop_Distribuidor_Vial_EEMSV_2025",
+  "origen_legado": "c04_estrategias4_prop_distribuidor_vial_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E4SegVial07",
+  "archivo": "C04_Estrategias4_Puntos_EEMSV_2025",
+  "origen_legado": "c04_estrategias4_puntos_eemsv_2025",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E4SegVial08",
+  "archivo": "C04_Estrategias4_Siniestros_Lineas1_EEMSV_2025",
+  "origen_legado": "c04_estrategias4_siniestros_lineas1_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E5Gen01",
+  "archivo": "C04_Estrategias5_AccPob_aislada_Puntos2_EEMSV_2025",
+  "origen_legado": "c04_estrategias5_accpob_aislada_puntos2_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E5Gen02",
+  "archivo": "C04_Estrategias5_Est_TM_GruposVul_Pol2_EEMSV_2025",
+  "origen_legado": "c04_estrategias5_est_tm_gruposvul_pol2_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E5Gen03",
+  "archivo": "C04_Estrategias5_Progr_MunPobreza_Pol_EEMSV_2025",
+  "origen_legado": "c04_estrategias5_progr_munpobreza_pol_eemsv_2025",
+  "tipo": "categorizedSymbol",
+  "cobertura_exacta": 0.538,
+  "clases_sin_simbolo": [
+   "Sin categoría"
+  ]
+ },
+ {
+  "id_capa": "E5Gen04",
+  "archivo": "C04_Estrategias5_Progr_Puntos_EEMSV_2025",
+  "origen_legado": "c04_estrategias5_progr_puntos_eemsv_2025",
+  "tipo": "categorizedSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "E5Gen05",
+  "archivo": "C04_Estrategias_5_LocAisladas_Progr_RSuroeste_EEMSV_2025",
+  "origen_legado": "c04_estrategias_5_locaisladas_progr_rsuroeste_eemsv_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Inf01",
+  "archivo": "00_EstacionesTM_ND_2025",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Inf02",
+  "archivo": "00_RFN_ARTF_2023",
+  "origen_legado": "C03_00_rfn_artf_2023_sesim_2026",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Lim01",
+  "archivo": "100_PAÍSES_0000",
+  "origen_legado": "C04_100_paises_0000_sesim_2026",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Nat01",
+  "archivo": "C00_ANP_CONANP_2025",
+  "origen_legado": "c00_anp_conanp_2025",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Lim02",
+  "archivo": "C00_Entidades_INEGI_2024",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Nat02",
+  "archivo": "C00_RPT_CONABIO_2008",
+  "origen_legado": "c00_rpt_conabio_2008",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Inf03",
+  "archivo": "C00_Ruta_Tren_Maya_PEOT_2023",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Inf04",
+  "archivo": "C00_emisor-senal_IMT_INEGI_2024",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Inf05",
+  "archivo": "C04002_paraderos-tren-ligero_SEDUMOP_2025",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Inf06",
+  "archivo": "C04004_tren-ligero_INFOCAM_2025",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Nat03",
+  "archivo": "C04_AreaBoscosa_INEGI_2018",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Nat04",
+  "archivo": "C04_CorrientesAgua_Area_INEGI_2024",
+  "origen_legado": "c04_corrientesagua_area_inegi_2024",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Nat05",
+  "archivo": "C04_CorrientesAgua_INEGI_2024",
+  "origen_legado": "c04_corrientesagua_inegi_2024",
+  "tipo": "categorizedSymbol",
+  "cobertura_exacta": 0.023,
+  "clases_sin_simbolo": [
+   "Intermitente"
+  ]
+ },
+ {
+  "id_capa": "Nat06",
+  "archivo": "C04_Cuerpos_Agua_INEGI_2024",
+  "origen_legado": "c04_cuerpos_agua_inegi_2024",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Inf07",
+  "archivo": "C04_EstacionesTM_SEDATU_2024",
+  "origen_legado": "c04_estacionestm_sedatu_2024",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Lim03",
+  "archivo": "C04_Lim_Edo_2024_INEGI_2024",
+  "origen_legado": "c04_lim_edo_2024_inegi_2024",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Loc01",
+  "archivo": "C04_Localidades_2024",
+  "origen_legado": "c04_localidades_2024",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Loc02",
+  "archivo": "C04_Localidades_Rurales_2024",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Loc03",
+  "archivo": "C04_Localidades_Urbanas_INEGI_AI1500_2024",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Loc04",
+  "archivo": "C04_Localidades_Urbanas_INEGI_AI_2024",
+  "origen_legado": "c04_localidades_urbanas_inegi_ai_2024",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Lim04",
+  "archivo": "C04_Municiipios_INEGI_2024",
+  "origen_legado": "c04_municiipios_inegi_2024",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Inf08",
+  "archivo": "C04_Puntos_Int_IMT_INEGI_2024",
+  "origen_legado": "c04_puntos_int_imt_inegi_2024",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 0.012,
+  "clases_sin_simbolo": [
+   "Lugar de Esparcimiento",
+   "Lugar de Culto",
+   "Cementerio",
+   "Estación de Abastecimiento de Combustible",
+   "Atractivo Turístico",
+   "Escuela de Educación Media",
+   "Centro Deportivo",
+   "Centro Comercial",
+   "Universidad",
+   "Hospital"
+  ]
+ },
+ {
+  "id_capa": "Inf09",
+  "archivo": "C04_Red_Campeche_IMT_INEGI_2024",
+  "origen_legado": "c04_red_campeche_imt_inegi_2024",
+  "tipo": "ruleRenderer",
+  "cobertura_exacta": 0.12,
+  "clases_sin_simbolo": [
+   "N/A",
+   "N/D",
+   "Particular",
+   "Otro"
+  ]
+ },
+ {
+  "id_capa": "Inf10",
+  "archivo": "C04_Red_Federal_IMT_INEGI_2024",
+  "origen_legado": "c04_red_federal_imt_inegi_2024",
+  "tipo": "singleSymbol",
+  "cobertura_exacta": 1.0,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Inf11",
+  "archivo": "C04_Red_Regional_IMT_INEGI_2024",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Inf12",
+  "archivo": "C04_acueductos_IMT_INEGI_2024",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Inf13",
+  "archivo": "C04_ductos_Champoton_2023",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Inf14",
+  "archivo": "C04_eje-calle_IMT_INEGI_2024",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Inf15",
+  "archivo": "C04_linea-transmision_IMT_INEGI_2024",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Loc05",
+  "archivo": "C04_manzanas_IMT_INEGI_2024",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Inf16",
+  "archivo": "C04_puente_IMT_INEGI_2024",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ },
+ {
+  "id_capa": "Lim05",
+  "archivo": "C04_zonas_estudio_PIMUS_2025",
+  "origen_legado": null,
+  "tipo": null,
+  "cobertura_exacta": null,
+  "clases_sin_simbolo": []
+ }
+]
