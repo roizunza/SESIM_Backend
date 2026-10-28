@@ -34,6 +34,10 @@ begin
   execute 'reset role';
   insert into resultados(caso, ok, detalle) values (c, ok, d);
 end $$;
+-- cuenta filas como anon y vuelve a ser dueno (reg() tambien reinicia el rol)
+create function pg_temp.cuenta_anon(q text) returns bigint language plpgsql as $$
+declare n bigint; begin
+  perform pg_temp.anonimo(); n := pg_temp.cuenta(q); execute 'reset role'; return n; end $$;
 grant all on pg_temp.resultados to public;
 
 -- ---------------------------------------------------------------- cuentas de prueba (como dueno)
@@ -137,8 +141,12 @@ begin
   perform pg_temp.yo(ca); n := pg_temp.cuenta(format('select 1 from api.evidencia_medicion where id_medicion = %L', m3));
   perform pg_temp.reg('C21 Capturista A si ve la evidencia de una medicion ya publica', n = 1, n::text);
 
-  perform pg_temp.anonimo(); n := pg_temp.cuenta('select 1 from api.indicador');
-  perform pg_temp.reg('C22 Sin sesion (anon) no lee nada de la API', n = -1, 'consulta rechazada');
+  perform pg_temp.anonimo();
+  perform pg_temp.reg('C22 Sin sesion (anon) NO lee lo privado: perfil, bitacora, invitacion, evidencia, dictamen, hallazgo, versiones de capa, diccionario',
+    (select bool_and(pg_temp.cuenta('select 1 from ' || x) = -1) from unnest(array[
+      'api.perfil','api.bitacora_cambio','core.invitacion','api.evidencia_medicion','api.dictamen',
+      'api.hallazgo_auditoria','api.capa_version','api.diccionario','api.medicion_indicador','api.umbral_semaforo','core.perfil']) x),
+    'todas rechazadas');
   perform pg_temp.yo(ca); n := pg_temp.cuenta('select 1 from api.indicador');
   perform pg_temp.reg('C23 Una cuenta activa lee el catalogo (113 indicadores)', n = 113, n::text);
   perform pg_temp.yo(ca); n := pg_temp.cuenta('select 1 from legado.indicador');
@@ -198,6 +206,112 @@ begin
   perform pg_temp.reg('C38 24 tablas del modelo + control de migraciones = 25 en core', (select count(*) from pg_class c join pg_namespace s on s.oid=c.relnamespace
         where s.nspname='core' and c.relkind='r') = 25, (select count(*) from pg_class c join pg_namespace s on s.oid=c.relnamespace
         where s.nspname='core' and c.relkind='r')::text);
+  ------------------------------------------------------------------ LECTURA PUBLICA (anon) Y D-16
+  execute 'reset role';
+  insert into core.medicion_indicador (id_indicador, id_unidad, id_periodo, usuario_captura, valor, estado) values
+    ('Im30', '04011', per, ca, 1, 'borrador'), ('Im30', '04012', per, ca, 2, 'revision');
+  insert into core.medicion_indicador (id_indicador, id_unidad, id_periodo, usuario_captura, usuario_validacion, fecha_validacion, valor, estado)
+    values ('Im30', '04013', per, ca, ad, now(), 3, 'vigente_publico');
+
+  perform pg_temp.reg('C39 anon lee territorio y catalogos base (2,785 unidades, 5 ejes, 31 sectores, 17 fuentes)',
+    pg_temp.cuenta_anon('select 1 from api.unidad_territorial') = 2785 and pg_temp.cuenta_anon('select 1 from api.eje_tematico') = 5
+    and pg_temp.cuenta_anon('select 1 from api.sector') = 31 and pg_temp.cuenta_anon('select 1 from api.fuente_informacion') = 17, '');
+  n := pg_temp.cuenta_anon('select 1 from api.indicador');
+  perform pg_temp.reg('C40 anon ve solo indicadores aprobados y activos (no los 113)',
+    n = (select count(*) from core.indicador where estatus_aprobado and activo) and n > 0 and n < 113, n || ' de 113');
+  perform pg_temp.reg('C41 anon ve solo capas vigente_publico (66) y ninguna en borrador',
+    pg_temp.cuenta_anon('select 1 from api.capa') = 66 and pg_temp.cuenta_anon('select 1 from api.capa where estatus <> ''vigente_publico''') = 0,
+    pg_temp.cuenta_anon('select 1 from api.capa')::text);
+  n := pg_temp.cuenta_anon('select 1 from api.capa_indicador');
+  perform pg_temp.reg('C42 anon ve capa-indicador solo de capas publicas e indicadores aprobados',
+    n = (select count(*) from core.capa_indicador ci join core.capa c on c.id = ci.id_capa and c.estatus = 'vigente_publico'
+         join core.indicador i on i.id = ci.id_indicador and i.estatus_aprobado and i.activo) and n > 0, n::text);
+  perform pg_temp.reg('C43 anon ve la medicion publicada y NO el borrador ni la que esta en revision',
+    pg_temp.cuenta_anon('select 1 from api.medicion_publica where id_unidad = ''04013''') = 1
+    and pg_temp.cuenta_anon('select 1 from api.medicion_publica where id_unidad in (''04011'',''04012'')') = 0
+    and pg_temp.cuenta_anon('select 1 from api.medicion_publica where estado <> ''vigente_publico''') = 0, '');
+  perform pg_temp.reg('C44 anon NO puede leer quien capturo ni quien valido (columnas de usuario)',
+    pg_temp.cuenta_anon('select usuario_captura from core.medicion_indicador') = -1
+    and pg_temp.cuenta_anon('select usuario_validacion from core.medicion_indicador') = -1
+    and pg_temp.cuenta_anon('select 1 from api.medicion_indicador') = -1
+    and pg_temp.cuenta_anon('select id_usuario from core.umbral_semaforo') = -1, 'columnas rechazadas');
+  perform pg_temp.reg('C45 api.medicion_publica y api.umbral_publico no exponen columnas de usuario',
+    not exists (select 1 from information_schema.columns where table_schema = 'api'
+                and table_name in ('medicion_publica','umbral_publico') and column_name like '%usuario%'), '');
+  perform pg_temp.anonimo();
+  t := pg_temp.intenta('insert into core.medicion_indicador (id_indicador,id_unidad,id_periodo,usuario_captura,valor) values (''Im29'',''04004'',1,''00000000-0000-0000-0000-00000000c0a1'',1)');
+  t2 := pg_temp.intenta('update core.indicador set nombre = nombre');
+  r := pg_temp.intenta('delete from core.capa');
+  perform pg_temp.reg('C46 anon no escribe: INSERT, UPDATE y DELETE rechazados', t <> 'OK' and t2 <> 'OK' and r <> 'OK', left(t, 60));
+  n := pg_temp.cuenta_anon('select 1 from api.instrumento_origen');
+  update core.instrumento_origen set publicado = false where id = (select min(id) from core.instrumento_origen);
+  perform pg_temp.reg('C47 anon ve los instrumentos publicados (6) y deja de ver el que se despublica (5)',
+    n = 6 and pg_temp.cuenta_anon('select 1 from api.instrumento_origen') = 5, n || ' -> ' || pg_temp.cuenta_anon('select 1 from api.instrumento_origen'));
+  perform pg_temp.reg('C48 anon lee la matriz solo de instrumentos publicados',
+    pg_temp.cuenta_anon('select 1 from api.matriz_instrumento') = (select count(*) from core.matriz_instrumento m join core.instrumento_origen i on i.id = m.id_instrumento and i.publicado), '');
+
+  -- D-16: se concede a `authenticated` escritura TEMPORAL (esta transaccion termina en ROLLBACK) con una
+  -- politica abierta para demostrar que el TRIGGER del modelo es el que frena a los demas perfiles.
+  execute 'reset role';
+  grant insert, update, delete on core.umbral_semaforo to authenticated;
+  grant update on core.instrumento_origen to authenticated;
+  create policy tmp_d16_umbral on core.umbral_semaforo for all to authenticated using (true) with check (true);
+  create policy tmp_d16_instr on core.instrumento_origen for update to authenticated using (true) with check (true);
+
+  perform pg_temp.yo(ad);
+  t := pg_temp.intenta('insert into core.umbral_semaforo (id_indicador, verde_desde, amarillo_desde) values (''Im30'', 95, 80)');
+  perform pg_temp.reg('C49 D-16: el Administrador NO crea umbrales', t like '42501:%Titular%', t);
+  perform pg_temp.yo(au);
+  t := pg_temp.intenta('insert into core.umbral_semaforo (id_indicador, verde_desde, amarillo_desde) values (''Im30'', 95, 80)');
+  perform pg_temp.yo(ca);
+  t2 := pg_temp.intenta('insert into core.umbral_semaforo (id_indicador, verde_desde, amarillo_desde) values (''Im30'', 95, 80)');
+  perform pg_temp.reg('C50 D-16: ni el Auditor ni el Capturista crean umbrales', t like '42501:%Titular%' and t2 like '42501:%Titular%', left(t, 40));
+  perform pg_temp.yo(ti);
+  t := pg_temp.intenta('insert into core.umbral_semaforo (id_indicador, verde_desde, amarillo_desde) values (''Im30'', 95, 80)');
+  perform pg_temp.reg('C51 D-16: el Administrador Titular SI crea umbrales', t = 'OK', t);
+  perform pg_temp.yo(ad);
+  t := pg_temp.intenta('update core.umbral_semaforo set verde_desde = 99 where id_indicador = ''Im30''');
+  t2 := pg_temp.intenta('delete from core.umbral_semaforo where id_indicador = ''Im30''');
+  perform pg_temp.reg('C52 D-16: el Administrador NO edita ni borra umbrales', t like '42501:%Titular%' and t2 like '42501:%Titular%', left(t, 40));
+  perform pg_temp.yo(ad);
+  t := pg_temp.intenta('update core.instrumento_origen set publicado = true, publicado_en = now() where publicado = false');
+  perform pg_temp.reg('C53 D-16: el Administrador NO publica instrumentos', t like '42501:%Titular%', t);
+  perform pg_temp.yo(ti);
+  t := pg_temp.intenta('update core.instrumento_origen set publicado = true, publicado_en = now() where publicado = false');
+  perform pg_temp.reg('C54 D-16: el Administrador Titular SI publica instrumentos', t = 'OK', t);
+  perform pg_temp.yo(ad);
+  t := pg_temp.intenta('update core.instrumento_origen set competencia = competencia');
+  perform pg_temp.reg('C55 D-16: otros cambios al instrumento no exigen Titular (solo "publicado")', t = 'OK', t);
+  perform pg_temp.reg('C56 api.instrumento_origen expone la columna publicado',
+    exists (select 1 from information_schema.columns where table_schema = 'api' and table_name = 'instrumento_origen' and column_name = 'publicado'), '');
+  ------------------------------------------------------------------ D-17: ESTATUS DE CAPAS
+  execute 'reset role';
+  perform pg_temp.reg('C57 Capas: 66 vigente_publico, 9 vigente_admin (internas) y 12 borrador (sin linaje)',
+    (select count(*) from core.capa where estatus = 'vigente_publico') = 66
+    and (select count(*) from core.capa where estatus = 'vigente_admin') = 9
+    and (select count(*) from core.capa where estatus = 'borrador') = 12, '');
+  perform pg_temp.reg('C58 Ninguna capa publica es interna y toda capa vigente tiene su metadato minimo',
+    not exists (select 1 from core.capa where estatus = 'vigente_publico' and metadatos_extra->>'restriccion_uso' <> 'pública')
+    and not exists (select 1 from core.capa where estatus in ('vigente_admin','vigente_publico') and btrim(coalesce(metadatos_extra->>'linaje','')) = ''), '');
+  perform pg_temp.reg('C59 anon ve 66 capas: ninguna vigente_admin ni borrador',
+    pg_temp.cuenta_anon('select 1 from api.capa') = 66 and pg_temp.cuenta_anon('select 1 from api.capa where estatus <> ''vigente_publico''') = 0, '');
+  perform pg_temp.yo(ca); n := pg_temp.cuenta('select 1 from api.capa');
+  perform pg_temp.reg('C60 Capturista ve 75 capas (66 publicas + 9 de uso interno) y ningun borrador',
+    n = 75 and pg_temp.cuenta('select 1 from api.capa where estatus = ''borrador''') = 0, n::text);
+  perform pg_temp.yo(ad); n := pg_temp.cuenta('select 1 from api.capa');
+  perform pg_temp.yo(au);
+  perform pg_temp.reg('C61 Administrador y Auditor ven las 87 capas', n = 87 and pg_temp.cuenta('select 1 from api.capa') = 87, n::text);
+  perform pg_temp.yo(ca);
+  perform pg_temp.reg('C62 Capturista no lee versiones de capa; capa-indicador solo de las capas que ve',
+    pg_temp.cuenta('select 1 from api.capa_version') = 0
+    and pg_temp.cuenta('select 1 from api.capa_indicador') = (select count(*) from core.capa_indicador ci join core.capa c on c.id = ci.id_capa and c.estatus <> 'borrador'), '');
+  execute 'reset role';
+  r := pg_temp.intenta('update core.capa set estatus = ''vigente_publico'' where id = ''DIt01''');
+  perform pg_temp.reg('C63 Una capa de restriccion interna NO se puede publicar', r like '23514%compuerta_publicacion%', r);
+  r := pg_temp.intenta('update core.capa set estatus = ''vigente_admin'' where id = ''Inf01''');
+  perform pg_temp.reg('C64 Una capa sin metadato minimo NO pasa a vigente_admin', r like '23514%compuerta_validacion%', r);
+  perform pg_temp.reg('C65 Las 9 capas internas dejaron su version 2 en capa_version (D-17)',
+    (select count(*) from core.capa_version where version = 2 and estatus = 'vigente_admin') = 9, '');
 end $$;
 
 select n, case when ok then 'PASA' else 'FALLA' end as resultado, caso, left(detalle, 90) as detalle from resultados order by n;

@@ -1,0 +1,188 @@
+{
+ "eje_tematico": {
+  "id": "Identificador del eje.",
+  "numero_eje": "Número oficial del eje (1 a 5).",
+  "nombre": "Nombre oficial del eje.",
+  "activo": "Baja lógica. Por omisión TRUE."
+ },
+ "sector": {
+  "id": "Clave del sector: SD-xx (definitivo) o SO-xx (original).",
+  "nombre": "Nombre del sector.",
+  "tipo": "original | definitivo.",
+  "activo": "Baja lógica."
+ },
+ "fuente_informacion": {
+  "id": "Identificador de la fuente.",
+  "nombre": "Nombre completo de la fuente.",
+  "siglas": "Siglas. Vacío en la fuente 16.",
+  "activo": "Baja lógica."
+ },
+ "instrumento_origen": {
+  "id": "ID corto: sigla + municipio + número (Eemsv01, PimusCal01). El número admite versiones futuras del mismo plan.",
+  "uuid_legado": "UUID de la versión 1; permite cruzar con el respaldo de PostGIS.",
+  "clave": "Clave institucional (EEMSV, PIMUS-CALKINI…).",
+  "nombre": "Nombre oficial del instrumento.",
+  "ambito": "Estatal | Municipal.",
+  "id_unidad_ambito": "Municipio que cubre un instrumento municipal (→ unidad_territorial.id). Vacío si es estatal.",
+  "competencia": "Quién es competente: Gobierno del Estado (EEMSV) o el municipio que emitió el PIMUS. Sustituye a fuente_informacion.competencia (OBS-12).",
+  "vigencia_desde": "Inicio de vigencia. Pendiente de dato en los 6 registros.",
+  "vigencia_hasta": "Fin de vigencia.",
+  "activo": "Baja lógica."
+ },
+ "indicador": {
+  "id": "Clave en PascalCase sin guion (Im01, Ee05, Accgir01). Sustituye al UUID.",
+  "uuid_legado": "UUID de la versión 1.",
+  "id_eje": "→ eje_tematico.id.",
+  "id_sector": "→ sector.id.",
+  "id_fuente": "→ fuente_informacion.id.",
+  "clave": "Clave del indicador (ACCGIR01, EE-xx, IM-xx…).",
+  "nombre": "Nombre del indicador.",
+  "variable": "Definición de la variable que se mide.",
+  "meta": "Meta en texto libre (mezcla «Por definir» y metas numéricas).",
+  "tendencia": "Ascendente | Descendente: sentido en que mejora el indicador. Llenado en 38 de los 40 IM-xx a partir de su meta y de su PIMUS.",
+  "valor_meta": "Meta numérica, cuando exista. Hoy vacía: sin línea base no se puede fijar (OBS-13).",
+  "linea_base": "Primer valor publicado que sirve de referencia para el semáforo.",
+  "anio_linea_base": "Año de la línea base.",
+  "nivel_mir": "Fin | Propósito | Componentes | Actividades.",
+  "smart_medible": "Criterio SMART: medible.",
+  "smart_alcanzable": "Criterio SMART: alcanzable. Estaba en el Mermaid pero no en la Tabla 1.",
+  "smart_temporal": "Criterio SMART: temporal.",
+  "estatus_aprobado": "TRUE cuando la ficha está aprobada.",
+  "activo": "Baja lógica.",
+  "created_at": "Alta del registro.",
+  "updated_at": "Última modificación."
+ },
+ "periodo": {
+  "id": "Identificador del periodo.",
+  "anio": "Año del corte.",
+  "etiqueta": "Etiqueta legible (p. ej. «2026-T1»).",
+  "tipo_periodo": "anual | semestral | trimestral | mensual. Vacío para que el equipo lo llene (OBS-21).",
+  "fecha_inicio": "Primer día del periodo. Vacío para que el equipo lo llene (OBS-21).",
+  "fecha_fin": "Último día del periodo. Vacío para que el equipo lo llene (OBS-21)."
+ },
+ "unidad_territorial": {
+  "id": "CVEGEO INEGI: 5 dígitos (municipio) o 9 (localidad). Se conserva tal cual.",
+  "id_padre": "→ unidad_territorial.id del municipio donde está la localidad. Vacío en municipios.",
+  "nivel": "municipio | localidad.",
+  "cve_ent": "Clave de entidad (04).",
+  "nom_ent": "Nombre de la entidad.",
+  "cve_mun": "Clave del municipio donde está hoy la unidad.",
+  "nom_mun": "Nombre del municipio.",
+  "cve_loc": "Clave de localidad; 0000 = total del municipio.",
+  "nom_loc": "Nombre de la localidad. Estaba en el Mermaid pero no en la Tabla 3.",
+  "pob_tot": "Población total (Censo 2020 o tabla del responsable).",
+  "cvegeo": "Clave vigente según ubicación; difiere del id en 28 localidades reubicadas.",
+  "activo": "Baja lógica."
+ },
+ "unidad_territorial_geom": {
+  "id_unidad": "→ unidad_territorial.id (relación 1 a 0..1).",
+  "geom": "Geometría PostGIS. Fuera del Excel (carpeta geojson/04_unidad_territorial)."
+ },
+ "medicion_indicador": {
+  "id": "Identificador de la medición.",
+  "id_indicador": "→ indicador.id.",
+  "id_unidad": "→ unidad_territorial.id.",
+  "id_periodo": "→ periodo.id.",
+  "usuario_captura": "→ usuario.id de quien captura.",
+  "usuario_validacion": "→ usuario.id de quien valida. Vacío mientras está en borrador.",
+  "valor": "Valor cuantitativo.",
+  "valor_texto": "Valor cualitativo.",
+  "desagregaciones": "Desagregaciones (sexo, edad, modo…)",
+  "estado": "borrador | revision | rechazado | vigente_admin | vigente_publico (OBS-28).",
+  "fecha_captura": "Se renombra desde fecha_registro (Excel v1).",
+  "fecha_validacion": "Fecha de validación.",
+  "created_at": "Alta del registro.",
+  "updated_at": "Última modificación."
+ },
+ "capa": {
+  "id": "Nomenclatura en PascalCase (eje como prefijo E) + número de 2 dígitos: Inf03, DIt01, E2Tpp05.",
+  "uuid_legado": "UUID de la versión 1.",
+  "titulo": "Título de la capa. Tren Maya y Red Federal indican su trazo (Mapa Base / Diagnóstico).",
+  "proposito": "Propósito declarado en la ficha ISO.",
+  "tipo_geometria": "Punto | Línea | Polígono.",
+  "srid_origen": "EPSG de origen (6372, 4326, 32615, 6365).",
+  "estatus": "vigente_publico | borrador.",
+  "responsable": "Custodio de la capa.",
+  "conjunto_datos": "Conjunto de datos de origen (DENUE, Red Nacional de Caminos…)",
+  "id_instrumento": "→ instrumento_origen.id. Eemsv01 para capas de Diagnóstico y Estrategia; vacío en Mapa Base.",
+  "archivo": "Nombre del archivo fuente (shapefile).",
+  "grupos": "Grupo(s) del visor donde se publica.",
+  "nomenclatura": "Código del grupo (INF, D-IT, 2TPP…)",
+  "n_elementos": "Elementos cargados en capa_vector.",
+  "geojson": "Ruta del GeoJSON entregado.",
+  "activo": "Baja lógica."
+ },
+ "capa_vector": {
+  "id": "Identificador del elemento.",
+  "id_capa": "→ capa.id.",
+  "id_unidad": "→ unidad_territorial.id donde cae el elemento (localidad si hay cve_loc; si no, municipio). Vacío fuera de Campeche.",
+  "id_origen": "Identificador del elemento en el archivo fuente.",
+  "cve_ent": "Claves geoestadísticas asignadas al elemento.",
+  "cve_mun": "Claves geoestadísticas asignadas al elemento.",
+  "cve_loc": "Claves geoestadísticas asignadas al elemento.",
+  "nombre": "Atributos comunes de lectura y simbología.",
+  "clasif": "Atributos comunes de lectura y simbología.",
+  "fecha_dato": "Atributos comunes de lectura y simbología.",
+  "metodo_cve_mun": "interseccion | proximidad<=1000m | proximidad_aguas_estatales | fuera_de_campeche.",
+  "vig_desde": "Vigencia del elemento (vig_hasta 100 % vacío).",
+  "vig_hasta": "Vigencia del elemento (vig_hasta 100 % vacío).",
+  "geom": "Geometría PostGIS. Fuera del Excel (GeoJSON por capa)."
+ },
+ "capa_indicador": {
+  "id_capa": "→ capa.id.",
+  "id_indicador": "→ indicador.id.",
+  "capa_archivo": "Columna de lectura (no se almacena en la base).",
+  "indicador_clave": "Columna de lectura (no se almacena en la base)."
+ },
+ "bitacora_cambio": {
+  "id": "Identificador del evento.",
+  "id_usuario": "→ usuario.id. Vacío en procesos automáticos (cargas, tareas programadas).",
+  "tabla_afectada": "Tabla donde ocurrió el cambio.",
+  "id_registro": "Llave del registro afectado (texto para admitir uuid, entero y alfanumérico).",
+  "accion": "INSERT | UPDATE | DELETE | cambio de estado.",
+  "datos_previos": "Fotografía antes del cambio.",
+  "datos_nuevos": "Fotografía después del cambio.",
+  "ip_origen": "IP de la petición.",
+  "fecha": "Momento del evento."
+ },
+ "evidencia_medicion": {
+  "id": "Identificador de la evidencia.",
+  "id_medicion": "→ medicion_indicador.id.",
+  "id_usuario": "→ usuario.id que sube el archivo.",
+  "url_archivo": "Ruta o URL del documento.",
+  "tipo_documento": "Oficio, reporte, base de datos, fotografía….",
+  "hash_archivo": "SHA-256 en hexadecimal (64 caracteres).",
+  "fecha_subida": "Momento de la carga."
+ },
+ "matriz_instrumento": {
+  "id": "ID del instrumento + R + número de renglón (PimusCar01R07). No usa la clave OE porque se repite en algunas matrices.",
+  "id_instrumento": "→ instrumento_origen.id.",
+  "clave_oe": "Clave del objetivo específico tal como viene en el PIMUS (OE1, E3_OE_2…).",
+  "objetivo": "Objetivo u objetivo específico.",
+  "meta": "Meta del PIMUS.",
+  "indicador_origen": "Indicador tal como lo nombra el PIMUS.",
+  "tendencia": "Ascendente | Descendente | otra expresión del PIMUS (100 %, igual o menor a la inflación).",
+  "indicadores_sesim": "Lectura: IM-xx equivalentes (no se almacena; sale de indicador_instrumento)."
+ },
+ "indicador_instrumento": {
+  "id": "Identificador del vínculo.",
+  "id_indicador": "→ indicador.id.",
+  "id_instrumento": "→ instrumento_origen.id.",
+  "id_matriz": "→ matriz_instrumento.id. Vacío en los vínculos con la EEMSV (no hay matriz cargada).",
+  "correspondencia": "origen (el indicador nace del instrumento) | directa (mide lo mismo) | parcial (mide un aspecto).",
+  "indicador_clave": "Columnas de lectura (no se almacenan).",
+  "clave_oe": "Columnas de lectura (no se almacenan)."
+ },
+ "invitacion": {
+  "id": "Identificador de la invitación.",
+  "token_hash": "SHA-256 del token enviado.",
+  "id_perfil": "→ perfil.id que tendrá la cuenta.",
+  "correo_destino": "Correo institucional al que se envía.",
+  "id_usuario_emisor": "→ usuario.id del Administrador Titular que la emite.",
+  "expira_en": "Caducidad del token.",
+  "usada_en": "Momento en que se usó.",
+  "id_usuario_creado": "→ usuario.id creado con esta invitación.",
+  "revocada": "TRUE si se canceló antes de usarse.",
+  "created_at": "Emisión."
+ }
+}

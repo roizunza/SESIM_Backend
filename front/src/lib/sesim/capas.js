@@ -11,10 +11,26 @@
  * capa: se activa por su `id`, así que prenderla en un grupo la prende en
  * todos.
  *
- * Visibilidad por estatus (sección 1.6 del documento): el geovisor público
- * solo muestra `vigente_publico`; los perfiles internos ven también las
- * capas en `borrador` (marcadas como tales).
+ * Visibilidad por estatus (D-17): el geovisor público solo muestra
+ * `vigente_publico` (que además exige restricción de uso pública). Los
+ * perfiles internos ven también `vigente_admin` (validadas, solo uso interno);
+ * `incluirBorrador` (Administrador, Titular, Auditor) suma `borrador` y `revision`.
+ * Es la misma regla que aplica la RLS del backend (migración 216).
  */
+export const ESTATUS_CAPA = {
+  borrador: 'Borrador',
+  revision: 'En revisión',
+  vigente_admin: 'Uso interno',
+  vigente_publico: 'Publicada',
+};
+
+/** Estatus visibles según el perfil. `null` = ciudadano sin cuenta. */
+export function estatusVisibles(perfil) {
+  if (['administrador', 'administrador_titular', 'auditor'].includes(perfil)) return Object.keys(ESTATUS_CAPA);
+  if (perfil === 'capturista') return ['vigente_admin', 'vigente_publico'];
+  return ['vigente_publico'];
+}
+
 import { tablas, simbologias } from './api';
 import { construirSimbologia, COLOR_POR_GRUPO, PALETA_NATURAL, PALETA_CATEGORICA } from './simbologia';
 import { EJES_ESTRATEGICOS } from '../ejesEstrategicos';
@@ -41,13 +57,14 @@ function limpiarGrupo(g) {
  * @param {{ incluirBorrador?: boolean }} opciones
  * @returns {Promise<{ categorias: Array, capasPorId: Map, ejes: Array }>}
  */
-export async function cargarArbolCapas({ incluirBorrador = false } = {}) {
+export async function cargarArbolCapas({ incluirBorrador = false, perfil = null } = {}) {
   const [{ capa, instrumento_origen }, simb] = await Promise.all([
     tablas(['capa', 'instrumento_origen']),
     simbologias(),
   ]);
   const instrumentos = new Map(instrumento_origen.map((i) => [i.id, i]));
-  const visibles = capa.filter((c) => incluirBorrador || c.estatus === 'vigente_publico');
+  const permitidos = new Set(incluirBorrador ? Object.keys(ESTATUS_CAPA) : estatusVisibles(perfil));
+  const visibles = capa.filter((c) => permitidos.has(c.estatus));
 
   const capasPorId = new Map();
   const grupos = { mapa_base: new Map(), diagnostico: new Map(), estrategia: new Map() };

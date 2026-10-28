@@ -98,6 +98,17 @@ def norm(s):
 
 
 # ------------------------------------------------------------------ catálogos
+def estatus_d17(c):
+    """D-17 (misma regla que la migración 216 del backend): metadato mínimo completo
+    (custodio, fuente, linaje, sistema de coordenadas) + restricción pública -> vigente_publico;
+    completo + interna/reservada -> vigente_admin; incompleto -> borrador."""
+    completo = all(str(v or '').strip() for v in (
+        c.get('responsable'), c.get('Fuente'), c.get('Linaje'), c.get('metadatos_extra.sistema_coordenadas')))
+    if not completo:
+        return 'borrador'
+    return 'vigente_publico' if str(c.get('metadatos_uso') or '').strip().lower() in ('pública', 'publica') else 'vigente_admin'
+
+
 def capas(clasif_por_capa):
     base = {c['id']: c for c in hoja('capa', TABLAS)}  # en SESIM_tablas el id de capa es el UUID (= uuid_legado)
     filas = []
@@ -118,7 +129,7 @@ def capas(clasif_por_capa):
             'categoria': categoria,
             'tipo_geometria': c['tipo_geometria'],
             'geom': GEOM.get(c['tipo_geometria'], 'unknown'),
-            'estatus': b.get('estatus') or 'borrador',
+            'estatus': estatus_d17(c),
             # R05: las capas de Diagnóstico y Estrategia se sustentan en la EEMSV;
             # las de Mapa Base no tienen instrumento (decisión del documento v2.2).
             'id_instrumento': 'Eemsv01' if categoria in ('diagnostico', 'estrategia') else None,
