@@ -29,12 +29,12 @@ echo "  GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_ENABLED = $(env_de supabase-auth GOTRUE_
 echo "  GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_URI     = $(env_de supabase-auth GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_URI)"
 DB="$(leer_env POSTGRES_DB)"
 echo "  El hook, ejecutado como supabase_auth_admin con un usuario real (debe traer rol distinto de null):"
-compose exec -T db psql -U postgres -d "${DB:-postgres}" -tA -c "
+compose exec -T db psql -U supabase_admin -d "${DB:-postgres}" -tA -c "
   set role supabase_auth_admin;
-  select core.custom_access_token_hook(jsonb_build_object('user_id', (select id_usuario from core.perfil limit 1), 'claims', '{}'::jsonb)) -> 'claims';" 2>&1 | sed 's/^/    /'
+  select core.custom_access_token_hook(jsonb_build_object('user_id', (select id_usuario from core.perfil limit 1), 'claims', '{}'::jsonb)) -> 'claims';" 2>&1 | grep -v 'level=warning' | sed 's/^/    /'
 
 echo ""; echo "== 3. Migraciones"
-./scripts/migrar.sh --estado 2>&1 | sed 's/^/  /'
+./scripts/migrar.sh --estado 2>&1 | grep -v 'level=warning' | sed 's/^/  /'
 
 echo ""; echo "== 4. Respuesta cruda de la API con un pase de sesion alterado"
 GW="http://localhost:$(leer_env API_GW_HTTP_PORT)"; ANON="$(leer_env ANON_KEY)"
