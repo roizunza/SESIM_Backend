@@ -13,11 +13,11 @@ solos:
   Ciclo 1:
     POST /admin/alta-usuario   Unica forma de crear una cuenta + perfil.
                                Nadie se auto-registra. Solo lo puede llamar
-                               alguien con perfil "administrador_vip" (ver
+                               alguien con perfil "administrador_titular" (ver
                                docs/decisiones-pendientes.md sobre por que
                                justo ese permiso y no "administrador").
                                Internamente: (1) valida el JWT de quien
-                               llama y que su perfil sea administrador_vip;
+                               llama y que su perfil sea administrador_titular;
                                (2) crea la cuenta en auth.users via la Admin
                                API de GoTrue (una funcion de SQL corriente
                                no puede hacer esa llamada HTTP sin sumar una
@@ -47,8 +47,9 @@ SERVICE_ROLE_KEY = os.environ["SERVICE_ROLE_KEY"]
 # URL interna de GoTrue DENTRO de la red de docker compose (no la publica:
 # esta llamada nunca sale por el gateway/Envoy, va contenedor a contenedor).
 GOTRUE_INTERNAL_URL = os.environ.get("GOTRUE_INTERNAL_URL", "http://auth:9999")
+APP_ENV = os.environ.get("APP_ENV", "desarrollo")
 
-ROLES_VALIDOS = {"capturista", "administrador", "administrador_vip", "auditor"}
+ROLES_VALIDOS = {"capturista", "administrador", "administrador_titular", "auditor"}
 
 app = FastAPI(title="SESIM - servicio de procesos")
 
@@ -67,8 +68,8 @@ def _conectar_db():
     return psycopg2.connect(DATABASE_URL)
 
 
-def _exigir_administrador_vip(authorization: str | None) -> str:
-    """Valida el JWT de quien llama y exige perfil administrador_vip activo.
+def _exigir_administrador_titular(authorization: str | None) -> str:
+    """Valida el JWT de quien llama y exige perfil administrador_titular activo.
 
     Devuelve el id_usuario (auth.uid()) de quien llama, para dejarlo en la
     bitacora mas adelante si hiciera falta.
@@ -100,9 +101,9 @@ def _exigir_administrador_vip(authorization: str | None) -> str:
             )
             fila = cur.fetchone()
 
-    if fila is None or fila[0] != "administrador_vip" or not fila[1]:
+    if fila is None or fila[0] != "administrador_titular" or not fila[1]:
         raise HTTPException(
-            status_code=403, detail="solo_administrador_vip_puede_dar_de_alta"
+            status_code=403, detail="solo_administrador_titular_puede_dar_de_alta"
         )
 
     return id_usuario
@@ -141,12 +142,12 @@ def _crear_en_auth_users(correo: str, password: str, nombre: str) -> str:
 
 @app.get("/health")
 def health():
-    return {"ok": True}
+    return {"ok": True, "ambiente": APP_ENV}
 
 
 @app.post("/admin/alta-usuario", status_code=201)
 def alta_usuario(payload: AltaUsuarioIn, authorization: str | None = Header(default=None)):
-    id_usuario_actor = _exigir_administrador_vip(authorization)
+    id_usuario_actor = _exigir_administrador_titular(authorization)
 
     if payload.rol not in ROLES_VALIDOS:
         raise HTTPException(status_code=422, detail="rol_invalido")
@@ -164,7 +165,7 @@ def alta_usuario(payload: AltaUsuarioIn, authorization: str | None = Header(defa
             # directo, sin pasar por PostgREST), asi que auth.uid() NO
             # resuelve dentro del trigger de bitacora (core.fn_bitacora_perfil,
             # ver db/migrations/104_schema_core_bitacora.sql). Se deja aqui
-            # explicitamente quien es el administrador_vip que esta dando de
+            # explicitamente quien es el administrador_titular que esta dando de
             # alta, para que la bitacora de cuentas registre el ALTA con su
             # actor correcto en vez de quedar en null. SET LOCAL: solo dura
             # la transaccion actual, no se filtra a otras conexiones del pool.

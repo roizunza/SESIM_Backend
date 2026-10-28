@@ -14,6 +14,6 @@ create view api.observacion
   from core.observacion;
 
 comment on view api.observacion is
-  'Valores capturados de indicadores -- solo credencial (capturista/administrador/administrador_vip/auditor), NUNCA anon. Ver 118_rls_observacion.sql para la matriz completa de permisos.';
+  'Valores capturados de indicadores -- solo credencial (capturista/administrador/administrador_titular/auditor), NUNCA anon. Ver 118_rls_observacion.sql para la matriz completa de permisos.';
 
 grant select, insert, update on api.observacion to authenticated;

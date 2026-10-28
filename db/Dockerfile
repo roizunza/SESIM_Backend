@@ -19,3 +19,7 @@ FROM supabase/postgres:17.6.1.136
 # infra/supabase/docker-compose.yml, servicio "db", bloque "volumes").
 # Los nuestros usan 100+ para correr despues, en el mismo directorio.
 COPY migrations/ /docker-entrypoint-initdb.d/init-scripts/
+
+# Ciclo 2: al terminar el arranque inicial, anota las migraciones aplicadas en
+# core.schema_migraciones (nombre 999_ para que corra despues de las .sql).
+COPY registrar_migraciones.sh /docker-entrypoint-initdb.d/init-scripts/999_registrar_migraciones.sh

@@ -17,7 +17,7 @@
 -- van en 116/117 junto con los catalogos de Capa 2, pero solo para
 -- indicador/capa -- observacion se deja fuera de 116/117 hasta confirmar
 -- la matriz real de permisos por rol
--- (capturista/administrador/administrador_vip/auditor) sobre esta tabla
+-- (capturista/administrador/administrador_titular/auditor) sobre esta tabla
 -- especifica: quien inserta, quien edita una fila vigente, como se
 -- filtra por cve_mun, y que tan publica es una fila segun su estatus
 -- (vigente_publico vs las otras 4). Escribir esa RLS a ciegas es

@@ -26,30 +26,30 @@ sobre **Supabase**, autoalojado con Docker (confirmado). Se rehizo el Ciclo
 Ver `infra/VENDOR.md` para como se vendorizo la infraestructura oficial de
 Supabase, y `README.md` para la arquitectura completa.
 
-### Permisos de `administrador_vip`
+### Permisos de `administrador_titular`
 
 **Actualizado** (Ismael revirtio la definicion original tras probar el
-front -- ver `db/migrations/109_rls_perfil_update_solo_vip.sql`):
-`administrador_vip` no solo es el unico que da de alta credenciales nuevas
+front -- ver `db/migrations/109_rls_rls_perfil_update_titular.sql`):
+`administrador_titular` no solo es el unico que da de alta credenciales nuevas
 -- tambien es el UNICO que puede ver/editar la pantalla de Gestion de
 usuarios (rol, ambito, dependencia, baja/reactivacion de cualquier perfil).
 Un `administrador` normal ya no edita perfiles existentes; solo ve su
-propia fila y, junto con auditor y administrador_vip, la lista completa de
+propia fila y, junto con auditor y administrador_titular, la lista completa de
 perfiles en modo lectura (`perfil_select_todo_administracion`,
 `102_rls_perfil.sql`).
 
 *(Definicion original, ya superada: "la unica diferencia de
-administrador_vip frente a administrador es el alta; en todo lo demas se
+administrador_titular frente a administrador es el alta; en todo lo demas se
 comportan igual" -- esto describia la policy `perfil_update_administracion`
-de `102_rls_perfil.sql`, reemplazada por `perfil_update_solo_vip` en
-`109_rls_perfil_update_solo_vip.sql`.)*
+de `102_rls_perfil.sql`, reemplazada por `rls_perfil_update_titular` en
+`109_rls_rls_perfil_update_titular.sql`.)*
 
-Implementado en `servicio-procesos/main.py` (`_exigir_administrador_vip`):
+Implementado en `servicio-procesos/main.py` (`_exigir_administrador_titular`):
 valida el JWT de quien llama, busca su perfil, y solo deja pasar si
-`rol = 'administrador_vip'` y esta activo. Un `administrador` normal recibe
+`rol = 'administrador_titular'` y esta activo. Un `administrador` normal recibe
 `403`. La edicion de perfiles (UPDATE sobre `core.perfil`, que no pasa por
 `servicio-procesos`) ahora tiene el mismo candado a nivel RLS, ver
-`109_rls_perfil_update_solo_vip.sql`.
+`109_rls_rls_perfil_update_titular.sql`.
 
 ### Convencion de correo de las cuentas semilla
 
@@ -61,7 +61,7 @@ Confirmada por Ismael (reemplaza la propuesta original con sufijos
 | Capturista 1 | `sesimcapturista1@gmail.com` |
 | Capturista 2 | `sesimcapturista2@gmail.com` |
 | Administrador | `sesimadmin@gmail.com` |
-| Administrador vip | `sesimadminvip@gmail.com` |
+| Administrador titular | `sesimadminvip@gmail.com` |
 | Auditor 1 | `sesimauditor1@gmail.com` |
 | Auditor 2 | `sesimauditor2@gmail.com` |
 
@@ -131,7 +131,7 @@ existentes, no una migracion.
 
 Este repo se armo y probo en un entorno donde Docker Hub esta bloqueado por
 politica de red. Se valido toda la logica (migraciones, RLS, el candado de
-administrador_vip, la idempotencia de la semilla) contra un Postgres real
+administrador_titular, la idempotencia de la semilla) contra un Postgres real
 con un remedo del esquema de Supabase -- ver README.md, seccion "Que se
 probo, y que falta por probar en una maquina con Docker", para el detalle
 completo de que quedo cubierto y que falta confirmar en tu maquina.

@@ -33,10 +33,10 @@ Abre una terminal DENTRO de la carpeta del repo (`cd ruta/a/sesim-backend`)
 y corre:
 
 ```bash
-./scripts/generar-claves.sh
+./scripts/generar-claves.sh desarrollo
 ```
 
-Esto crea el archivo `.env` (a partir de `.env.example`) y le pone
+Esto crea el archivo `.env` (a partir de `env/desarrollo.env.example`; para pruebas y producción ver `docs/ambientes.md`) y le pone
 contraseñas y llaves generadas de verdad (usa el generador oficial de
 Supabase, no algo hecho a mano). Vas a ver en pantalla los valores
 generados -- no hace falta que copies nada, ya quedan escritos en `.env`.
@@ -94,7 +94,7 @@ directo), las 6 cuentas de prueba:
 | Capturista 1 | `sesimcapturista1@gmail.com` | capturista |
 | Capturista 2 | `sesimcapturista2@gmail.com` | capturista |
 | Administrador | `sesimadmin@gmail.com` | administrador |
-| Administrador vip | `sesimadminvip@gmail.com` | administrador_vip |
+| Administrador titular | `sesimadminvip@gmail.com` | administrador_titular |
 | Auditor 1 | `sesimauditor1@gmail.com` | auditor |
 | Auditor 2 | `sesimauditor2@gmail.com` | auditor |
 
@@ -130,16 +130,16 @@ curl -s "http://localhost:8000/rest/v1/perfil" \
 Debe devolver **solo una fila** (la del propio capturista). Si repites el
 mismo paso 5 y 6 pero con `sesimadmin@gmail.com` o
 `sesimadminvip@gmail.com`, el mismo `GET /rest/v1/perfil` debe devolver
-**las 6 filas** -- porque administrador y administrador_vip ven todo.
+**las 6 filas** -- porque administrador y administrador_titular ven todo.
 
-## 7. Probar el alta de usuarios (solo administrador_vip)
+## 7. Probar el alta de usuarios (solo administrador_titular)
 
 Primero haz login (paso 5) con `sesimadminvip@gmail.com` para obtener su
 `access_token`. Con ese token:
 
 ```bash
 curl -s -X POST "http://localhost:8001/admin/alta-usuario" \
-  -H "Authorization: Bearer EL_ACCESS_TOKEN_DE_ADMINVIP" \
+  -H "Authorization: Bearer EL_ACCESS_TOKEN_DE_ADMINTITULAR" \
   -H "Content-Type: application/json" \
   -d '{
         "correo": "prueba.alta@example.com",
@@ -151,8 +151,8 @@ curl -s -X POST "http://localhost:8001/admin/alta-usuario" \
 
 Debe responder `201` con el id de la cuenta creada. Si repites este mismo
 `curl` pero con el `access_token` de `sesimadmin@gmail.com` (administrador
-normal, NO vip), debe responder `403` -- esa es justo la restricción que
-pediste (solo administrador_vip puede dar de alta).
+normal, NO titular), debe responder `403` -- esa es justo la restricción que
+pediste (solo administrador_titular puede dar de alta).
 
 ## 8. Si quieres ver el correo de restablecimiento de contraseña
 

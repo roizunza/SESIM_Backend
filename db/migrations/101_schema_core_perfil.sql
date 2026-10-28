@@ -24,7 +24,7 @@ create table if not exists core.perfil (
   creado_en    timestamptz not null default now(),
 
   constraint perfil_rol_valido
-    check (rol in ('capturista', 'administrador', 'administrador_vip', 'auditor')),
+    check (rol in ('capturista', 'administrador', 'administrador_titular', 'auditor')),
 
   constraint perfil_ambito_valido
     check (ambito in ('estatal', 'municipal')),
@@ -44,7 +44,7 @@ create table if not exists core.perfil (
 
 comment on table core.perfil is 'Rol, ambito y dependencia de cada persona que usa la plataforma. Una fila por persona, ligada 1 a 1 con auth.users (la tabla de Supabase, no una tabla propia).';
 comment on column core.perfil.id_usuario is 'FK a auth.users(id) -- la tabla de credenciales de Supabase. On delete cascade: si se borra la cuenta de auth, se borra el perfil (en la practica no se borra, solo se desactiva con activo=false).';
-comment on column core.perfil.rol is 'Catalogo cerrado: capturista | administrador | administrador_vip | auditor. administrador_vip: unica diferencia frente a administrador es que puede dar de alta credenciales nuevas (ver servicio-procesos, endpoint /admin/alta-usuario, y docs/decisiones-pendientes.md).';
+comment on column core.perfil.rol is 'Catalogo cerrado: capturista | administrador | administrador_titular | auditor. administrador_titular: unica diferencia frente a administrador es que puede dar de alta credenciales nuevas (ver servicio-procesos, endpoint /admin/alta-usuario, y docs/decisiones-pendientes.md).';
 comment on column core.perfil.ambito is 'estatal | municipal. Fijo en estatal mientras el manejo de la plataforma sea solo estatal.';
 comment on column core.perfil.cve_mun is 'Clave INEGI de municipio. Solo aplica si ambito = municipal; hoy siempre null. No confundir con el cve_mun de los datos territoriales (ese vive en core.observacion/core.capa y sigue activo para filtrar informacion por municipio, aunque el acceso a la plataforma ya no se reparta por municipio).';
 comment on column core.perfil.dependencia is 'Area o dependencia institucional de la persona. Pendiente: aun no existe el catalogo real de dependencias (queda NULL hasta tenerlo).';
@@ -73,10 +73,10 @@ stable
 security definer
 set search_path = core, auth, public
 as $$
-  select rol from core.perfil where id_usuario = auth.uid();
+  select rol from core.perfil where id_usuario = auth.uid() and activo;
 $$;
 
-comment on function core.rol_actual() is 'Rol de negocio (capturista | administrador | administrador_vip | auditor) de quien hace la consulta actual, segun auth.uid(). Null si no hay sesion o esa persona no tiene perfil.';
+comment on function core.rol_actual() is 'Rol de negocio (capturista | administrador | administrador_titular | auditor) de quien hace la consulta actual, segun auth.uid(). Null si no hay sesion, no tiene perfil o esta dada de baja (activo = false).';
 
 revoke all on function core.rol_actual() from public;
 grant execute on function core.rol_actual() to authenticated;

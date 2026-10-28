@@ -25,7 +25,7 @@
 -- curl de ejemplo completos.)
 --
 -- Lo unico que SESIM sigue necesitando resolver por su cuenta es el ALTA de
--- credenciales (nadie se auto-registra: solo administrador_vip puede crear
+-- credenciales (nadie se auto-registra: solo administrador_titular puede crear
 -- una cuenta nueva) -- eso vive en servicio-procesos, no aqui, porque
 -- necesita llamar a la Admin API de Supabase por HTTP (algo que una funcion
 -- de SQL corriente no puede hacer sin una extension adicional como pg_net,

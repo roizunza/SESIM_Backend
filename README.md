@@ -44,9 +44,15 @@ scripts/
   generar-claves.sh    Genera POSTGRES_PASSWORD/JWT_SECRET/ANON_KEY/
                        SERVICE_ROLE_KEY/etc. (usa el generador oficial de
                        Supabase)
-  levantar.sh          Levanta solo los servicios que Ciclo 1 necesita
-  sembrar.sh           Aplica las 6 cuentas de prueba (SOLO DESARROLLO)
+  levantar.sh          Levanta el ambiente declarado en .env y aplica migraciones
+  migrar.sh            Aplica migraciones pendientes (control en core.schema_migraciones)
+  verificar.sh         Prueba de humo del ambiente en marcha
+  pruebas-tangibles.sh Casos de demo del Ciclo 1 contra la API real
+  sembrar.sh           Aplica las 6 cuentas de prueba (NO corre en produccion)
+env/                   .env de partida por ambiente (desarrollo, pruebas, produccion)
 docs/
+  PRUEBAS-TANGIBLES.md       Guia paso a paso (Windows + Docker) para levantar y probar de verdad
+  ambientes.md               Los tres ambientes (Ciclo 2): reglas, comandos y migraciones
   decisiones-pendientes.md   Lo que quedo pendiente de definir, no adivinado
 ```
 
@@ -57,11 +63,11 @@ Construido de forma transversal alrededor del perfil **capturista**. Trae:
 - Credenciales en `auth.users` (Supabase/GoTrue), no en una tabla propia.
 - `core.perfil`: rol, ambito, dependencia -- lo que es del NEGOCIO de SESIM,
   ligado 1 a 1 a `auth.users`.
-- Catalogo de roles: `capturista`, `administrador`, `administrador_vip`,
-  `auditor`. **La unica diferencia de `administrador_vip` frente a
-  `administrador` es que solo `administrador_vip` puede dar de alta
+- Catalogo de roles: `capturista`, `administrador`, `administrador_titular`,
+  `auditor`. **La unica diferencia de `administrador_titular` frente a
+  `administrador` es que solo `administrador_titular` puede dar de alta
   credenciales nuevas** (ver mas abajo, "Alta de usuarios"). En todo lo
-  demas (ver y editar perfiles) administrador y administrador_vip se
+  demas (ver y editar perfiles) administrador y administrador_titular se
   comportan igual.
 - El manejo de la plataforma es **solo estatal** por ahora: todo perfil se
   da de alta con `ambito = 'estatal'`. La columna `ambito`/`cve_mun` de
@@ -72,8 +78,8 @@ Construido de forma transversal alrededor del perfil **capturista**. Trae:
   `core.observacion`/`core.capa`), no en las credenciales de acceso.
 - RLS real sobre `core.perfil` (usando `auth.uid()`, no un esquema de roles
   de Postgres por perfil de negocio): cada quien ve su propia fila;
-  auditor/administrador/administrador_vip ven todo; solo administrador y
-  administrador_vip editan.
+  auditor/administrador/administrador_titular ven todo; solo administrador y
+  administrador_titular editan.
 - Nadie se auto-registra ni hace INSERT directo sobre `core.perfil`: toda
   alta pasa por `servicio-procesos` (ver mas abajo).
 
@@ -82,7 +88,7 @@ Construido de forma transversal alrededor del perfil **capturista**. Trae:
 Requiere Docker y Docker Compose (`docker compose version`).
 
 ```bash
-./scripts/generar-claves.sh   # crea .env con claves/secretos generados
+./scripts/generar-claves.sh desarrollo   # crea .env (desarrollo | pruebas | produccion)
 ./scripts/levantar.sh         # construye y levanta db, auth, rest, gateway,
                                # studio, meta, servicio-procesos y mailpit
 ./scripts/sembrar.sh          # crea las 6 cuentas de prueba del Ciclo 1
@@ -138,11 +144,11 @@ Supabase Auth para el detalle exacto del flujo del lado del front).
 
 ### Alta de usuarios (lo unico que SESIM resuelve por su cuenta)
 
-Solo quien tiene perfil `administrador_vip` puede crear una cuenta nueva:
+Solo quien tiene perfil `administrador_titular` puede crear una cuenta nueva:
 
 ```bash
 curl -s -X POST "http://localhost:8001/admin/alta-usuario" \
-  -H "Authorization: Bearer <access_token-de-un-administrador_vip>" \
+  -H "Authorization: Bearer <access_token-de-un-administrador_titular>" \
   -H "Content-Type: application/json" \
   -d '{
         "correo": "nueva.persona@example.com",
@@ -152,7 +158,7 @@ curl -s -X POST "http://localhost:8001/admin/alta-usuario" \
       }'
 ```
 
-Si quien llama no es `administrador_vip` (por ejemplo, un `administrador`
+Si quien llama no es `administrador_titular` (por ejemplo, un `administrador`
 normal), responde `403`. Ver `servicio-procesos/main.py` para el detalle.
 
 ## Cuentas de la semilla (SOLO DESARROLLO)
@@ -165,7 +171,7 @@ normal), responde `403`. Ver `servicio-procesos/main.py` para el detalle.
 | Capturista 1 | `sesimcapturista1@gmail.com` | capturista |
 | Capturista 2 | `sesimcapturista2@gmail.com` | capturista |
 | Administrador | `sesimadmin@gmail.com` | administrador |
-| Administrador vip | `sesimadminvip@gmail.com` | administrador_vip |
+| Administrador titular | `sesimadminvip@gmail.com` | administrador_titular |
 | Auditor 1 | `sesimauditor1@gmail.com` | auditor |
 | Auditor 2 | `sesimauditor2@gmail.com` | auditor |
 
@@ -200,12 +206,12 @@ de este repo tal cual**, sin cambiarles una linea:
   aplican limpio.
 - RLS de `core.perfil` probado con los 4 roles de negocio: capturista solo
   ve su propia fila y no puede editar nada (ni la suya); administrador y
-  administrador_vip ven y editan todas las filas; auditor ve todo pero no
+  administrador_titular ven y editan todas las filas; auditor ve todo pero no
   puede editar; sin sesion (anon), la vista `api.perfil` da `permission
   denied` (no hay ningun GRANT para `anon`, a proposito).
 - El endpoint `POST /admin/alta-usuario` de `servicio-procesos` (con la
   llamada a la Admin API de GoTrue simulada, ya que no hay GoTrue real
-  corriendo aqui): un `administrador_vip` puede dar de alta, un
+  corriendo aqui): un `administrador_titular` puede dar de alta, un
   `administrador` normal o un `capturista` reciben `403`, un rol invalido o
   un `ambito=municipal` sin `cve_mun` reciben `422`.
 - `servicio-procesos/seed_dev.py` probado dos veces seguidas: no duplica
@@ -227,4 +233,4 @@ restriccion (la tuya):
 
 Si algo de esto falla en tu maquina, dimelo con el mensaje de error
 completo y lo ajustamos -- la parte que si quedo verificada (el esquema, la
-RLS, el candado de administrador_vip) es la que mas costaba dejar mal.
+RLS, el candado de administrador_titular) es la que mas costaba dejar mal.

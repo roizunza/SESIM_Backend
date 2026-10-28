@@ -1,0 +1,115 @@
+== 1. Secreto JWT: .env contra lo que ven los contenedores (deben coincidir)
+  .env JWT_SECRET                    longitud=40   huella=92f75b84
+  supabase-rest PGRST_JWT_SECRET     longitud=40   huella=92f75b84
+  supabase-auth GOTRUE_JWT_SECRET    longitud=40   huella=92f75b84
+  servicio-procesos JWT_SECRET       longitud=40   huella=92f75b84
+  (.env tiene JWT_JWKS? no)
+
+== 2. Hook del rol (GoTrue)
+  GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_ENABLED = true
+  GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_URI     = pg-functions://postgres/core/custom_access_token_hook
+  El hook, ejecutado como supabase_auth_admin con un usuario real (debe traer rol distinto de null):
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SUPABASE_PUBLISHABLE_KEY\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SUPABASE_SECRET_KEY\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"OPENAI_API_KEY\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SMTP_HOST\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SMTP_PASS\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SMTP_USER\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SMTP_PORT\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"IMGPROXY_AUTO_WEBP\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"FUNCTIONS_VERIFY_JWT\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SECRET_KEY_BASE\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"REGION\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"GLOBAL_S3_BUCKET\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"STORAGE_TENANT_ID\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"S3_PROTOCOL_ACCESS_KEY_ID\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"S3_PROTOCOL_ACCESS_KEY_SECRET\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"POOLER_PROXY_PORT_TRANSACTION\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"VAULT_ENC_KEY\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"POOLER_TENANT_ID\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SECRET_KEY_BASE\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"POOLER_DEFAULT_POOL_SIZE\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"POOLER_DB_POOL_SIZE\" variable is not set. Defaulting to a blank string."
+    time="2026-10-26T22:57:45-06:00" level=warning msg="The \"POOLER_MAX_CLIENT_CONN\" variable is not set. Defaulting to a blank string."
+    ERROR:  permission denied to set role "supabase_auth_admin"
+
+== 3. Migraciones
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SECRET_KEY_BASE\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"GLOBAL_S3_BUCKET\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"STORAGE_TENANT_ID\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"S3_PROTOCOL_ACCESS_KEY_SECRET\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"REGION\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"S3_PROTOCOL_ACCESS_KEY_ID\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"IMGPROXY_AUTO_WEBP\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"FUNCTIONS_VERIFY_JWT\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"OPENAI_API_KEY\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SUPABASE_PUBLISHABLE_KEY\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SUPABASE_SECRET_KEY\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SMTP_HOST\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SMTP_PASS\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SMTP_USER\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SMTP_PORT\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"POOLER_DEFAULT_POOL_SIZE\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"POOLER_MAX_CLIENT_CONN\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"SECRET_KEY_BASE\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"POOLER_DB_POOL_SIZE\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"POOLER_TENANT_ID\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"VAULT_ENC_KEY\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:45-06:00" level=warning msg="The \"POOLER_PROXY_PORT_TRANSACTION\" variable is not set. Defaulting to a blank string."
+  NOTICE:  schema "core" already exists, skipping
+  NOTICE:  relation "schema_migraciones" already exists, skipping
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"SECRET_KEY_BASE\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"REGION\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"S3_PROTOCOL_ACCESS_KEY_ID\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"STORAGE_TENANT_ID\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"GLOBAL_S3_BUCKET\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"S3_PROTOCOL_ACCESS_KEY_SECRET\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"IMGPROXY_AUTO_WEBP\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"POOLER_MAX_CLIENT_CONN\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"POOLER_TENANT_ID\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"POOLER_DEFAULT_POOL_SIZE\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"POOLER_DB_POOL_SIZE\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"SECRET_KEY_BASE\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"VAULT_ENC_KEY\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"POOLER_PROXY_PORT_TRANSACTION\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"SUPABASE_PUBLISHABLE_KEY\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"OPENAI_API_KEY\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"SUPABASE_SECRET_KEY\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"SMTP_USER\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"SMTP_PORT\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"SMTP_HOST\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"SMTP_PASS\" variable is not set. Defaulting to a blank string."
+  time="2026-10-26T22:57:46-06:00" level=warning msg="The \"FUNCTIONS_VERIFY_JWT\" variable is not set. Defaulting to a blank string."
+  Aplicadas: 24   Pendientes: 0
+
+== 4. Respuesta cruda de la API con un pase de sesion alterado
+  payload del pase: {"aal":"aal1","amr":[{"method":"password","timestamp":1793077067}],"app_metadata":{"provider":"email","providers":["email"]},"aud":"authenticated","email":"sesimcapturista1@gmail.com","exp":1793080667,"iat":1793077067,"is_anonymous":false,"iss":"http://localhost:8000/auth/v1","phone":"","rol":"capturista","role":"authenticated","session_id":"1253f8b7-1f43-44d7-a174-ca4d0d95786a","sub":"bcf5a4ba-517f-4b0e-a078-225dc4ad67cf","user_metadata":{"email_verified":true}}
+  -- pase valido:
+    HTTP/1.1 200 OK
+    [{"nombre":"Capturista de prueba 1"}]
+  -- firma alterada:
+    HTTP/1.1 401 Unauthorized
+    {"code":"PGRST301","details":"None of the keys was able to decode the JWT","hint":null,"message":"No suitable key or wrong key type"}
+  -- sin Authorization (solo apikey anon):
+    HTTP/1.1 401 Unauthorized
+    {"code":"42501","details":null,"hint":null,"message":"permission denied for view perfil"}
+
+== 5. Ultimas lineas de PostgREST y GoTrue
+  rest: 27/Oct/2026:04:57:45 +0000: Successfully connected to PostgreSQL 17.6 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit
+  rest: 27/Oct/2026:04:57:45 +0000: Connection Pool initialized with a maximum size of 10 connections
+  rest: 27/Oct/2026:04:57:45 +0000: Received a schema cache reload message on the "pgrst" channel
+  rest: 27/Oct/2026:04:57:45 +0000: Received a schema cache reload message on the "pgrst" channel
+  rest: 27/Oct/2026:04:57:45 +0000: Received a schema cache reload message on the "pgrst" channel
+  rest: 27/Oct/2026:04:57:45 +0000: Config reloaded
+  rest: 27/Oct/2026:04:57:45 +0000: Schema cache queried in 495.1 milliseconds
+  rest: 27/Oct/2026:04:57:45 +0000: Schema cache loaded 15 Relations, 20 Relationships, 255 RPCs, 0 Domain Representations, 4 Media Type Handlers, 1196 Timezones
+  rest: 27/Oct/2026:04:57:45 +0000: Schema cache loaded in 4.4 milliseconds
+  rest: 27/Oct/2026:04:57:45 +0000: Successfully connected to PostgreSQL 17.6 on x86_64-pc-linux-gnu, compiled by gcc (GCC) 15.2.0, 64-bit
+  rest: 27/Oct/2026:04:57:45 +0000: Connection Pool initialized with a maximum size of 10 connections
+  rest: 27/Oct/2026:04:57:45 +0000: Config reloaded
+  rest: 27/Oct/2026:04:57:45 +0000: Schema cache queried in 159.3 milliseconds
+  rest: 27/Oct/2026:04:57:45 +0000: Schema cache loaded 15 Relations, 20 Relationships, 255 RPCs, 0 Domain Representations, 4 Media Type Handlers, 1196 Timezones
+  rest: 27/Oct/2026:04:57:45 +0000: Schema cache loaded in 0.8 milliseconds
+  auth: {"action":"run_hook","auth_event":{"action":"login","actor_id":"03ddff3f-19e5-4384-a056-0d193bd37497","actor_username":"prueba.1793077027@example.com","actor_via_sso":false,"log_type":"account","traits":{"provider":"emai
+  auth: {"component":"api","duration":19948985,"error":"error finding user: sql: Scan error on column index 1, name \"banned_until\": unsupported Scan, storing driver.Value type string into type *time.Time","error_code":"unexpec
+  auth: {"action":"run_hook","auth_event":{"action":"login","actor_id":"bcf5a4ba-517f-4b0e-a078-225dc4ad67cf","actor_username":"sesimcapturista1@gmail.com","actor_via_sso":false,"log_type":"account","traits":{"provider":"email"}

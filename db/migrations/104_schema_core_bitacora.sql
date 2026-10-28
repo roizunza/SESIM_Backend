@@ -13,8 +13,8 @@ create table if not exists core.bitacora (
 
   -- Quien hizo el cambio. Puede ser null en teoria (ej. una migracion de
   -- datos corrida a mano), pero en la practica siempre es un
-  -- administrador/administrador_vip (para cambio_rol/cambio_ambito/baja/
-  -- reactivacion) o el propio administrador_vip que da de alta (para alta).
+  -- administrador/administrador_titular (para cambio_rol/cambio_ambito/baja/
+  -- reactivacion) o el propio administrador_titular que da de alta (para alta).
   actor_id_usuario   uuid references auth.users(id) on delete set null,
   actor_rol          text,
 
@@ -47,7 +47,7 @@ create index if not exists bitacora_objetivo_rol_idx on core.bitacora (objetivo_
 --
 -- security definer a proposito (igual que core.rol_actual()): quien hace el
 -- UPDATE es el rol de Postgres "authenticated" (un administrador/
--- administrador_vip real, del lado de negocio), y NO tiene ningun GRANT para
+-- administrador_titular real, del lado de negocio), y NO tiene ningun GRANT para
 -- insertar en core.bitacora (a proposito -- nadie escribe la bitacora a
 -- mano, solo este trigger). Sin security definer, el INSERT de aqui abajo
 -- fallaria por permisos.

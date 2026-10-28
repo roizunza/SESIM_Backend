@@ -5,7 +5,7 @@
 -- anotada esta regla de negocio:
 --
 --   1. Visibilidad (uso estatal): todo usuario con credenciales
---      (capturista, administrador, administrador_vip, auditor) ve las
+--      (capturista, administrador, administrador_titular, auditor) ve las
 --      observaciones de TODOS los municipios. No hay filtro por
 --      cve_mun a nivel de RLS -- la busqueda/filtro por municipio es
 --      una funcionalidad del front (query param sobre cve_mun, que ya
@@ -15,13 +15,13 @@
 --      absoluto -- ni siquiera filtrado. El publico si ve el geovisor
 --      (core.capa/core.capa_feature, ya publico desde 116/117) pero NO
 --      ve el valor de ninguna observacion.
---   3. Insercion: capturista, administrador y administrador_vip pueden
+--   3. Insercion: capturista, administrador y administrador_titular pueden
 --      registrar observaciones nuevas. 
 --   4. Edicion capturista: solo puede actualizar una fila si el
 --      solicitante ES el autor original (capturado_por = auth.uid())
 --      Y el estatus de la fila (al momento de editar) esta en
 --      'borrador' o 'rechazado'.
---   5. Edicion administracion: administrador y administrador_vip
+--   5. Edicion administracion: administrador y administrador_titular
 --      pueden editar SIEMPRE (cualquier fila, cualquier estatus), para
 --      avanzar el flujo de dictamen -- ese flujo en si (que transicion
 --      de estatus es valida) es Ciclo 8, esta RLS solo controla QUIEN
@@ -46,7 +46,7 @@ create policy observacion_insert_captura on core.observacion
   for insert
   to authenticated
   with check (
-    core.rol_actual() in ('capturista', 'administrador', 'administrador_vip')
+    core.rol_actual() in ('capturista', 'administrador', 'administrador_titular')
     and capturado_por = auth.uid()
   );
 
@@ -66,5 +66,5 @@ create policy observacion_update_capturista on core.observacion
 create policy observacion_update_administracion on core.observacion
   for update
   to authenticated
-  using (core.rol_actual() in ('administrador', 'administrador_vip'))
-  with check (core.rol_actual() in ('administrador', 'administrador_vip'));
+  using (core.rol_actual() in ('administrador', 'administrador_titular'))
+  with check (core.rol_actual() in ('administrador', 'administrador_titular'));

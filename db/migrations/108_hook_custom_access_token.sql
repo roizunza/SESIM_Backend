@@ -17,7 +17,7 @@
 --     carga mientras esa consulta resuelve).
 --   - NINGUNA decision de permisos cambia: RLS (core.rol_actual(), en
 --     101_schema_core_perfil.sql) y servicio-procesos
---     (_exigir_administrador_vip, en main.py) SIGUEN resolviendo el rol
+--     (_exigir_administrador_titular, en main.py) SIGUEN resolviendo el rol
 --     consultando core.perfil en cada request, exactamente igual que antes
 --     de este archivo. Asi, una baja o un cambio de rol sigue surtiendo
 --     efecto de inmediato donde de verdad importa (autorizacion real); el

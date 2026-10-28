@@ -14,7 +14,7 @@ Esto NO es un endpoint HTTP (a diferencia de POST /admin/alta-usuario en
 main.py): es un script de una sola vez que se corre a mano, con el
 service_role, precisamente para resolver el problema del "huevo y la
 gallina" -- crear las primeras cuentas cuando todavia no existe ningun
-administrador_vip que pueda llamar a /admin/alta-usuario.
+administrador_titular que pueda llamar a /admin/alta-usuario.
 
 Uso (con el entorno ya arriba -- ver README.md):
 
@@ -58,8 +58,8 @@ CUENTAS = [
     },
     {
         "correo": "sesimadminvip@gmail.com",
-        "nombre": "Administrador vip de prueba",
-        "rol": "administrador_vip",
+        "nombre": "Administrador titular de prueba",
+        "rol": "administrador_titular",
     },
     {
         "correo": "sesimauditor1@gmail.com",
@@ -99,6 +99,11 @@ def _crear_en_auth_users(correo: str) -> str:
 
 
 def main():
+    # Candado de ambiente (Ciclo 2): las cuentas de prueba tienen contrasena
+    # conocida; jamas deben existir en produccion.
+    if os.environ.get("APP_ENV", "desarrollo") == "produccion":
+        print("ABORTADO: APP_ENV=produccion. La semilla de desarrollo no corre en produccion.", file=sys.stderr)
+        sys.exit(1)
     with psycopg2.connect(DATABASE_URL) as conn:
         for cuenta in CUENTAS:
             with conn.cursor() as cur:

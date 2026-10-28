@@ -6,7 +6,7 @@
 -- Los joins a core.perfil para traer el nombre de "quien hizo el cambio" y
 -- "sobre quien fue" son seguros aunque la vista sea security_invoker: todo
 -- rol que puede ver una fila de bitacora que no es la suya (administrador,
--- administrador_vip, auditor) tambien puede ver TODAS las filas de
+-- administrador_titular, auditor) tambien puede ver TODAS las filas de
 -- core.perfil (policy perfil_select_todo_administracion), asi que el join
 -- nunca se queda sin nombre por RLS.
 

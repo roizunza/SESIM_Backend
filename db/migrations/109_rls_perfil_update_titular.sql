@@ -1,9 +1,9 @@
 
 -- "el de usuario admin puede hacer gestión
--- cuando se supone que solo debería admin a nivel VIP" — es decir, la
+-- cuando se supone que solo debería admin a nivel titular" — es decir, la
 -- pantalla y la capacidad completa de gestión de usuarios (ver/editar rol,
 -- ámbito, dependencia, dar de baja/reactivar) son EXCLUSIVAS de
--- administrador_vip. administrador (no vip) deja de poder editar
+-- administrador_titular. administrador (no titular) deja de poder editar
 -- core.perfil por completo, incluso el suyo propio vía esta vía (sigue
 -- pudiendo verse a sí mismo por `perfil_select_propio`, y ver a todos por
 -- `perfil_select_todo_administracion` — de solo lectura).
@@ -15,11 +15,11 @@
 
 drop policy if exists perfil_update_administracion on core.perfil;
 
-create policy perfil_update_solo_vip on core.perfil
+create policy rls_perfil_update_titular on core.perfil
   for update
   to authenticated
-  using (core.rol_actual() = 'administrador_vip')
-  with check (core.rol_actual() = 'administrador_vip');
+  using (core.rol_actual() = 'administrador_titular')
+  with check (core.rol_actual() = 'administrador_titular');
 
 -- Nota: aplica esta migración igual que 104-108 (psql manual
 -- dentro del contenedor, o pegada en el editor SQL de Supabase Studio) —

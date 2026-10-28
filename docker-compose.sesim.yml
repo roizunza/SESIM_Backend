@@ -30,16 +30,33 @@
 #     mientras no haya contrasena de aplicacion de Gmail (ver
 #     docs/decisiones-pendientes.md).
 
+# AMBIENTES (Ciclo 2): un solo compose para los tres ambientes (desarrollo,
+# pruebas, produccion). Lo que cambia entre ellos NO esta en este archivo
+# sino en el .env de cada ambiente (env/<ambiente>.env.example): puertos,
+# direccion en la que escucha Postgres, correo (SMTP) y si se levanta el
+# buzon de prueba (perfil "correo-prueba", solo desarrollo y pruebas).
+# Se usa asi a proposito, en vez de archivos override por ambiente: no hay
+# fusion de archivos que pueda romperse. Ver scripts/levantar.sh y
+# docs/ambientes.md.
+#
+# LIMITE CONOCIDO: infra/supabase fija nombres de contenedor
+# (container_name: supabase-db, supabase-auth, ...) y la carpeta de datos de
+# Postgres, y no se edita (ver infra/VENDOR.md). Por eso hay UN ambiente por
+# maquina/servidor: desarrollo en la laptop, pruebas y produccion en su
+# servidor. No se pueden levantar dos ambientes a la vez en el mismo equipo.
+
 include:
   - path: infra/supabase/docker-compose.yml
 
 services:
   db:
     build: ./db
+    restart: unless-stopped
     ports:
-      # Solo para desarrollo: poder conectarse con psql/DBeaver desde fuera
-      # de docker. En un ambiente que se exponga de verdad, quitar esto.
-      - "5432:5432"
+      # Postgres escucha solo en la direccion DB_BIND_ADDR (por defecto
+      # 127.0.0.1: unicamente desde el propio equipo, para psql/DBeaver por
+      # tunel SSH). Nunca poner 0.0.0.0 en pruebas ni produccion.
+      - "${DB_BIND_ADDR:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432"
 
   auth:
     environment:
@@ -48,10 +65,13 @@ services:
       # prefijo como ${SMTP_HOST} solo como ATAJO para rellenar estas
       # mismas variables -- pero como aqui las sobreescribimos directo en
       # el compose, hay que usar el nombre real que ve GoTrue).
-      GOTRUE_SMTP_HOST: mailpit
-      GOTRUE_SMTP_PORT: "1025"
-      GOTRUE_SMTP_USER: ""
-      GOTRUE_SMTP_PASS: ""
+      # En desarrollo y pruebas apuntan a Mailpit (valores por defecto); en
+      # produccion se definen SMTP_HOST/PORT/USER/PASS en .env (SMTP
+      # institucional) -- ver env/produccion.env.example.
+      GOTRUE_SMTP_HOST: ${SMTP_HOST:-mailpit}
+      GOTRUE_SMTP_PORT: ${SMTP_PORT:-1025}
+      GOTRUE_SMTP_USER: ${SMTP_USER:-}
+      GOTRUE_SMTP_PASS: ${SMTP_PASS:-}
       GOTRUE_SMTP_SENDER_NAME: ${SMTP_SENDER_NAME:-SESIM}
       GOTRUE_SMTP_ADMIN_EMAIL: ${SMTP_ADMIN_EMAIL:-admin@sesim.local}
       # Custom Access Token Hook: agrega el rol de core.perfil como claim de
@@ -63,12 +83,10 @@ services:
       # no para "pg-functions://" como este.
       GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_ENABLED: "true"
       GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_URI: "pg-functions://postgres/core/custom_access_token_hook"
-    depends_on:
-      mailpit:
-        condition: service_started
 
   servicio-procesos:
     build: ./servicio-procesos
+    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
@@ -79,11 +97,17 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       SERVICE_ROLE_KEY: ${SERVICE_ROLE_KEY}
       GOTRUE_INTERNAL_URL: http://auth:9999
+      # Nombre del ambiente: lo devuelve GET /health y bloquea las semillas
+      # de desarrollo en produccion.
+      APP_ENV: ${APP_ENV:-desarrollo}
     ports:
-      - "8001:8000"
+      - "${PROCESOS_BIND_ADDR:-127.0.0.1}:${PROCESOS_PORT:-8001}:8000"
 
   mailpit:
     image: axllent/mailpit:latest
+    # Solo desarrollo y pruebas: scripts/levantar.sh lo activa con
+    # --profile correo-prueba. En produccion NO existe.
+    profiles: ["correo-prueba"]
     ports:
-      - "8025:8025" # interfaz web para ver los correos capturados
-      - "1025:1025" # puerto SMTP que usa GoTrue (servicio "auth")
+      - "127.0.0.1:8025:8025" # interfaz web para ver los correos capturados
+      - "127.0.0.1:1025:1025" # puerto SMTP que usa GoTrue (servicio "auth")
