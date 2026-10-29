@@ -23,7 +23,7 @@ function verificar(token) {
   return c.exp > Math.floor(Date.now() / 1000) ? c : null;
 }
 
-export function iniciarMock({ port = 0, anonKey = 'anon-mock', expiraEn = 3600, claveAlta = 'ClaveNueva2026!' } = {}) {
+export function iniciarMock({ port = 0, anonKey = 'anon-mock', expiraEn = 3600, claveAlta = 'ClaveNueva2026!', catalogo = {} } = {}) {
   const usuarios = new Map(); // correo -> {id, password, nombre, rol, activo, conPerfil}
   const refresh = new Map(); // refresh_token -> id
   const bitacora = [];
@@ -73,6 +73,23 @@ export function iniciarMock({ port = 0, anonKey = 'anon-mock', expiraEn = 3600, 
       if (!claims) return json(401, { message: 'invalid JWT' });
       for (const [rt, id] of refresh) if (id === claims.sub) refresh.delete(rt);
       res.writeHead(204); return res.end();
+    }
+    // Catálogos del esquema api (PostgREST): anon ve los indicadores activos, aprobados o no (migración 217, E-6);
+    // una cuenta con perfil activo ve todo (migración 207). Soporta order=<col> y Range (paginación).
+    const nombreTabla = url.pathname.split('/').pop();
+    if (url.pathname.startsWith('/rest/v1/') && Object.hasOwn(catalogo, nombreTabla)) {
+      if (req.headers['accept-profile'] !== 'api') return json(406, { code: 'PGRST106', message: 'Invalid schema' });
+      const par = claims && porId(claims.sub);
+      const esAnon = !claims && bearer === anonKey;
+      if (!esAnon && !(par && par[1].activo && par[1].conPerfil)) return json(claims ? 200 : 401, claims ? [] : { code: 'PGRST301', message: 'JWT invalid' });
+      let filas = catalogo[nombreTabla];
+      if (esAnon && nombreTabla === 'indicador') filas = filas.filter((i) => i.activo);
+      const orden = url.searchParams.get('order');
+      if (orden) filas = [...filas].sort((a, b) => (a[orden] > b[orden] ? 1 : a[orden] < b[orden] ? -1 : 0));
+      const m = /^(\d+)-(\d+)$/.exec(req.headers.range ?? '');
+      const desde = m ? Number(m[1]) : 0;
+      const hasta = Math.min(m ? Number(m[2]) : 999, desde + 999); // tope de PostgREST: 1000
+      return json(200, filas.slice(desde, hasta + 1));
     }
     if (url.pathname.startsWith('/rest/v1/')) {
       if (!claims) return json(401, { code: 'PGRST301', message: 'JWT invalid' });

@@ -290,13 +290,11 @@ def main():
     print(f'Origen: {ORIGEN}')
     conteos = {}
     unidades = hoja('unidad_territorial')
-    for t in ('perfil', 'eje_tematico', 'sector', 'fuente_informacion', 'instrumento_origen',
-              'matriz_instrumento', 'indicador'):
-        conteos[t] = escribir(t, hoja(t))
-    conteos['indicador_instrumento'] = escribir('indicador_instrumento', hoja('indicador_instrumento'))
+    # Los catálogos de indicadores (indicador, eje_tematico, sector, fuente_informacion,
+    # instrumento_origen, matriz_instrumento, indicador_instrumento, capa_indicador) YA NO se exportan:
+    # el front los lee en vivo de Supabase (api.*). Aquí solo quedan las tablas aún estáticas.
+    conteos['perfil'] = escribir('perfil', hoja('perfil'))
     conteos['unidad_territorial'] = escribir('unidad_territorial', unidades)
-    conteos['capa_indicador'] = escribir('capa_indicador', [
-        {'id_capa': r['id_capa'], 'id_indicador': r['id_indicador']} for r in hoja('capa_indicador', llave='id_capa')])
     conteos['v_capa_por_municipio'] = escribir('v_capa_por_municipio', cruce_capa_municipio(unidades))
 
     lista = capas(clasif_por_capa)

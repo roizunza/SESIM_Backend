@@ -1,51 +1,82 @@
 /**
  * Cliente de datos del SESIM — ÚNICO punto por el que el front lee el modelo.
  *
- * Hoy lee los JSON estáticos que genera `scripts/datos/01_exportar_catalogos.py`
- * (`public/sesim/catalogo/<tabla>.json`), que tienen los MISMOS nombres de
- * tabla y columna que el esquema de PostgreSQL de la arquitectura de datos
- * v2.2. Cuando el backend exponga PostgREST, basta con definir
- * `VITE_SESIM_API_URL` (p. ej. `https://sesim.campeche.gob.mx/api`) y cada
- * `tabla('indicador')` pasa a ser `GET {API}/indicador` sin tocar ningún
- * componente.
+ * Los catálogos de indicadores y su trazabilidad (indicador, eje_tematico, sector,
+ * fuente_informacion, instrumento_origen, matriz_instrumento, indicador_instrumento,
+ * capa_indicador) se leen en VIVO de Supabase: `GET /rest/v1/<tabla>` sobre el esquema
+ * `api` (vistas security_invoker, así que la RLS decide qué ve cada quien):
+ *   · sin sesión (portal público): rol `anon`, solo indicadores aprobados y activos,
+ *     instrumentos publicados, etc. (migración 215);
+ *   · con sesión: el rol de la cuenta (capturista, administrador, titular, auditor).
+ * Ya NO existen JSON estáticos de esas tablas: si el backend no está configurado o no
+ * responde, el front lo dice, no inventa datos.
  *
- * Las funciones `fn*` y `v*` replican, con el mismo nombre y el mismo cruce,
- * las funciones y vistas del esquema `api` (sección 7 del documento,
- * "Funciones derivadas"). Mientras no exista el backend se calculan aquí con
- * los catálogos estáticos; después se sustituyen por la llamada RPC
- * (`POST {API}/rpc/fn_capas_de_indicador`) o la vista
- * (`GET {API}/v_capa_por_municipio?id_capa=eq.Inf09`). Ver
- * docs/FRONT_ARQUITECTURA_DATOS_V2.md, tabla "Funciones derivadas → front".
+ * Siguen estáticos (se conectan en su ciclo): capa y v_capa_por_municipio (Ciclo 9),
+ * unidad_territorial (2,785 filas, Ciclo 9) y perfil. Se generan con
+ * `scripts/datos/01_exportar_catalogos.py` en `public/sesim/catalogo/`.
+ *
+ * Las funciones `fn*` y `v*` replican las del esquema `api` (sección 7 del documento,
+ * "Funciones derivadas"); hoy se calculan aquí con las tablas leídas.
  *
  * Módulo puro (sin React ni Leaflet).
  */
 
-const API_URL = import.meta.env?.VITE_SESIM_API_URL || null;
+import { backend } from './supabase.js';
+
 const BASE_ESTATICA = '/sesim/catalogo';
 
-/** Tablas que el front lee del catálogo (todas sin geometría). */
-export const TABLAS = [
-  'perfil', 'eje_tematico', 'sector', 'fuente_informacion', 'instrumento_origen',
-  'matriz_instrumento', 'indicador_instrumento', 'indicador', 'unidad_territorial',
-  'capa', 'capa_indicador', 'v_capa_por_municipio',
-];
+/** Tablas que se leen de la API de Supabase (con su orden de lectura). */
+const TABLAS_API = {
+  indicador: 'order=id',
+  eje_tematico: 'order=id',
+  sector: 'order=id',
+  fuente_informacion: 'order=id',
+  instrumento_origen: 'order=id',
+  matriz_instrumento: 'order=id',
+  indicador_eje: '',
+  indicador_instrumento: '',
+  capa_indicador: '',
+  periodo: 'order=id',
+  // Vista pública: el filtro es explícito porque con sesión la RLS deja ver también borradores.
+  medicion_publica: 'estado=eq.vigente_publico&order=id',
+};
+
+/** Tablas estáticas que aún no se conectan. */
+const TABLAS_ESTATICAS = ['perfil', 'unidad_territorial', 'capa', 'v_capa_por_municipio'];
+
+export const TABLAS = [...Object.keys(TABLAS_API), ...TABLAS_ESTATICAS];
 
 const cache = new Map();
+let cliente = backend;
 
-/** Lee una tabla completa (memoizada por sesión de navegador). */
+// Al entrar o salir de la sesión cambia lo que la RLS deja ver: se descarta lo leído.
+const olvidarLecturasApi = () => { for (const n of Object.keys(TABLAS_API)) cache.delete(n); };
+let desuscribir = cliente.suscribir(olvidarLecturasApi);
+
+/** Solo para pruebas en Node: cambia el cliente (p. ej. uno apuntando al mock o al Supabase real). */
+export function _usarCliente(otro) {
+  desuscribir();
+  cliente = otro;
+  desuscribir = cliente.suscribir(olvidarLecturasApi);
+  cache.clear();
+}
+
+/** Lee una tabla completa (memoizada hasta que cambie la sesión). */
 export function tabla(nombre) {
   if (!cache.has(nombre)) {
-    const url = API_URL ? `${API_URL}/${nombre}` : `${BASE_ESTATICA}/${nombre}.json`;
-    const promesa = fetch(url)
-      .then((r) => {
+    let promesa;
+    if (nombre in TABLAS_API) {
+      promesa = cliente.leer(nombre, { query: ['select=*', TABLAS_API[nombre]].filter(Boolean).join('&') });
+    } else {
+      promesa = fetch(`${BASE_ESTATICA}/${nombre}.json`).then((r) => {
         if (!r.ok) throw new Error(`${nombre}: HTTP ${r.status}`);
         return r.json();
-      })
-      .catch((err) => {
-        cache.delete(nombre); // permite reintentar
-        throw err;
       });
-    cache.set(nombre, promesa);
+    }
+    cache.set(nombre, promesa.catch((err) => {
+      cache.delete(nombre); // permite reintentar
+      throw err;
+    }));
   }
   return cache.get(nombre);
 }

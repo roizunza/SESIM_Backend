@@ -3,7 +3,6 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { X, Map as MapIcon, Search } from 'lucide-react';
 import { useCatalogo } from '../lib/sesim/useCatalogo';
 import { indexar, fnTrazabilidadNormativa, vEquivalenciaPimus, fnCapasDeIndicador } from '../lib/sesim/api';
-import { useOperacion, vSerieIndicador, lineaBaseDe } from '../lib/sesim/operacion';
 import { fnSemaforo, COLORES_SEMAFORO } from '../lib/sesim/semaforo';
 import './MonitoreoIndicadores.css';
 import '../components/perfiles/comun/Comun.css';
@@ -14,6 +13,8 @@ import '../components/perfiles/comun/Comun.css';
  * La tabla sale de `indicador` (113 filas, ID corto Im01/Ee05/Accgir01) con
  * sus dimensiones resueltas por llave: eje_tematico, sector,
  * fuente_informacion y los instrumentos vía indicador_instrumento.
+ * Mediciones, periodos, ejes y capas salen de la base (api.medicion_publica, api.periodo, api.indicador_eje,
+ * api.capa_indicador): nada se lee del navegador. Solo cuentan mediciones vigente_publico.
  * Al elegir un indicador se abre su ficha pública:
  *   · F01 fn_trazabilidad_normativa  (¿por qué se mide y con qué respaldo?)
  *   · F15 v_equivalencia_pimus       (cómo lo nombra cada PIMUS)
@@ -21,12 +22,13 @@ import '../components/perfiles/comun/Comun.css';
  *   · F02 v_serie_indicador + F04 fn_semaforo (solo mediciones publicadas)
  * Deep-link: /monitoreo?indicador=Im18
  */
+const numeroDeEjeDe = (catalogo, i) => catalogo.ejes.get(i.id_eje)?.numero_eje;
+
 function Semaforo({ estado }) {
   return <span className="semaforo-chip"><i style={{ background: COLORES_SEMAFORO[estado] }} />{estado}</span>;
 }
 
 function FichaIndicador({ id, catalogo, onClose }) {
-  const op = useOperacion();
   const [traz, setTraz] = useState(null);
   const [equiv, setEquiv] = useState([]);
   const [capas, setCapas] = useState([]);
@@ -43,8 +45,8 @@ function FichaIndicador({ id, catalogo, onClose }) {
 
   const ind = catalogo.indicadores.get(id);
   if (!ind) return null;
-  const serie = vSerieIndicador(id, op);
-  const lb = lineaBaseDe(ind, op);
+  const serie = catalogo.serie.get(id) ?? [];
+  const lb = { linea_base: ind.linea_base, anio_linea_base: ind.anio_linea_base };
 
   return (
     <div className="ficha-indicador" role="dialog" aria-label={ind.nombre}>
@@ -57,8 +59,8 @@ function FichaIndicador({ id, catalogo, onClose }) {
       </div>
       <div className="panel-detalle-cuerpo">
         <div className="dato"><span className="dato-etiqueta">Variable</span><span className="dato-valor">{ind.variable}</span></div>
-        <div className="dato"><span className="dato-etiqueta">Meta</span><span className="dato-valor">{ind.meta ?? '—'}{ind.valor_meta !== null ? ` (valor meta: ${ind.valor_meta})` : ''}</span></div>
-        <div className="dato"><span className="dato-etiqueta">Tendencia · línea base</span><span className="dato-valor">{ind.tendencia ?? 'Sin definir'} · {lb.linea_base !== null ? `${lb.linea_base}${lb.anio_linea_base ? ` (${lb.anio_linea_base})` : ''}` : 'sin línea base'}</span></div>
+        <div className="dato"><span className="dato-etiqueta">Meta</span><span className="dato-valor">{ind.meta ?? '—'}{ind.valor_meta != null ? ` (valor meta: ${ind.valor_meta})` : ''}</span></div>
+        <div className="dato"><span className="dato-etiqueta">Tendencia · línea base</span><span className="dato-valor">{ind.tendencia ?? 'Sin definir'} · {lb.linea_base != null ? `${lb.linea_base}${lb.anio_linea_base ? ` (${lb.anio_linea_base})` : ''}` : 'sin línea base'}</span></div>
         <div className="dato"><span className="dato-etiqueta">Criterios SMART</span>
           <span className="dato-valor">Medible {ind.smart_medible ? '✓' : '✗'} · Alcanzable {ind.smart_alcanzable ? '✓' : '✗'} · Temporal {ind.smart_temporal ? '✓' : '✗'} · Ficha {ind.estatus_aprobado ? 'aprobada' : 'pendiente de aprobación'}</span>
         </div>
@@ -66,7 +68,8 @@ function FichaIndicador({ id, catalogo, onClose }) {
         {traz && (
           <div className="dato">
             <span className="dato-etiqueta">Trazabilidad normativa (F01)</span>
-            <span className="dato-valor">Eje {traz.eje?.numero_eje}. {traz.eje?.nombre}</span>
+            <span className="dato-valor">Eje principal {traz.eje?.numero_eje}. {traz.eje?.nombre}</span>
+            {(catalogo.ejesDe.get(id) ?? []).length > 1 && <span className="dato-valor">También atiende: {catalogo.ejesDe.get(id).filter((n) => n !== traz.eje?.numero_eje).map((n) => `Eje ${n}`).join(', ')}</span>}
             <span className="dato-valor">Sector: {traz.sector?.nombre} ({traz.sector?.id})</span>
             <span className="dato-valor">Fuente: {traz.fuente?.nombre}</span>
           </div>
@@ -128,8 +131,7 @@ function FichaIndicador({ id, catalogo, onClose }) {
 
 export default function MonitoreoIndicadores() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const op = useOperacion();
-  const { datos, error } = useCatalogo(['indicador', 'eje_tematico', 'sector', 'fuente_informacion', 'instrumento_origen', 'indicador_instrumento', 'capa_indicador', 'unidad_territorial']);
+  const { datos, error } = useCatalogo(['indicador', 'eje_tematico', 'sector', 'fuente_informacion', 'instrumento_origen', 'indicador_instrumento', 'indicador_eje', 'capa_indicador', 'capa', 'periodo', 'medicion_publica', 'unidad_territorial']);
   const [f, setF] = useState({ texto: '', eje: '', instrumento: '', mir: '', aprobados: false });
 
   const catalogo = useMemo(() => {
@@ -139,12 +141,33 @@ export default function MonitoreoIndicadores() {
       if (!vinculos.has(v.id_indicador)) vinculos.set(v.id_indicador, []);
       vinculos.get(v.id_indicador).push(v);
     }
+    // Solo cuentan las capas publicadas (con sesión la RLS deja ver también las de uso interno y borradores).
+    const capasPublicas = new Set(datos.capa.filter((c) => c.estatus === 'vigente_publico').map((c) => c.id));
     const nCapas = new Map();
-    for (const v of datos.capa_indicador) nCapas.set(v.id_indicador, (nCapas.get(v.id_indicador) ?? 0) + 1);
+    for (const v of datos.capa_indicador) if (capasPublicas.has(v.id_capa)) nCapas.set(v.id_indicador, (nCapas.get(v.id_indicador) ?? 0) + 1);
+    // Todos los ejes de cada indicador (indicador_eje, 127 vínculos), el principal primero.
+    const numeroDeEje = new Map(datos.eje_tematico.map((e) => [e.id, e.numero_eje]));
+    const ejesDe = new Map();
+    for (const v of datos.indicador_eje) {
+      if (!ejesDe.has(v.id_indicador)) ejesDe.set(v.id_indicador, []);
+      ejesDe.get(v.id_indicador).push({ n: numeroDeEje.get(v.id_eje), principal: v.principal });
+    }
+    for (const [k, lista] of ejesDe) ejesDe.set(k, lista.sort((a, b) => Number(b.principal) - Number(a.principal) || a.n - b.n).map((x) => x.n));
+    // Mediciones publicadas por indicador, en orden cronológico (F02).
+    const periodos = new Map(datos.periodo.map((p) => [p.id, p]));
+    const serie = new Map();
+    for (const m of datos.medicion_publica) {
+      if (!serie.has(m.id_indicador)) serie.set(m.id_indicador, []);
+      serie.get(m.id_indicador).push({ ...m, periodo: periodos.get(m.id_periodo) });
+    }
+    for (const lista of serie.values()) lista.sort((a, b) => (a.periodo?.fecha_inicio ?? '').localeCompare(b.periodo?.fecha_inicio ?? ''));
     return {
       ...datos,
+      indicador: datos.indicador.filter((i) => i.activo !== false),
       indicadores: indexar(datos.indicador),
       ejes: indexar(datos.eje_tematico),
+      ejesDe,
+      serie,
       sectores: indexar(datos.sector),
       instrumentos: indexar(datos.instrumento_origen),
       unidades: indexar(datos.unidad_territorial),
@@ -160,7 +183,7 @@ export default function MonitoreoIndicadores() {
     if (!catalogo) return [];
     const q = f.texto.trim().toLowerCase();
     return catalogo.indicador.filter((i) => {
-      if (f.eje && String(i.id_eje) !== f.eje) return false;
+      if (f.eje && !(catalogo.ejesDe.get(i.id) ?? [numeroDeEjeDe(catalogo, i)]).includes(Number(f.eje))) return false;
       if (f.mir && !String(i.nivel_mir).startsWith(f.mir)) return false;
       if (f.aprobados && !i.estatus_aprobado) return false;
       if (f.instrumento && !(catalogo.vinculos.get(i.id) ?? []).some((v) => v.id_instrumento === f.instrumento)) return false;
@@ -170,11 +193,10 @@ export default function MonitoreoIndicadores() {
   }, [catalogo, f]);
 
   const ultimoSemaforo = (ind) => {
-    const serie = vSerieIndicador(ind.id, op);
+    const serie = catalogo?.serie.get(ind.id) ?? [];
     if (!serie.length) return 'sin dato';
     const m = serie[serie.length - 1];
-    const lb = lineaBaseDe(ind, op);
-    return fnSemaforo({ valor: m.valor, linea_base: lb.linea_base, valor_meta: ind.valor_meta, tendencia: ind.tendencia });
+    return fnSemaforo({ valor: m.valor, linea_base: ind.linea_base, valor_meta: ind.valor_meta, tendencia: ind.tendencia });
   };
 
   const nivelesMir = ['Fin', 'Propósito', 'Componentes', 'Actividades'];
@@ -196,7 +218,7 @@ export default function MonitoreoIndicadores() {
             <label>Eje temático
               <select value={f.eje} onChange={(e) => setF({ ...f, eje: e.target.value })}>
                 <option value="">Todos</option>
-                {catalogo.eje_tematico.map((e) => <option key={e.id} value={e.id}>{e.numero_eje}. {e.nombre}</option>)}
+                {catalogo.eje_tematico.map((e) => <option key={e.id} value={e.numero_eje}>{e.numero_eje}. {e.nombre}</option>)}
               </select>
             </label>
             <label>Instrumento
@@ -216,7 +238,7 @@ export default function MonitoreoIndicadores() {
             </label>
           </div>
 
-          <p className="indicadores-conteo">{filas.length} de {catalogo.indicador.length} indicadores</p>
+          <p className="indicadores-conteo">{filas.length} de {catalogo.indicador.length} indicadores · {catalogo.indicador.filter((i) => i.estatus_aprobado).length} con ficha aprobada</p>
           <div className={`indicadores-cuerpo ${seleccion ? 'con-ficha' : ''}`}>
             <div className="indicadores-scroll">
               <table className="indicadores-tabla">
@@ -230,14 +252,14 @@ export default function MonitoreoIndicadores() {
                     <tr key={i.id} className={`clic ${seleccion === i.id ? 'activa' : ''}`} onClick={() => abrir(i.id)}>
                       <td><strong>{i.id}</strong></td>
                       <td>{i.nombre}</td>
-                      <td>{catalogo.ejes.get(i.id_eje)?.numero_eje}</td>
+                      <td>{(catalogo.ejesDe.get(i.id) ?? [numeroDeEjeDe(catalogo, i)]).join(', ')}</td>
                       <td>{catalogo.sectores.get(i.id_sector)?.nombre}</td>
                       <td>{String(i.nivel_mir).split(' ')[0]}</td>
                       <td>{i.tendencia ?? '—'}</td>
                       <td>{(catalogo.vinculos.get(i.id) ?? []).map((v) => catalogo.instrumentos.get(v.id_instrumento)?.clave.replace('PIMUS-', 'P-')).filter((x, k, a) => a.indexOf(x) === k).join(', ')}</td>
                       <td>{catalogo.nCapas.get(i.id) ?? 0}</td>
                       <td><Semaforo estado={ultimoSemaforo(i)} /></td>
-                      <td>{i.estatus_aprobado ? 'Aprobada' : '—'}</td>
+                      <td>{i.estatus_aprobado ? 'Aprobada' : 'Pendiente'}</td>
                     </tr>
                   ))}
                 </tbody>

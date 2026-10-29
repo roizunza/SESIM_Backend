@@ -21,6 +21,7 @@ end $$;
 create function pg_temp.anonimo() returns void language plpgsql as $$
 begin
   perform set_config('request.jwt.claim.sub', '', true);
+  perform set_config('request.jwt.claims', '', true);   -- el auth.uid() real de Supabase tambien lee este claim
   execute 'set local role anon';
 end $$;
 -- ejecuta sql y devuelve 'OK' o el mensaje de error (subtransaccion: el error no aborta la prueba)
@@ -32,6 +33,9 @@ declare n bigint; begin
 create function pg_temp.reg(c text, ok boolean, d text) returns void language plpgsql as $$
 begin
   execute 'reset role';
+  -- volver a ser el dueno = sin identidad: el auth.uid() real de Supabase lee claim.sub Y claims->>sub
+  perform set_config('request.jwt.claim.sub', '', true);
+  perform set_config('request.jwt.claims', '', true);
   insert into resultados(caso, ok, detalle) values (c, ok, d);
 end $$;
 -- cuenta filas como anon y vuelve a ser dueno (reg() tambien reinicia el rol)
@@ -217,15 +221,15 @@ begin
     pg_temp.cuenta_anon('select 1 from api.unidad_territorial') = 2785 and pg_temp.cuenta_anon('select 1 from api.eje_tematico') = 5
     and pg_temp.cuenta_anon('select 1 from api.sector') = 31 and pg_temp.cuenta_anon('select 1 from api.fuente_informacion') = 17, '');
   n := pg_temp.cuenta_anon('select 1 from api.indicador');
-  perform pg_temp.reg('C40 anon ve solo indicadores aprobados y activos (no los 113)',
-    n = (select count(*) from core.indicador where estatus_aprobado and activo) and n > 0 and n < 113, n || ' de 113');
+  perform pg_temp.reg('C40 anon ve el catalogo completo de indicadores activos (113); la aprobacion es un dato, no un filtro (E-6)',
+    n = (select count(*) from core.indicador where activo) and n = 113, n || ' de 113');
   perform pg_temp.reg('C41 anon ve solo capas vigente_publico (66) y ninguna en borrador',
     pg_temp.cuenta_anon('select 1 from api.capa') = 66 and pg_temp.cuenta_anon('select 1 from api.capa where estatus <> ''vigente_publico''') = 0,
     pg_temp.cuenta_anon('select 1 from api.capa')::text);
   n := pg_temp.cuenta_anon('select 1 from api.capa_indicador');
-  perform pg_temp.reg('C42 anon ve capa-indicador solo de capas publicas e indicadores aprobados',
+  perform pg_temp.reg('C42 anon ve capa-indicador solo de capas publicas (con indicadores activos)',
     n = (select count(*) from core.capa_indicador ci join core.capa c on c.id = ci.id_capa and c.estatus = 'vigente_publico'
-         join core.indicador i on i.id = ci.id_indicador and i.estatus_aprobado and i.activo) and n > 0, n::text);
+         join core.indicador i on i.id = ci.id_indicador and i.activo) and n > 0, n::text);
   perform pg_temp.reg('C43 anon ve la medicion publicada y NO el borrador ni la que esta en revision',
     pg_temp.cuenta_anon('select 1 from api.medicion_publica where id_unidad = ''04013''') = 1
     and pg_temp.cuenta_anon('select 1 from api.medicion_publica where id_unidad in (''04011'',''04012'')') = 0

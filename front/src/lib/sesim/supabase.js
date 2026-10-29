@@ -239,6 +239,38 @@ export function crearCliente({
   const rest = (tabla, { query = '', metodo = 'GET', cuerpo, extra } = {}) =>
     llamar(`/rest/v1/${tabla}${query ? `?${query}` : ''}`, { metodo, cuerpo, esquema: 'api', extra });
 
+  /**
+   * Lectura de un catálogo del esquema `api` (PostgREST). Funciona CON o SIN sesión:
+   *  - con sesión usa el token del usuario (la RLS decide qué rol ve qué);
+   *  - sin sesión (o si expiró) lee como `anon`, que solo ve lo público (migración 215).
+   * Pagina de a 1000 filas (tope por omisión de PostgREST) para no truncar en silencio.
+   */
+  const leer = async (tabla, { query = 'select=*' } = {}) => {
+    exigirConfig();
+    const TAM = 1000;
+    const filas = [];
+    for (let desde = 0; ; desde += TAM) {
+      const ruta = `/rest/v1/${tabla}?${query}`;
+      const extra = { Range: `${desde}-${desde + TAM - 1}`, 'Range-Unit': 'items' };
+      let pagina;
+      try {
+        if (!sesion) throw new ErrorSesim('sin sesión', { codigo: 'sin_sesion' });
+        pagina = await llamar(ruta, { esquema: 'api', extra });
+      } catch (e) {
+        if (e.codigo !== 'sin_sesion' && e.codigo !== 'sesion_expirada') throw e;
+        const r = await pedir(ruta, { token: anonKey, esquema: 'api', extra });
+        if (!r.ok) {
+          const msg = r.datos?.message || `Error ${r.status}`;
+          throw new ErrorSesim(`No se pudo leer ${tabla}: ${msg}`, { status: r.status, codigo: r.datos?.code ?? null });
+        }
+        pagina = r.datos;
+      }
+      if (!Array.isArray(pagina)) throw new ErrorSesim(`Respuesta inesperada al leer ${tabla}.`, { codigo: 'respuesta' });
+      filas.push(...pagina);
+      if (pagina.length < TAM) return filas;
+    }
+  };
+
   /** Llamada a servicio-procesos (alta de usuarios, cargas). */
   const procesos = (ruta, { metodo = 'POST', cuerpo } = {}) => llamar(ruta, { metodo, cuerpo, raiz: baseProcesos });
 
@@ -266,6 +298,7 @@ export function crearCliente({
     refrescar,
     restaurar,
     rest,
+    leer,
     procesos,
     altaUsuario,
     cambiarActivo,
