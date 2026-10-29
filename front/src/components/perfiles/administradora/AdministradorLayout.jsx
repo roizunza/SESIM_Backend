@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
 import { Link } from 'react-router-dom';
-import { Download, Play, Map as MapIcon, X } from 'lucide-react';
+import { Download, Play, Map as MapIcon, X, SlidersHorizontal, ChevronUp } from 'lucide-react';
 import AdministradorSidebar from './AdministradorSidebar';
 import DashboardKPIs from './DashboardKPIs';
 import PanelDictamen from './PanelDictamen';
@@ -14,6 +14,8 @@ import { useCatalogoOperativo } from '../comun/useCatalogoOperativo';
 import CapaSesim from '../../geovisor/CapaSesim';
 import CapaMetadataModal from '../../geovisor/CapaMetadataModal';
 import { cargarArbolCapas } from '../../../lib/sesim/capas';
+import PanelFab from '../comun/PanelFab';
+import { usePanelLateral } from '../../../lib/sesim/usePanelLateral';
 import { useSesion } from '../../../lib/sesim/sesion';
 import { useOperacion, medicionesVisibles, fnCompletitudCaptura, lineaBaseDe, ESTADOS } from '../../../lib/sesim/operacion';
 import { fnSemaforo, COLORES_SEMAFORO } from '../../../lib/sesim/semaforo';
@@ -35,7 +37,8 @@ const AdministradorLayout = () => {
   const sesion = useSesion();
   const op = useOperacion();
   const { catalogo } = useCatalogoOperativo();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen, esMovil] = usePanelLateral();
+  const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
   const [seleccion, setSeleccion] = useState(null);
   const [arbol, setArbol] = useState(null);
   const [capaVista, setCapaVista] = useState(null);
@@ -132,6 +135,8 @@ const AdministradorLayout = () => {
         {cargada && <GeoJSON key={cargada.capa.id + cargada.capa.titulo} data={cargada.geojson} style={{ color: '#F59E0B', weight: 2, fillColor: '#F59E0B', fillOpacity: 0.3 }} pointToLayer={(f, ll) => L.circleMarker(ll, { radius: 5, color: '#fff', weight: 1, fillColor: '#F59E0B', fillOpacity: 0.9 })} />}
       </MapaPerfil>
 
+      <PanelFab abierto={isSidebarOpen} esMovil={esMovil} onAbrir={() => setIsSidebarOpen(true)} onCerrar={() => setIsSidebarOpen(false)} etiqueta="Solicitudes" />
+
       <div className="floating-sidebar-wrapper">
         <AdministradorSidebar
           isSidebarOpen={isSidebarOpen}
@@ -141,12 +146,12 @@ const AdministradorLayout = () => {
           mediciones={visibles}
           periodosPorId={periodosPorId}
           seleccion={seleccion}
-          onSeleccionar={(id) => { setSeleccion(id); setResumen(null); }}
+          onSeleccionar={(id) => { setSeleccion(id); setResumen(null); if (esMovil) setIsSidebarOpen(false); }}
           capasBorrador={capasBorrador}
           capaVista={capaVista}
           onVerCapa={(id) => { setCapaVista(capaVista === id ? null : id); setCargada(null); }}
-          onCargarCapa={() => setModalCarga(true)}
-          onInvitaciones={() => setInvitaciones(true)}
+          onCargarCapa={() => { setModalCarga(true); if (esMovil) setIsSidebarOpen(false); }}
+          onInvitaciones={() => { setInvitaciones(true); if (esMovil) setIsSidebarOpen(false); }}
         />
       </div>
 
@@ -167,7 +172,11 @@ const AdministradorLayout = () => {
 
       {invitaciones && sesion?.perfil === 'administrador_titular' && <InvitacionesPanel sesion={sesion} onClose={() => setInvitaciones(false)} />}
 
-      <div className="fullwidth-bottom-banner" style={{ left: isSidebarOpen ? '280px' : '0', transition: 'left 0.3s ease' }}>
+      <div className={`fullwidth-bottom-banner${filtrosAbiertos ? ' abierto' : ''}`} style={{ left: !esMovil && isSidebarOpen ? '280px' : '0', transition: 'left 0.3s ease' }}>
+        <button type="button" className="banner-handle" onClick={() => setFiltrosAbiertos(!filtrosAbiertos)} aria-expanded={filtrosAbiertos}>
+          <span><SlidersHorizontal size={15} /> Filtros y tablero</span>
+          <ChevronUp size={16} style={{ transform: filtrosAbiertos ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }} />
+        </button>
         <div className="banner-filter-row">
           <div className="filter-group">
             <label>Instrumento de origen</label>

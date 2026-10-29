@@ -15,7 +15,7 @@ import { fnIndicadoresDeCapa, vCapaPorMunicipio, tabla, indexar } from '../../li
  *
  * `datos` = { capa, propiedades? }
  */
-const ETIQUETAS_ESTATUS = { vigente_publico: 'Publicada', borrador: 'Borrador (uso interno)' };
+const ETIQUETAS_ESTATUS = { vigente_publico: 'Publicada', vigente_admin: 'Validada (solo uso interno)', revision: 'En revisión', borrador: 'Borrador (sin metadato completo)' };
 
 function Campo({ etiqueta, valor }) {
   if (valor === null || valor === undefined || valor === '') return null;

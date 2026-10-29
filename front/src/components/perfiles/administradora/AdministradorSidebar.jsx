@@ -24,8 +24,8 @@ const AdministradorSidebar = ({
   const titular = sesion?.perfil === 'administrador_titular';
 
   return (
-    <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : 'collapsed'}`} style={{ backgroundColor: '#183B33' }}>
-      <button className="admin-sidebar-toggle" style={{ background: '#102A24' }} onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+    <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : 'collapsed'}`}>
+      <button className="admin-sidebar-toggle" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
         {isSidebarOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
       </button>
 
@@ -34,7 +34,7 @@ const AdministradorSidebar = ({
         <div className="profile-info">
           <span className="profile-greeting" style={{ fontSize: 16 }}>Bienvenid@<br />{titular ? 'Administrador Titular' : 'Administrador'}</span>
           <span className="user-email">{sesion?.correo}</span>
-          <button onClick={() => navigate('/bitacora')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#D97706', fontSize: 12, fontWeight: 'bold', fontStyle: 'italic', cursor: 'pointer', padding: 0, marginTop: 6 }}>
+          <button onClick={() => navigate('/bitacora')} style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', fontSize: 12, cursor: 'pointer', padding: 0, marginTop: 6 }}>
             <Settings size={14} /> Bitácora completa
           </button>
         </div>
@@ -42,11 +42,11 @@ const AdministradorSidebar = ({
 
       <nav className="admin-nav">
         <div className="admin-nav-group">
-          <div className="admin-nav-header" style={{ background: '#254E45', padding: '8px 20px', marginBottom: 8 }}>
-            <span className="nav-title" style={{ color: '#A7F3D0', fontWeight: 'bold' }}>CONTROL DE SOLICITUDES</span>
+          <div className="admin-nav-header" >
+            <span className="nav-title" >CONTROL DE SOLICITUDES</span>
           </div>
 
-          <button className={`admin-nav-link ${medOpen ? 'active' : ''}`} onClick={() => setMedOpen(!medOpen)} style={{ background: 'transparent' }}>
+          <button className={`admin-nav-link ${medOpen ? 'active' : ''}`} onClick={() => setMedOpen(!medOpen)} >
             <BarChart3 size={18} />
             <span style={{ fontWeight: 600 }}>Mediciones</span>
             {medOpen ? <ChevronUp size={16} className="nav-chevron" /> : <ChevronDown size={16} className="nav-chevron" />}
@@ -62,14 +62,14 @@ const AdministradorSidebar = ({
             />
           )}
 
-          <button className={`admin-nav-link ${capasOpen ? 'active' : ''}`} onClick={() => setCapasOpen(!capasOpen)} style={{ background: 'rgba(255,255,255,0.05)' }}>
+          <button className={`admin-nav-link ${capasOpen ? 'active' : ''}`} onClick={() => setCapasOpen(!capasOpen)} >
             <Layers size={18} />
             <span style={{ fontWeight: 600 }}>Catálogo de capas</span>
             {capasOpen ? <ChevronUp size={16} className="nav-chevron" /> : <ChevronDown size={16} className="nav-chevron" />}
           </button>
           {capasOpen && (
-            <div className="bandeja-mediciones" style={{ background: 'rgba(255,255,255,0.05)' }}>
-              <button className="btn-base btn-white" onClick={onCargarCapa} style={{ width: '100%', justifyContent: 'flex-start', color: '#183B33', margin: '6px 0' }}>
+            <div className="bandeja-mediciones" >
+              <button className="btn-base btn-white" onClick={onCargarCapa} style={{ width: '100%', justifyContent: 'flex-start', margin: '6px 0' }}>
                 <Upload size={16} /> Cargar / actualizar capa
               </button>
               <div className="bandeja-grupo-titulo">En borrador <span className="n">{capasBorrador.length}</span></div>
@@ -86,7 +86,7 @@ const AdministradorSidebar = ({
           )}
 
           {titular && (
-            <button className="admin-nav-link" onClick={onInvitaciones} style={{ background: 'transparent' }}>
+            <button className="admin-nav-link" onClick={onInvitaciones} >
               <KeyRound size={18} />
               <span style={{ fontWeight: 600 }}>Usuarios e invitaciones</span>
             </button>

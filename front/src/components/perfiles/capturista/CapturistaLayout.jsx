@@ -5,6 +5,8 @@ import MedicionModal from './MedicionModal';
 import MapaPerfil from '../comun/MapaPerfil';
 import DetalleMedicion from '../comun/DetalleMedicion';
 import { useCatalogoOperativo } from '../comun/useCatalogoOperativo';
+import PanelFab from '../comun/PanelFab';
+import { usePanelLateral } from '../../../lib/sesim/usePanelLateral';
 import { useSesion } from '../../../lib/sesim/sesion';
 import { useOperacion, medicionesVisibles, fnTransicionEstado, eliminarBorrador } from '../../../lib/sesim/operacion';
 import '../comun/Comun.css';
@@ -24,7 +26,7 @@ const CapturistaLayout = () => {
   const sesion = useSesion();
   const op = useOperacion();
   const { catalogo, error } = useCatalogoOperativo();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen, esMovil] = usePanelLateral();
   const [modal, setModal] = useState({ abierto: false, id: null });
   const [seleccion, setSeleccion] = useState(null);
   const [errorAccion, setErrorAccion] = useState('');
@@ -38,6 +40,7 @@ const CapturistaLayout = () => {
     const m = mias.find((x) => x.id === id);
     if (m && ['borrador', 'rechazado'].includes(m.estado)) setModal({ abierto: true, id });
     setSeleccion(id);
+    if (esMovil) setIsSidebarOpen(false);
   };
 
   const enviar = (id) => {
@@ -53,6 +56,8 @@ const CapturistaLayout = () => {
     <div className="dashboard-fullscreen-container">
       <MapaPerfil resaltarUnidad={seleccionada?.id_unidad} />
 
+      <PanelFab abierto={isSidebarOpen} esMovil={esMovil} onAbrir={() => setIsSidebarOpen(true)} onCerrar={() => setIsSidebarOpen(false)} etiqueta="Mis mediciones" />
+
       <div className="floating-sidebar-wrapper">
         <CapturistaSidebar
           isSidebarOpen={isSidebarOpen}
@@ -62,7 +67,7 @@ const CapturistaLayout = () => {
           mediciones={mias}
           periodosPorId={periodosPorId}
           seleccion={seleccion}
-          onNueva={() => setModal({ abierto: true, id: null })}
+          onNueva={() => { setModal({ abierto: true, id: null }); if (esMovil) setIsSidebarOpen(false); }}
           onSeleccionar={abrir}
         />
       </div>

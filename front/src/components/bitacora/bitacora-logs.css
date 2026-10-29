@@ -1,0 +1,671 @@
+/* ==========================================================================
+   ESTILOS INSTITUCIONALES PARA EL HISTORIAL Y BITÁCORA DE ACTIVIDAD
+   SESIM - GOBIERNO DEL ESTADO DE CAMPECHE
+   ========================================================================== */
+
+.bitacora-page {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background: var(--c-bg, #F8F9FA);
+  padding: 24px 32px 48px;
+  box-sizing: border-box;
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+}
+
+/* Header Ejecutivo */
+.bitacora-header {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.bitacora-header-info h2 {
+  margin: 0 0 6px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--c-guinda-dk, #691C32);
+  font-family: var(--font-heading, inherit);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bitacora-user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--c-white, #ffffff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: var(--text-secondary, #4B5563);
+  font-weight: 500;
+}
+
+.bitacora-header-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Tarjetas de Métricas (KPIs Interactivos) */
+.bitacora-kpi-grid {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.bitacora-kpi-card {
+  background: var(--c-white, #ffffff);
+  border: 1.5px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  position: relative;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.bitacora-kpi-card:hover {
+  transform: translateY(-1px);
+}
+
+.bitacora-kpi-card.active-todos {
+  border-color: #4B5563;
+  background: #F3F4F6;
+}
+
+.active-todos .kpi-total {
+  background: #E5E7EB;
+  color: #111827;
+  border: 1px solid #D1D5DB;
+}
+
+.bitacora-kpi-card.active-revision {
+  border-color: #D97706;
+  background: #FFFBEB;
+}
+
+.bitacora-kpi-card.active-aprobado {
+  border-color: #059669;
+  background: #ECFDF5;
+}
+
+.bitacora-kpi-card.active-rechazado {
+  border-color: #DC2626;
+  background: #FEF2F2;
+}
+
+.kpi-active-indicator {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.active-todos .kpi-active-indicator { background: #4B5563; color: #fff; }
+.active-revision .kpi-active-indicator { background: #D97706; color: #fff; }
+.active-aprobado .kpi-active-indicator { background: #059669; color: #fff; }
+.active-rechazado .kpi-active-indicator { background: #DC2626; color: #fff; }
+
+.kpi-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.kpi-total { 
+  background: #F3F4F6; 
+  color: #4B5563; 
+  border: 1px solid #E5E7EB;
+}
+.kpi-revision { background: #FEF3C7; color: #92400E; }
+.kpi-aprobado { background: #DEF7EC; color: #03543F; }
+.kpi-rechazado { background: #FEE2E2; color: #991B1B; }
+
+.kpi-details {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kpi-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  line-height: 1;
+}
+
+.kpi-label {
+  font-size: 12px;
+  color: var(--text-secondary, #6B7280);
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* Barra de Filtros */
+.bitacora-filter-bar {
+  flex-shrink: 0;
+  background: var(--c-white, #ffffff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  padding: 12px 18px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.filter-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+}
+
+.filter-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-secondary, #9CA3AF);
+  pointer-events: none;
+}
+
+.filter-search-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 36px 0 38px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color, #E5E7EB);
+  background: var(--c-bg, #F9FAFB);
+  font-size: 13px;
+  color: var(--text-primary, #111827);
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.filter-search-input:focus {
+  border-color: var(--c-guinda, #9F2241);
+  background: #ffffff;
+}
+
+.filter-search-clear {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, #9CA3AF);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.filter-search-clear:hover {
+  background: #E5E7EB;
+  color: #111827;
+}
+
+.filter-select-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  height: 38px;
+  padding: 0 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color, #E5E7EB);
+  background: var(--c-bg, #F9FAFB);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary, #374151);
+  cursor: pointer;
+  outline: none;
+}
+
+.filter-select:focus {
+  border-color: var(--c-guinda, #9F2241);
+  background: #fff;
+}
+
+.view-toggle-buttons {
+  display: flex;
+  background: var(--c-bg, #F3F4F6);
+  padding: 3px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color, #E5E7EB);
+}
+
+.btn-view-toggle {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary, #6B7280);
+  transition: all 0.2s ease;
+}
+
+.btn-view-toggle.active {
+  background: #ffffff;
+  color: var(--c-guinda, #9F2241);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Layout Principal: 68% feed / 32% panel de detalle (Capturista / Admin) */
+.bitacora-content-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+}
+
+/* Layout de ancho completo (Auditor) */
+.bitacora-content-layout.full-width {
+  display: block;
+  width: 100%;
+}
+
+/* Feed Cronológico de Tarjetas */
+.bitacora-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bitacora-card {
+  background: var(--c-white, #ffffff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.bitacora-card:hover {
+  border-color: var(--c-guinda, #9F2241);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
+}
+
+.bitacora-card.selected.status-en_revision,
+.bitacora-card.selected.status-borrador {
+  border-color: #D97706;
+  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.15);
+  background: #FFFDFC;
+}
+
+.bitacora-card.selected.status-aprobado {
+  border-color: #059669;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15);
+  background: #FFFDFC;
+}
+
+.bitacora-card.selected.status-rechazado {
+  border-color: #DC2626;
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+  background: #FFFDFC;
+}
+
+/* Fallback default */
+.bitacora-card.selected {
+  border-color: var(--c-guinda, #9F2241);
+  box-shadow: 0 0 0 2px rgba(159, 34, 65, 0.15);
+  background: #FFFDFC;
+}
+
+.card-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.card-badges-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.badge-tipo {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-cartografia { background: #E0E7FF; color: #3730A3; }
+.badge-instrumento { background: #FCE7F3; color: #9D174D; }
+
+.badge-operacion {
+  white-space: nowrap;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--c-bg, #F3F4F6);
+  color: var(--text-secondary, #4B5563);
+  font-weight: 500;
+}
+
+.card-date {
+  font-size: 12px;
+  color: var(--text-secondary, #9CA3AF);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary, #111827);
+  margin: 0 0 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.card-metadata-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-secondary, #6B7280);
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.card-metadata-summary span strong {
+  color: var(--text-primary, #374151);
+}
+
+/* Cuadro de Observaciones del Dictamen de Rechazo */
+.admin-reject-callout {
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.admin-reject-callout p {
+  margin: 0;
+  font-size: 12px;
+  color: #991B1B;
+  line-height: 1.4;
+}
+
+/* Cuadro de Dictamen Aprobado */
+.admin-approved-callout {
+  background: #ECFDF5;
+  border: 1px solid #A7F3D0;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #065F46;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.card-bottom-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-color, #F3F4F6);
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Badges de Estado */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.status-pill.aprobado { background: #DEF7EC; color: #03543F; }
+.status-pill.en_revision { background: #FEF3C7; color: #92400E; }
+.status-pill.rechazado { background: #FEE2E2; color: #991B1B; }
+.status-pill.borrador { background: #F3F4F6; color: #374151; }
+
+
+
+/* Vista de Tabla (Data Grid) */
+.bitacora-table-container {
+  background: var(--c-white, #ffffff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  overflow-x: auto;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.bitacora-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.bitacora-table th {
+  background: var(--c-bg, #F9FAFB);
+  padding: 12px 16px;
+  color: var(--text-primary, #374151);
+  font-weight: 700;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.bitacora-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color, #F3F4F6);
+  color: var(--text-primary, #111827);
+  vertical-align: middle;
+}
+
+.bitacora-table tr:hover {
+  background: #FFFDFD;
+}
+
+.bitacora-table tr.selected {
+  background: #FFF8F8;
+}
+
+.bitacora-user-id {
+  font-family: var(--font-mono, monospace, Courier New);
+  font-weight: 700;
+  font-size: 12px;
+  color: var(--c-guinda, #9F2241);
+  background: rgba(159, 34, 65, 0.06);
+  padding: 3px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* Panel Lateral de Detalle Activo (Fijo / Sticky) */
+.bitacora-detail-panel {
+  background: var(--c-white, #ffffff);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: var(--radius-md, 8px);
+  padding: 20px;
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.detail-header {
+  border-bottom: 1px solid var(--border-color, #E5E7EB);
+  padding-bottom: 14px;
+  margin-bottom: 16px;
+}
+
+.detail-header h3 {
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--c-guinda, #9F2241);
+}
+
+.detail-meta-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 12px;
+  margin-bottom: 20px;
+}
+
+.detail-meta-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--border-color, #E5E7EB);
+}
+
+.detail-meta-item strong {
+  color: var(--text-secondary, #6B7280);
+}
+
+.detail-meta-item span {
+  font-weight: 600;
+  color: var(--text-primary, #111827);
+  text-align: right;
+}
+
+.detail-files-box {
+  background: var(--c-bg, #F9FAFB);
+  border: 1px solid var(--border-color, #E5E7EB);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 18px;
+}
+
+.detail-files-box h4 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary, #374151);
+  text-transform: uppercase;
+}
+
+.detail-file-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary, #4B5563);
+  padding: 4px 0;
+}
+
+.empty-state-box {
+  background: var(--c-white, #ffffff);
+  border: 1px dashed var(--border-color, #E5E7EB);
+  border-radius: 8px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-secondary, #6B7280);
+}
+
+/* Scrollbars Institucionales Sutiles */
+.bitacora-feed::-webkit-scrollbar,
+.bitacora-table-container::-webkit-scrollbar,
+.bitacora-detail-panel::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.bitacora-feed::-webkit-scrollbar-thumb,
+.bitacora-table-container::-webkit-scrollbar-thumb,
+.bitacora-detail-panel::-webkit-scrollbar-thumb {
+  background: #D1D5DB;
+  border-radius: 4px;
+}
+
+.bitacora-feed::-webkit-scrollbar-thumb:hover,
+.bitacora-table-container::-webkit-scrollbar-thumb:hover,
+.bitacora-detail-panel::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+@media (max-width: 1100px) {
+  .bitacora-kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .bitacora-content-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Modo embebido (dentro de la página Bitácora de SESIM): sin marco propio ni título; solo filtros, métricas y tabla. */
+.bitacora-page.embebido {
+  height: auto;
+  overflow: visible;
+  padding: 0;
+  background: transparent;
+}
+.bitacora-page.embebido .bitacora-header { justify-content: flex-end; margin-bottom: 8px; }
+.bitacora-page.embebido .bitacora-header > div:first-child { display: none !important; }

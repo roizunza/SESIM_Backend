@@ -5,8 +5,10 @@ import { ChevronLeft, ChevronRight, ChevronDown, Layers, Info, Camera, Search, X
 import html2canvas from 'html2canvas';
 import 'leaflet/dist/leaflet.css';
 import './MapViewer.css';
+import PanelFab from '../perfiles/comun/PanelFab';
+import { usePanelLateral } from '../../lib/sesim/usePanelLateral';
 import { toSwatchSvg } from '../../lib/leafletSymbology';
-import { cargarArbolCapas, CAPAS_FIJAS, CAPAS_CON_ETIQUETA } from '../../lib/sesim/capas';
+import { cargarArbolCapas, CAPAS_FIJAS, CAPAS_CON_ETIQUETA, ESTATUS_CAPA } from '../../lib/sesim/capas';
 import { fnCapasDeIndicador, tabla } from '../../lib/sesim/api';
 import EsriBasemap from './EsriBasemap';
 import CapaSesim from './CapaSesim';
@@ -25,7 +27,7 @@ import CapaMetadataModal from './CapaMetadataModal';
  *   /geovisor?capa=Inf09           enciende una capa y abre su grupo
  *   /geovisor?indicador=Im18       F06 · enciende las capas que ilustran el indicador
  *
- * `incluirBorrador` (perfiles internos) muestra también las capas en borrador.
+ * `incluirBorrador` (perfiles internos) muestra también las capas de uso interno y en borrador.
  */
 
 const ORDEN_GEOMETRIA = { polygon: 0, line: 1, point: 2 };
@@ -62,7 +64,7 @@ const MapViewer = ({ incluirBorrador = false }) => {
   const [mapInstance, setMapInstance] = useState(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
   const [activeBaseLayer, setActiveBaseLayer] = useState('claro');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen, esMovil] = usePanelLateral();
 
   const [arbol, setArbol] = useState(null);
   const [errorCarga, setErrorCarga] = useState(null);
@@ -222,6 +224,7 @@ const MapViewer = ({ incluirBorrador = false }) => {
 
   return (
     <div className="map-container-wrapper">
+      <PanelFab abierto={isSidebarOpen} esMovil={esMovil} onAbrir={() => setIsSidebarOpen(true)} onCerrar={() => setIsSidebarOpen(false)} etiqueta="Capas" />
       <div className={`map-sidebar ${isSidebarOpen ? 'open' : 'collapsed'}`}>
         <button className="sidebar-toggle-btn" onClick={() => setIsSidebarOpen(!isSidebarOpen)} title={isSidebarOpen ? 'Contraer panel' : 'Expandir panel'}>
           {isSidebarOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
@@ -298,7 +301,7 @@ const MapViewer = ({ incluirBorrador = false }) => {
                                   <span className="switch-label">
                                     {capa.titulo}
                                     <span className="capa-id-chip">{capa.id}</span>
-                                    {capa.estatus !== 'vigente_publico' && <span className="capa-borrador-chip">borrador</span>}
+                                    {capa.estatus !== 'vigente_publico' && <span className="capa-borrador-chip">{(ESTATUS_CAPA[capa.estatus] ?? capa.estatus).toLowerCase()}</span>}
                                   </span>
                                 </label>
                                 <button type="button" className="capa-info-btn" onClick={() => setFicha({ capa })} title="Ver ficha y metadatos" aria-label={`Ver ficha de ${capa.titulo}`}>

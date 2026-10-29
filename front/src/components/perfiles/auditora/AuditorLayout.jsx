@@ -4,6 +4,8 @@ import AuditorSidebar from './AuditorSidebar';
 import MapaPerfil from '../comun/MapaPerfil';
 import DetalleMedicion from '../comun/DetalleMedicion';
 import { useCatalogoOperativo } from '../comun/useCatalogoOperativo';
+import PanelFab from '../comun/PanelFab';
+import { usePanelLateral } from '../../../lib/sesim/usePanelLateral';
 import { useSesion } from '../../../lib/sesim/sesion';
 import { useOperacion, medicionesVisibles, registrarHallazgo } from '../../../lib/sesim/operacion';
 import { nombreUnidad, fechaCorta } from '../comun/formato';
@@ -23,7 +25,7 @@ const AuditorLayout = () => {
   const sesion = useSesion();
   const op = useOperacion();
   const { catalogo } = useCatalogoOperativo();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen, esMovil] = usePanelLateral();
   const [seleccion, setSeleccion] = useState(null);
   const [filtro, setFiltro] = useState({ texto: '', desde: '', hasta: '' });
   const [hallazgo, setHallazgo] = useState({ descripcion: '', severidad: 'media' });
@@ -62,6 +64,8 @@ const AuditorLayout = () => {
     <div className="dashboard-fullscreen-container">
       <MapaPerfil resaltarUnidad={medicion?.id_unidad} colorMedicion="#6B7280" />
 
+      <PanelFab abierto={isSidebarOpen} esMovil={esMovil} onAbrir={() => setIsSidebarOpen(true)} onCerrar={() => setIsSidebarOpen(false)} etiqueta="Auditoría" />
+
       <div className="floating-sidebar-wrapper">
         <AuditorSidebar
           isSidebarOpen={isSidebarOpen}
@@ -71,7 +75,7 @@ const AuditorLayout = () => {
           mediciones={visibles}
           periodosPorId={periodosPorId}
           seleccion={seleccion}
-          onSeleccionar={setSeleccion}
+          onSeleccionar={(id) => { setSeleccion(id); if (esMovil) setIsSidebarOpen(false); }}
           filtro={filtro}
           setFiltro={setFiltro}
           nHallazgos={op.hallazgo.length}

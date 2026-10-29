@@ -5,6 +5,7 @@ import { useSesion, PERFILES } from '../lib/sesim/sesion';
 import { useOperacion, bitacoraVisible, ETIQUETA_ESTADO } from '../lib/sesim/operacion';
 import { fechaCorta, ACCION_LEGIBLE } from '../components/perfiles/comun/formato';
 import BitacoraCuentas from '../components/perfiles/comun/BitacoraCuentas';
+import BitacoraLogs from '../components/bitacora/BitacoraLogs';
 import '../components/perfiles/comun/Comun.css';
 
 /**
@@ -13,6 +14,7 @@ import '../components/perfiles/comun/Comun.css';
  * auditor, la bitácora completa (Tabla 3). El auditor ve también los
  * hallazgos registrados.
  *
+ * Pestaña «Cambios»: trazabilidad de capas e instrumentos leída de `api.bitacora_operativa` (Ciclo 5, migración 218).
  * Con backend será `GET /api/bitacora` filtrada por RLS; las columnas son
  * las del diccionario (tabla_afectada, id_registro, accion, datos_previos,
  * datos_nuevos, ip_origen, fecha).
@@ -22,7 +24,7 @@ export default function BitacoraPagina() {
   const op = useOperacion();
   const navigate = useNavigate();
   const [f, setF] = useState({ tabla: '', accion: '', texto: '', desde: '', hasta: '' });
-  const [vista, setVista] = useState('cuentas');
+  const [vista, setVista] = useState('cambios');
 
   const usuarios = useMemo(() => new Map(op.usuario.map((u) => [u.id, u])), [op.usuario]);
   const filas = useMemo(() => {
@@ -67,15 +69,17 @@ export default function BitacoraPagina() {
           <h3>{sesion.perfil === 'capturista' ? 'Mi bitácora' : 'Bitácora completa'} · {PERFILES[sesion.perfil].nombre}</h3>
         </div>
         <div className="fila-botones" style={{ flex: 'none' }}>
+          <button className={`btn-base ${vista === 'cambios' ? 'btn-primary' : 'btn-tertiary'}`} style={{ width: 'auto' }} onClick={() => setVista('cambios')}>Cambios (servidor)</button>
           <button className={`btn-base ${vista === 'cuentas' ? 'btn-primary' : 'btn-tertiary'}`} style={{ width: 'auto' }} onClick={() => setVista('cuentas')}>Cuentas (servidor)</button>
           <button className={`btn-base ${vista === 'bitacora' ? 'btn-primary' : 'btn-tertiary'}`} style={{ width: 'auto' }} onClick={() => setVista('bitacora')}>Operación · local ({filas.length})</button>
           {veHallazgos && (
             <button className={`btn-base ${vista === 'hallazgos' ? 'btn-primary' : 'btn-tertiary'}`} style={{ width: 'auto' }} onClick={() => setVista('hallazgos')}>Hallazgos · local ({op.hallazgo.length})</button>
           )}
-          {vista !== 'cuentas' && <button className="btn-base btn-secondary" style={{ width: 'auto' }} onClick={exportar}><Download size={15} /> Exportar</button>}
+          {vista !== 'cuentas' && vista !== 'cambios' && <button className="btn-base btn-secondary" style={{ width: 'auto' }} onClick={exportar}><Download size={15} /> Exportar</button>}
         </div>
       </div>
       <div className="panel-completo-cuerpo">
+        {vista === 'cambios' && <BitacoraLogs embebido />}
         {vista === 'cuentas' && <BitacoraCuentas />}
         {vista === 'bitacora' && (
           <>

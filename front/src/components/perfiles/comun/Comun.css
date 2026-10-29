@@ -112,3 +112,11 @@
 /* En el perfil del Administrador la barra de filtros ocupa el borde inferior. */
 .con-banner .panel-detalle { bottom: 204px; }
 @media (max-width: 1024px) { .con-banner .panel-detalle { bottom: 290px; } }
+
+/* Encabezado de los paneles completos en pantallas angostas: el título y las pestañas pasan a otra línea
+   en vez de salirse de la pantalla (Bitácora y demás paneles). */
+@media (max-width: 760px) {
+  .panel-completo-cab { flex-wrap: wrap; }
+  .panel-completo-cab .fila-botones { flex: 1 1 100% !important; }
+  .panel-completo-cab .fila-botones > button { min-width: 0; flex: 1 1 calc(50% - 8px); }
+}

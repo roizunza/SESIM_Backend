@@ -37,12 +37,12 @@ export const PERMISOS = {
   auditor: { registrarHallazgo: true, verificarEvidencia: true, verTodasLasMediciones: true, verBitacora: true },
 };
 
-/** Normaliza nombres heredados (administradora, auditora, administrador_vip). */
+/** Normaliza nombres heredados (administradora, auditora). */
 export function perfilCanonico(valor) {
   const v = String(valor || '').toLowerCase().trim();
   if (v === 'administradora') return 'administrador';
   if (v === 'auditora') return 'auditor';
-  if (v === 'administrador_vip' || v === 'titular' || v === 'administrador titular') return 'administrador_titular';
+  if (v === 'titular' || v === 'administrador titular') return 'administrador_titular';
   return PERFILES[v] ? v : null;
 }
 

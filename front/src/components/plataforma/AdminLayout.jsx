@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
+import RolBar from './RolBar';
+import { useTablasApilables } from '../../lib/sesim/useTablasApilables';
 import { useSesion, useVerificandoSesion } from '../../lib/sesim/sesion';
 import { OPERACION_CONECTADA } from '../../lib/sesim/operacion';
 
@@ -14,18 +16,21 @@ const AdminLayout = () => {
   const sesion = useSesion();
   const verificando = useVerificandoSesion();
   const location = useLocation();
+  const raiz = useRef(null);
+  useTablasApilables(raiz);
   if (verificando) return <p role="status" style={{ padding: 24 }}>Verificando sesión…</p>;
   if (!sesion) return <Navigate to="/admin" replace state={{ desde: location.pathname }} />;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden' }}>
+    <div className="app-shell" ref={raiz} data-rol={sesion.perfil} style={{ display: 'flex', flexDirection: 'column', height: '100dvh', overflow: 'hidden' }}>
       <Header isAdmin={true} />
+      <RolBar sesion={sesion} />
       {!OPERACION_CONECTADA && (
-        <div role="status" style={{ background: '#FFF7E0', color: '#6B5200', borderBottom: '1px solid #E8D48A', fontSize: 12, padding: '4px 24px' }}>
-          Acceso real conectado al backend. El módulo de mediciones, evidencias y dictámenes aún trabaja en modo local de este navegador (se conecta en los Ciclos 4 a 8): lo que capture aquí no se guarda en el servidor.
+        <div role="status" className="modo-local">
+          <span>Acceso real conectado al backend. Mediciones, evidencias y dictámenes aún trabajan en modo local de este navegador (se conectan en los Ciclos 4 a 8): lo que capture aquí no se guarda en el servidor.</span>
         </div>
       )}
-      <main style={{ flex: 1, display: 'flex', position: 'relative', overflow: 'hidden' }}>
+      <main style={{ flex: 1, display: 'flex', position: 'relative', overflow: 'hidden', minHeight: 0 }}>
         <Outlet />
       </main>
     </div>

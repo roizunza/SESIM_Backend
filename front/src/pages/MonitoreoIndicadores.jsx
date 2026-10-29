@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { X, Map as MapIcon, Search } from 'lucide-react';
+import { X, Map as MapIcon, Search, Activity } from 'lucide-react';
 import { useCatalogo } from '../lib/sesim/useCatalogo';
 import { indexar, fnTrazabilidadNormativa, vEquivalenciaPimus, fnCapasDeIndicador } from '../lib/sesim/api';
 import { fnSemaforo, COLORES_SEMAFORO } from '../lib/sesim/semaforo';
@@ -25,8 +25,12 @@ import '../components/perfiles/comun/Comun.css';
 const numeroDeEjeDe = (catalogo, i) => catalogo.ejes.get(i.id_eje)?.numero_eje;
 
 function Semaforo({ estado }) {
-  return <span className="semaforo-chip"><i style={{ background: COLORES_SEMAFORO[estado] }} />{estado}</span>;
+  return <span className="semaforo-chip" style={{ '--sem': COLORES_SEMAFORO[estado] }}><i />{estado.charAt(0).toUpperCase() + estado.slice(1)}</span>;
 }
+
+const TENDENCIA = { Ascendente: { flecha: '▲', clase: 'sube' }, Descendente: { flecha: '▼', clase: 'baja' } };
+const NIVELES_MIR = ['Fin', 'Propósito', 'Componentes', 'Actividades'];
+const FILTROS_VACIOS = { texto: '', eje: '', instrumento: '', mir: '', aprobados: false };
 
 function FichaIndicador({ id, catalogo, onClose }) {
   const [traz, setTraz] = useState(null);
@@ -199,21 +203,67 @@ export default function MonitoreoIndicadores() {
     return fnSemaforo({ valor: m.valor, linea_base: ind.linea_base, valor_meta: ind.valor_meta, tendencia: ind.tendencia });
   };
 
-  const nivelesMir = ['Fin', 'Propósito', 'Componentes', 'Actividades'];
+  const hora = useMemo(() => new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }), [datos]);
+  const hayFiltros = JSON.stringify(f) !== JSON.stringify(FILTROS_VACIOS);
+
+  // Escape cierra la ficha.
+  useEffect(() => {
+    if (!seleccion) return undefined;
+    const alTeclear = (e) => { if (e.key === 'Escape') abrir(null); };
+    window.addEventListener('keydown', alTeclear);
+    return () => window.removeEventListener('keydown', alTeclear);
+  }, [seleccion]);
+
+  const kpis = catalogo && [
+    { etiqueta: 'Indicadores', valor: catalogo.indicador.length, total: catalogo.indicador.length },
+    { etiqueta: 'Fichas aprobadas', valor: catalogo.indicador.filter((i) => i.estatus_aprobado).length, total: catalogo.indicador.length },
+    { etiqueta: 'Con mediciones publicadas', valor: catalogo.indicador.filter((i) => catalogo.serie.has(i.id)).length, total: catalogo.indicador.length },
+    { etiqueta: 'Con capas en el mapa', valor: catalogo.indicador.filter((i) => catalogo.nCapas.has(i.id)).length, total: catalogo.indicador.length },
+  ];
+  const porMir = catalogo && Object.fromEntries(NIVELES_MIR.map((n) => [n, catalogo.indicador.filter((i) => String(i.nivel_mir).startsWith(n)).length]));
 
   return (
     <div className="page-content indicadores-page">
-      <h1>Monitoreo de Indicadores</h1>
-      <p className="text-muted">Sistema Estatal de Seguimiento a Indicadores de Movilidad y Seguridad Vial</p>
+      <header className="mon-hero">
+        <div>
+          <span className="mon-eyebrow"><i className="mon-pulso" aria-hidden="true" /> <Activity size={13} aria-hidden="true" /> Tablero en vivo</span>
+          <h1>Monitoreo de Indicadores</h1>
+          <p>Sistema Estatal de Seguimiento a Indicadores de Movilidad y Seguridad Vial</p>
+        </div>
+        {catalogo && <div className="mon-hero-hora" title="Hora de la última lectura a la base de datos">Última lectura<strong>{hora}</strong></div>}
+      </header>
 
-      {error && <p className="indicadores-error">No se pudo cargar el catálogo de indicadores: {error}</p>}
-      {!catalogo && !error && <p className="text-muted">Cargando indicadores…</p>}
+      {error && <p className="indicadores-error" role="alert">No se pudo cargar el catálogo de indicadores: {error}</p>}
+      {!catalogo && !error && (
+        <div className="mon-esqueleto" aria-busy="true" aria-label="Cargando indicadores">
+          <div className="mon-kpis">{[0, 1, 2, 3].map((k) => <span key={k} className="mon-kpi sk" />)}</div>
+          {[0, 1, 2, 3, 4, 5].map((k) => <span key={k} className="mon-fila-sk" />)}
+        </div>
+      )}
 
       {catalogo && (
         <>
-          <div className="filtros-fila indicadores-filtros">
-            <label>Buscar
-              <span className="capa-buscador" style={{ margin: 0 }}><Search size={13} /><input value={f.texto} onChange={(e) => setF({ ...f, texto: e.target.value })} placeholder="ID, clave, nombre o variable" /></span>
+          <section className="mon-kpis" aria-label="Resumen">
+            {kpis.map((k) => (
+              <div key={k.etiqueta} className="mon-kpi">
+                <span className="mon-kpi-etiqueta">{k.etiqueta}</span>
+                <strong className="mon-kpi-valor">{k.valor}<small>/{k.total}</small></strong>
+                <span className="mon-kpi-barra"><i style={{ width: `${k.total ? (k.valor / k.total) * 100 : 0}%` }} /></span>
+              </div>
+            ))}
+          </section>
+
+          <section className="mon-mir" aria-label="Filtrar por nivel MIR">
+            {NIVELES_MIR.map((n) => (
+              <button key={n} type="button" className={`mon-mir-chip ${f.mir === n ? 'activa' : ''}`} aria-pressed={f.mir === n} onClick={() => setF({ ...f, mir: f.mir === n ? '' : n })}>
+                {n}<b>{porMir[n]}</b>
+              </button>
+            ))}
+          </section>
+
+          <div className="filtros-fila indicadores-filtros mon-filtros">
+            <label className="mon-buscar">Buscar
+              <span className="capa-buscador"><Search size={14} aria-hidden="true" /><input type="search" value={f.texto} onChange={(e) => setF({ ...f, texto: e.target.value })} placeholder="ID, clave, nombre o variable" /></span>
             </label>
             <label>Eje temático
               <select value={f.eje} onChange={(e) => setF({ ...f, eje: e.target.value })}>
@@ -227,18 +277,14 @@ export default function MonitoreoIndicadores() {
                 {catalogo.instrumento_origen.map((i) => <option key={i.id} value={i.id}>{i.clave}</option>)}
               </select>
             </label>
-            <label>Nivel MIR
-              <select value={f.mir} onChange={(e) => setF({ ...f, mir: e.target.value })}>
-                <option value="">Todos</option>
-                {nivelesMir.map((n) => <option key={n}>{n}</option>)}
-              </select>
+            <label className="mon-interruptor">
+              <input type="checkbox" checked={f.aprobados} onChange={(e) => setF({ ...f, aprobados: e.target.checked })} />
+              <span className="mon-interruptor-pista" aria-hidden="true" /> Solo fichas aprobadas
             </label>
-            <label style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-              <input type="checkbox" checked={f.aprobados} onChange={(e) => setF({ ...f, aprobados: e.target.checked })} style={{ minWidth: 0 }} /> Solo fichas aprobadas
-            </label>
+            {hayFiltros && <button type="button" className="mon-limpiar" onClick={() => setF(FILTROS_VACIOS)}>Limpiar filtros</button>}
           </div>
 
-          <p className="indicadores-conteo">{filas.length} de {catalogo.indicador.length} indicadores · {catalogo.indicador.filter((i) => i.estatus_aprobado).length} con ficha aprobada</p>
+          <p className="indicadores-conteo mon-conteo" aria-live="polite">Mostrando <strong>{filas.length}</strong> de {catalogo.indicador.length} indicadores</p>
           <div className={`indicadores-cuerpo ${seleccion ? 'con-ficha' : ''}`}>
             <div className="indicadores-scroll">
               <table className="indicadores-tabla">
@@ -248,23 +294,32 @@ export default function MonitoreoIndicadores() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filas.map((i) => (
-                    <tr key={i.id} className={`clic ${seleccion === i.id ? 'activa' : ''}`} onClick={() => abrir(i.id)}>
-                      <td><strong>{i.id}</strong></td>
-                      <td>{i.nombre}</td>
-                      <td>{(catalogo.ejesDe.get(i.id) ?? [numeroDeEjeDe(catalogo, i)]).join(', ')}</td>
-                      <td>{catalogo.sectores.get(i.id_sector)?.nombre}</td>
-                      <td>{String(i.nivel_mir).split(' ')[0]}</td>
-                      <td>{i.tendencia ?? '—'}</td>
-                      <td>{(catalogo.vinculos.get(i.id) ?? []).map((v) => catalogo.instrumentos.get(v.id_instrumento)?.clave.replace('PIMUS-', 'P-')).filter((x, k, a) => a.indexOf(x) === k).join(', ')}</td>
-                      <td>{catalogo.nCapas.get(i.id) ?? 0}</td>
-                      <td><Semaforo estado={ultimoSemaforo(i)} /></td>
-                      <td>{i.estatus_aprobado ? 'Aprobada' : 'Pendiente'}</td>
-                    </tr>
-                  ))}
+                  {filas.length === 0 && (
+                    <tr className="mon-vacio"><td colSpan={10}>Ningún indicador coincide con los filtros. <button type="button" className="mon-limpiar" onClick={() => setF(FILTROS_VACIOS)}>Limpiar filtros</button></td></tr>
+                  )}
+                  {filas.map((i) => {
+                    const t = TENDENCIA[i.tendencia];
+                    const ejes = catalogo.ejesDe.get(i.id) ?? [numeroDeEjeDe(catalogo, i)];
+                    const instr = (catalogo.vinculos.get(i.id) ?? []).map((v) => catalogo.instrumentos.get(v.id_instrumento)?.clave.replace('PIMUS-', 'P-')).filter((x, k, a) => x && a.indexOf(x) === k);
+                    return (
+                      <tr key={i.id} className={`clic ${seleccion === i.id ? 'activa' : ''}`} tabIndex={0} aria-selected={seleccion === i.id} onClick={() => abrir(i.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(i.id); } }}>
+                        <td data-label="ID"><code className="mon-id">{i.id}</code></td>
+                        <td data-label="Indicador" className="mon-nombre">{i.nombre}</td>
+                        <td data-label="Eje">{ejes.map((n, k) => <span key={n} className={`mon-eje ${k === 0 ? 'principal' : ''}`} title={k === 0 ? 'Eje principal' : 'Eje adicional'}>{n}</span>)}</td>
+                        <td data-label="Sector">{catalogo.sectores.get(i.id_sector)?.nombre}</td>
+                        <td data-label="Nivel MIR"><span className="mon-mir-etiqueta">{String(i.nivel_mir).split(' ')[0]}</span></td>
+                        <td data-label="Tendencia">{t ? <span className={`mon-tend ${t.clase}`}>{t.flecha} {i.tendencia}</span> : <span className="mon-nulo">Sin definir</span>}</td>
+                        <td data-label="Instrumentos">{instr.length ? instr.map((x) => <span key={x} className="mon-chip">{x}</span>) : <span className="mon-nulo">—</span>}</td>
+                        <td data-label="Capas"><span className="mon-num">{catalogo.nCapas.get(i.id) ?? 0}</span></td>
+                        <td data-label="Semáforo"><Semaforo estado={ultimoSemaforo(i)} /></td>
+                        <td data-label="Ficha"><span className={`mon-ficha ${i.estatus_aprobado ? 'ok' : 'pend'}`}>{i.estatus_aprobado ? 'Aprobada' : 'Pendiente'}</span></td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
+            {seleccion && <button type="button" className="ficha-fondo" aria-label="Cerrar ficha" onClick={() => abrir(null)} />}
             {seleccion && <FichaIndicador id={seleccion} catalogo={catalogo} onClose={() => abrir(null)} />}
           </div>
         </>
