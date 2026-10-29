@@ -15,9 +15,13 @@ import AdminMapViewer from './components/geovisor/AdminMapViewer';
 /* Bitácora (tabla `bitacora`, visible según perfil) */
 import BitacoraPagina from './pages/BitacoraPagina';
 
+/* Canje de invitación (pública: la persona aún no tiene cuenta) */
+import AceptarInvitacion from './pages/AceptarInvitacion';
+
 function App() {
   return (
     <Routes>
+      <Route path="/invitacion" element={<AceptarInvitacion />} />
       <Route path="/" element={<Plataforma />}>
         <Route index element={<Inicio />} />
         <Route path="geovisor" element={<MapViewer />} />

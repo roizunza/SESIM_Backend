@@ -73,7 +73,10 @@ begin
 
   ---------------------------------------------------------------- AUDITORIA GENERICA
   perform pg_temp.reg('E01 Las 8 tablas de control tienen su disparador de auditoria',
-    (select count(*) from pg_trigger where tgname = 'trg_auditoria' and not tgisinternal) = 8, '');
+    (select count(*) from pg_trigger t join pg_class c on c.oid = t.tgrelid
+      where t.tgname = 'trg_auditoria' and not t.tgisinternal
+        and c.relname in ('capa','instrumento_origen','indicador','medicion_indicador','evidencia_medicion','umbral_semaforo','hallazgo_auditoria','periodo')) = 8, '');
+  -- (Ciclo 4 agrego mas tablas auditadas; sus disparadores se prueban en pruebas-ciclo4.)
 
   -- A) Capturista A envia la capa a revision (acta como duena de la funcion, con identidad de A)
   perform pg_temp.actua(ca);

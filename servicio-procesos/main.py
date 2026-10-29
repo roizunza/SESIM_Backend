@@ -25,6 +25,12 @@ solos:
                                no meter una pieza mas sin probar); (3) crea
                                el perfil correspondiente en core.perfil.
 
+  Ciclo 4:
+    GET  /invitacion/{token}   Dice si el enlace de invitacion sigue vigente (correo y rol) sin exponer nada mas.
+    POST /invitacion/canjear   La persona invitada elige nombre y contrasena. Crea la cuenta en GoTrue y llama
+                               core.fn_consumir_invitacion (crea el perfil con el rol de la invitacion y la marca
+                               usada). La invitacion la emite el Titular con api.fn_emitir_invitacion.
+
   Ciclos futuros (Ciclo 4 y Ciclo 9): procesar cargas de XLSX y de capas
   geoespaciales (GeoJSON/Shapefile/GPKG) que suba alguien sin perfil
   tecnico, validarlas, y ser quien de verdad hable con PostGIS -- para que
@@ -59,6 +65,15 @@ class AltaUsuarioIn(BaseModel):
     password: str
     nombre: str
     rol: str
+    ambito: str = "estatal"
+    cve_mun: str | None = None
+    dependencia: str | None = None
+
+
+class CanjeIn(BaseModel):
+    token: str
+    password: str
+    nombre: str
     ambito: str = "estatal"
     cve_mun: str | None = None
     dependencia: str | None = None
@@ -189,3 +204,59 @@ def alta_usuario(payload: AltaUsuarioIn, authorization: str | None = Header(defa
         conn.commit()
 
     return {"id_usuario": id_usuario, "id_perfil": id_perfil}
+
+
+def _borrar_en_auth_users(id_usuario: str) -> None:
+    """Compensacion: si el canje falla despues de crear la cuenta en GoTrue, se retira para no dejar una cuenta sin perfil."""
+    try:
+        httpx.delete(
+            f"{GOTRUE_INTERNAL_URL}/admin/users/{id_usuario}",
+            headers={"Authorization": f"Bearer {SERVICE_ROLE_KEY}", "apikey": SERVICE_ROLE_KEY},
+            timeout=10,
+        )
+    except httpx.HTTPError:
+        pass
+
+
+@app.get("/invitacion/{token}")
+def invitacion_vigente(token: str):
+    with _conectar_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute("select id, rol, correo_destino from core.fn_invitacion_vigente(%s)", (token,))
+            fila = cur.fetchone()
+    if fila is None:
+        raise HTTPException(status_code=404, detail="invitacion_no_valida_o_vencida")
+    return {"correo": fila[2], "rol": fila[1]}
+
+
+@app.post("/invitacion/canjear", status_code=201)
+def canjear_invitacion(payload: CanjeIn):
+    if len(payload.password) < 10:
+        raise HTTPException(status_code=422, detail="contrasena_muy_corta")
+    if payload.ambito == "municipal" and not payload.cve_mun:
+        raise HTTPException(status_code=422, detail="falta_cve_mun_para_ambito_municipal")
+    if payload.ambito == "estatal" and payload.cve_mun:
+        raise HTTPException(status_code=422, detail="cve_mun_no_aplica_a_ambito_estatal")
+
+    with _conectar_db() as conn:
+        with conn.cursor() as cur:
+            cur.execute("select id, rol, correo_destino from core.fn_invitacion_vigente(%s)", (payload.token,))
+            fila = cur.fetchone()
+    if fila is None:
+        raise HTTPException(status_code=404, detail="invitacion_no_valida_o_vencida")
+    correo = fila[2]
+
+    id_usuario = _crear_en_auth_users(correo, payload.password, payload.nombre)
+    try:
+        with _conectar_db() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "select core.fn_consumir_invitacion(%s, %s, %s, %s, %s, %s)",
+                    (payload.token, id_usuario, payload.nombre, payload.ambito, payload.cve_mun, payload.dependencia),
+                )
+            conn.commit()
+    except Exception:
+        _borrar_en_auth_users(id_usuario)
+        raise HTTPException(status_code=409, detail="no_se_pudo_canjear_la_invitacion")
+
+    return {"id_usuario": id_usuario, "correo": correo, "rol": fila[1]}

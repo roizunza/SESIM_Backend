@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useSesion } from '../../lib/sesim/sesion';
 import { cargarBitacoraOperativa, ETIQUETA_ESTATUS_SESIM } from '../../lib/sesim/bitacoraOperativa';
+import DictamenModal, { DictamenObjetivo } from './DictamenModal';
 import './bitacora-logs.css';
 
 /**
@@ -38,6 +39,9 @@ export default function BitacoraLogs({ embebido = false }: { embebido?: boolean 
   const [cargando, setCargando] = useState(true);
   const [errorCarga, setErrorCarga] = useState('');
 
+  const [recarga, setRecarga] = useState(0);
+  const [dictaminando, setDictaminando] = useState<DictamenObjetivo | null>(null);
+
   useEffect(() => {
     let vivo = true;
     setCargando(true);
@@ -46,7 +50,7 @@ export default function BitacoraLogs({ embebido = false }: { embebido?: boolean 
       .catch((e: Error) => { if (vivo) setErrorCarga(e.message || 'No se pudo leer la bitácora del servidor.'); })
       .finally(() => { if (vivo) setCargando(false); });
     return () => { vivo = false; };
-  }, [sesion?.id]);
+  }, [sesion?.id, recarga]);
 
   // Función para extraer solo la fecha sin la hora
   const getSoloFecha = (dateStr?: string | null) => {
@@ -675,25 +679,27 @@ Administración General de Información Territorial - SEOTDU Campeche`;
 
                       {/* 9. Dictamen */}
                       <td style={{ textAlign: 'center' }}>
-                        {log.status === 'en_revision' && esEstadoActual(log) ? (
+                        {isAdministrador && (log.estatusSesim === 'revision' || log.estatusSesim === 'vigente_admin') && esEstadoActual(log) ? (
                           <button
                             type="button"
-                            disabled
-                            onClick={() => navigate('/admin-visor')}
-                            title="El dictamen de capas e instrumentos se conecta al servidor en el Ciclo 4 (api.fn_dictaminar)"
+                            disabled={log.tipo === 'instrumento' && role !== 'administrador_titular'}
+                            onClick={() => setDictaminando({ tipo: log.tipo, recursoId: log.recursoId ?? '', titulo: log.title, estatus: log.estatusSesim ?? 'revision' })}
+                            title={log.tipo === 'instrumento' && role !== 'administrador_titular'
+                              ? 'Los instrumentos los dictamina solo el Administrador Titular'
+                              : (log.estatusSesim === 'revision' ? 'Validar o rechazar' : 'Publicar o rechazar')}
                             style={{
                               display: 'inline-flex',
                               alignItems: 'center',
                               gap: '4px',
                               padding: '4px 10px',
-                              background: 'var(--c-guinda, #691C32)',
+                              background: 'var(--c-guinda, #9f2241)',
                               border: 'none',
                               borderRadius: '4px',
                               color: '#FFFFFF',
                               fontSize: '11px',
                               fontWeight: '600',
-                              cursor: 'not-allowed',
-                              opacity: 0.55,
+                              cursor: (log.tipo === 'instrumento' && role !== 'administrador_titular') ? 'not-allowed' : 'pointer',
+                              opacity: (log.tipo === 'instrumento' && role !== 'administrador_titular') ? 0.55 : 1,
                               whiteSpace: 'nowrap'
                             }}
                           >
@@ -1019,6 +1025,13 @@ Administración General de Información Territorial - SEOTDU Campeche`;
 
       </div>
 
+      {dictaminando && (
+        <DictamenModal
+          objetivo={dictaminando}
+          onClose={() => setDictaminando(null)}
+          onHecho={() => { setDictaminando(null); setRecarga((n) => n + 1); }}
+        />
+      )}
     </div>
   );
 }

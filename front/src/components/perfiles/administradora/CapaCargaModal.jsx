@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { X, UploadCloud, FileText, Database, ArrowLeft, ArrowRight, CheckCircle, AlertTriangle } from 'lucide-react';
+import { guardarCapa, enviarCapaARevision } from '../../../lib/sesim/catalogoApi';
 import '../comun/Comun.css';
 
 /**
@@ -16,8 +17,9 @@ import '../comun/Comun.css';
  *     geográficas, atributos nombre/clasif).
  *
  * Termina en `onVerificar({ capa, geojson })`: la capa se previsualiza en el
- * mapa como borrador. Con backend, «Registrar» hará el INSERT en core.capa
- * (estatus = borrador) y la carga de capa_vector por el servicio de procesos.
+ * mapa como borrador. Ciclo 4: «Registrar» da de alta la ficha en el servidor (api.fn_guardar_capa, estatus borrador)
+ * y, si la ficha ISO está completa, la envía a revisión (api.fn_enviar_capa_revision). La carga de los elementos
+ * geográficos (capa_vector) la hará el servicio de procesos en el Ciclo 9.
  */
 const GEOM = { Point: 'Punto', MultiPoint: 'Punto', LineString: 'Línea', MultiLineString: 'Línea', Polygon: 'Polígono', MultiPolygon: 'Polígono' };
 
@@ -51,7 +53,8 @@ export default function CapaCargaModal({ isOpen, onClose, onVerificar, catalogo 
   const [documento, setDocumento] = useState(null);
   const [estilo, setEstilo] = useState(null);
   const [errorArchivo, setErrorArchivo] = useState('');
-  const [ficha, setFicha] = useState({ nomenclatura: '', titulo: '', categoria: '', grupo: '', id_instrumento: '', conjunto_datos: '', responsable: '', periodicidad: '', restriccion_uso: 'pública', fecha_corte: '' });
+  const [ficha, setFicha] = useState({ nomenclatura: '', titulo: '', categoria: '', grupo: '', id_instrumento: '', conjunto_datos: '', responsable: '', periodicidad: '', restriccion_uso: 'pública', fecha_corte: '', fuente_origen: '', linaje: '' });
+  const [registro, setRegistro] = useState({ ocupado: false, error: '', hecho: '' });
 
   const nomenclaturas = useMemo(() => {
     const m = new Map();
@@ -101,7 +104,45 @@ export default function CapaCargaModal({ isOpen, onClose, onVerificar, catalogo 
     setGeojson(null);
     setDocumento(null);
     setEstilo(null);
+    setRegistro({ ocupado: false, error: '', hecho: '' });
     onClose();
+  };
+
+  const fichaIso = () => ({
+    custodio: ficha.responsable,
+    fuente_origen: ficha.fuente_origen,
+    linaje: ficha.linaje,
+    sistema_coordenadas: 'EPSG:4326 — WGS 84',
+    restriccion_uso: ficha.restriccion_uso,
+    periodicidad: ficha.periodicidad || undefined,
+    fecha_corte: ficha.fecha_corte || undefined,
+    categoria: nom?.categoria ?? (ficha.categoria || undefined),
+    documento: documento?.name,
+    estilo_qml: estilo?.name,
+  });
+
+  const registrar = async (enviar) => {
+    setRegistro({ ocupado: true, error: '', hecho: '' });
+    try {
+      await guardarCapa({
+        id: idPropuesto,
+        titulo: ficha.titulo,
+        tipo_geometria: validacion?.familia,
+        srid_origen: 4326,
+        responsable: ficha.responsable,
+        conjunto_datos: ficha.conjunto_datos || null,
+        id_instrumento: ficha.id_instrumento || null,
+        nomenclatura: ficha.nomenclatura,
+        grupos: ficha.grupo || null,
+        n_elementos: validacion?.n ?? 0,
+        archivo: archivo?.name ?? null,
+        metadatos_extra: Object.fromEntries(Object.entries(fichaIso()).filter(([, v]) => v !== undefined && v !== '')),
+      });
+      if (enviar) await enviarCapaARevision(idPropuesto);
+      setRegistro({ ocupado: false, error: '', hecho: enviar ? `La capa ${idPropuesto} quedó registrada y enviada a revisión.` : `La capa ${idPropuesto} quedó registrada en borrador.` });
+    } catch (err) {
+      setRegistro({ ocupado: false, error: err.message, hecho: '' });
+    }
   };
 
   const verificar = () => {
@@ -201,6 +242,14 @@ export default function CapaCargaModal({ isOpen, onClose, onVerificar, catalogo 
                 </div>
               </div>
               <div className="form-group">
+                <label>Fuente de origen (ficha ISO)</label>
+                <input className="form-input" value={ficha.fuente_origen} onChange={set('fuente_origen')} placeholder="INEGI, 2020…" />
+              </div>
+              <div className="form-group">
+                <label>Linaje (cómo se obtuvo; obligatorio para enviar a revisión)</label>
+                <textarea className="form-input" rows={3} value={ficha.linaje} onChange={set('linaje')} />
+              </div>
+              <div className="form-group">
                 <label>Conjunto de datos de origen</label>
                 <input className="form-input" value={ficha.conjunto_datos} onChange={set('conjunto_datos')} placeholder="DENUE, Red Nacional de Caminos…" />
               </div>
@@ -246,6 +295,9 @@ export default function CapaCargaModal({ isOpen, onClose, onVerificar, catalogo 
               {validacion.valido
                 ? <div className="aviso aviso-ok">La estructura es compatible. Se registrará como <strong>{idPropuesto}</strong> en estatus <strong>borrador</strong>.</div>
                 : <div className="aviso aviso-error">Corrija el archivo y vuelva a cargarlo.</div>}
+              {registro.error && <div className="aviso aviso-error">{registro.error}</div>}
+              {registro.hecho && <div className="aviso aviso-ok">{registro.hecho}</div>}
+              {!ficha.fuente_origen || !ficha.linaje ? <small>Para enviarla a revisión falta la fuente de origen y el linaje (paso 2). Puede registrarla en borrador y completarlos después.</small> : null}
             </>
           )}
         </div>
@@ -257,9 +309,17 @@ export default function CapaCargaModal({ isOpen, onClose, onVerificar, catalogo 
               Siguiente <ArrowRight size={16} />
             </button>
           ) : (
-            <button className="btn-base btn-primary" style={{ width: 'auto', background: 'var(--status-aprobado)' }} disabled={!validacion?.valido} onClick={verificar}>
-              <CheckCircle size={16} /> Ver en el mapa como borrador
-            </button>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+              <button className="btn-base btn-secondary" style={{ width: 'auto' }} disabled={!validacion?.valido} onClick={verificar}>
+                Ver en el mapa
+              </button>
+              <button className="btn-base btn-secondary" style={{ width: 'auto' }} disabled={!validacion?.valido || registro.ocupado || !!registro.hecho} onClick={() => registrar(false)}>
+                Registrar borrador
+              </button>
+              <button className="btn-base btn-primary" style={{ width: 'auto', background: 'var(--status-aprobado)' }} disabled={!validacion?.valido || registro.ocupado || !!registro.hecho || !ficha.fuente_origen || !ficha.linaje} onClick={() => registrar(true)}>
+                <CheckCircle size={16} /> Registrar y enviar a revisión
+              </button>
+            </div>
           )}
         </div>
       </div>

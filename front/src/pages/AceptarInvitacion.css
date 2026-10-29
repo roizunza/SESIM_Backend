@@ -1,0 +1,8 @@
+.invitacion-pagina { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px; background: #f3f4f6; }
+.invitacion-tarjeta { width: 100%; max-width: 440px; background: #fff; border: 1px solid #d1d5db; border-radius: 8px; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+.invitacion-tarjeta h1 { margin: 0; font-size: 20px; color: #9f2241; }
+.invitacion-tarjeta form { display: flex; flex-direction: column; gap: 12px; }
+.invitacion-tarjeta label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 600; color: #374151; }
+.invitacion-tarjeta input { height: 38px; padding: 0 10px; border: 1px solid #9ca3af; border-radius: 4px; font-size: 14px; }
+.invitacion-tarjeta .btn-base { width: 100%; }
+.invitacion-volver { color: #9f2241; font-weight: 600; }

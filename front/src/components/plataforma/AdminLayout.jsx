@@ -27,7 +27,7 @@ const AdminLayout = () => {
       <RolBar sesion={sesion} />
       {!OPERACION_CONECTADA && (
         <div role="status" className="modo-local">
-          <span>Acceso real conectado al backend. Mediciones, evidencias y dictámenes aún trabajan en modo local de este navegador (se conectan en los Ciclos 4 a 8): lo que capture aquí no se guarda en el servidor.</span>
+          <span>Acceso real conectado al backend. Usuarios, invitaciones, catálogos, capas e instrumentos ya operan contra el servidor (Ciclo 4). Las mediciones y sus evidencias aún trabajan en modo local de este navegador (se conectan en los Ciclos 6 a 8): lo que capture aquí no se guarda en el servidor.</span>
         </div>
       )}
       <main style={{ flex: 1, display: 'flex', position: 'relative', overflow: 'hidden', minHeight: 0 }}>

@@ -1,45 +1,71 @@
-import React, { useState } from 'react';
-import { X, KeyRound, UserX, Copy } from 'lucide-react';
-import { useOperacion, fnEmitirInvitacion, revocarInvitacion, estadoInvitacion, darDeBaja } from '../../../lib/sesim/operacion';
+import React, { useCallback, useEffect, useState } from 'react';
+import { X, KeyRound, UserX, UserCheck, Copy } from 'lucide-react';
 import { PERFILES } from '../../../lib/sesim/sesion';
+import {
+  listarUsuarios, listarInvitaciones, emitirInvitacion, revocarInvitacion, darDeBajaUsuario, reactivarUsuario, enlaceInvitacion,
+} from '../../../lib/sesim/catalogoApi';
 import { fechaCorta } from '../comun/formato';
 import '../comun/Comun.css';
 
 /**
- * Exclusivo del ADMINISTRADOR TITULAR (Tabla 3 y F16):
- *  · emitir invitaciones (token de un solo uso; se guarda solo su SHA-256),
+ * Exclusivo del ADMINISTRADOR TITULAR (Tabla 3 y F16). Opera contra el servidor (Ciclo 4):
+ *  · emitir invitaciones (api.fn_emitir_invitacion): el token se muestra UNA vez; la base solo guarda su SHA-256,
  *  · revocarlas antes de usarse,
- *  · dar de baja usuarios (usuario.fecha_baja / id_usuario_baja).
+ *  · dar de baja y reactivar cuentas (baja lógica: bloquea el acceso y queda en la bitácora de cuentas).
+ * La persona invitada abre el enlace (/invitacion), elige su contraseña y su cuenta nace con el rol de la invitación.
  */
 export default function InvitacionesPanel({ sesion, onClose }) {
-  const op = useOperacion();
   const [correo, setCorreo] = useState('');
-  const [idPerfil, setIdPerfil] = useState(1);
-  const [token, setToken] = useState(null);
+  const [rol, setRol] = useState('capturista');
+  const [emitida, setEmitida] = useState(null);
+  const [copiado, setCopiado] = useState(false);
+  const [invitaciones, setInvitaciones] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [error, setError] = useState('');
+  const [cargando, setCargando] = useState(true);
+  const [ocupado, setOcupado] = useState(false);
 
-  const perfilPorId = new Map(Object.values(PERFILES).map((p) => [p.id_perfil, p]));
-  const usuarios = new Map(op.usuario.map((u) => [u.id, u]));
+  const nombreRol = (r) => PERFILES[r]?.nombre ?? r;
 
-  const emitir = async () => {
-    setError('');
-    setToken(null);
+  const cargar = useCallback(async () => {
     try {
-      const r = await fnEmitirInvitacion(sesion, { correo_destino: correo, id_perfil: idPerfil });
-      setToken(r);
-      setCorreo('');
+      const [inv, usr] = await Promise.all([listarInvitaciones(), listarUsuarios()]);
+      setInvitaciones(Array.isArray(inv) ? inv : []);
+      setUsuarios(Array.isArray(usr) ? usr : []);
+      setError('');
     } catch (err) {
       setError(err.message);
+    } finally {
+      setCargando(false);
+    }
+  }, []);
+
+  useEffect(() => { cargar(); }, [cargar]);
+
+  const ejecutar = async (fn) => {
+    setError('');
+    setOcupado(true);
+    try {
+      await fn();
+      await cargar();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setOcupado(false);
     }
   };
 
-  const ejecutar = (fn) => {
-    setError('');
-    try {
-      fn();
-    } catch (err) {
-      setError(err.message);
-    }
+  const emitir = () => ejecutar(async () => {
+    setEmitida(null);
+    setCopiado(false);
+    const r = await emitirInvitacion(correo, rol);
+    setEmitida(r);
+    setCorreo('');
+  });
+
+  const enlace = emitida ? enlaceInvitacion(emitida.token) : '';
+  const copiar = async () => {
+    try { await navigator.clipboard?.writeText(enlace); setCopiado(true); } catch { setCopiado(false); }
   };
 
   return (
@@ -54,19 +80,20 @@ export default function InvitacionesPanel({ sesion, onClose }) {
           <div className="filtros-fila">
             <label>Correo institucional<input type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} placeholder="persona@campeche.gob.mx" /></label>
             <label>Perfil
-              <select value={idPerfil} onChange={(e) => setIdPerfil(Number(e.target.value))}>
-                {Object.values(PERFILES).map((p) => <option key={p.id_perfil} value={p.id_perfil}>{p.nombre}</option>)}
+              <select value={rol} onChange={(e) => setRol(e.target.value)}>
+                {Object.values(PERFILES).map((p) => <option key={p.clave} value={p.clave}>{p.nombre}</option>)}
               </select>
             </label>
-            <button className="btn-base btn-primary" style={{ width: 'auto' }} onClick={emitir}>Generar token</button>
+            <button className="btn-base btn-primary" style={{ width: 'auto' }} disabled={ocupado || !correo} onClick={emitir}>Generar enlace</button>
           </div>
-          {token && (
+          {emitida && (
             <div className="aviso aviso-ok" style={{ marginTop: 10 }}>
-              Copie y envíe este token a <strong>{token.invitacion.correo_destino}</strong>. Es de un solo uso, vence el {fechaCorta(token.invitacion.expira_en)} y no se volverá a mostrar (solo se guarda su huella):
+              Envíe este enlace a <strong>{emitida.correo_destino}</strong>. Es de un solo uso, vence el {fechaCorta(emitida.expira_en)} y no se volverá a mostrar (el servidor solo guarda su huella):
               <div className="token-mostrado" style={{ marginTop: 6, display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-                <span>{token.token}</span>
-                <button style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }} onClick={() => navigator.clipboard?.writeText(token.token)} title="Copiar"><Copy size={14} /></button>
+                <span style={{ wordBreak: 'break-all' }}>{enlace}</span>
+                <button style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }} onClick={copiar} title="Copiar"><Copy size={14} /></button>
               </div>
+              {copiado && <small>Copiado.</small>}
             </div>
           )}
           {error && <div className="aviso aviso-error" style={{ marginTop: 10 }}>{error}</div>}
@@ -77,20 +104,18 @@ export default function InvitacionesPanel({ sesion, onClose }) {
           <table className="tabla-sesim">
             <thead><tr><th>Correo</th><th>Perfil</th><th>Emitida</th><th>Vence</th><th>Estado</th><th></th></tr></thead>
             <tbody>
-              {op.invitacion.length === 0 && <tr><td colSpan={6} className="text-muted">Sin invitaciones.</td></tr>}
-              {[...op.invitacion].reverse().map((i) => {
-                const st = estadoInvitacion(i);
-                return (
-                  <tr key={i.id}>
-                    <td>{i.correo_destino}</td>
-                    <td>{perfilPorId.get(i.id_perfil)?.nombre}</td>
-                    <td>{fechaCorta(i.created_at)}</td>
-                    <td>{fechaCorta(i.expira_en)}</td>
-                    <td>{st}{i.id_usuario_creado ? ` · ${usuarios.get(i.id_usuario_creado)?.correo ?? ''}` : ''}</td>
-                    <td>{st === 'vigente' && <button className="btn-base btn-tertiary" style={{ width: 'auto', height: 26 }} onClick={() => ejecutar(() => revocarInvitacion(sesion, i.id))}>Revocar</button>}</td>
-                  </tr>
-                );
-              })}
+              {!cargando && invitaciones.length === 0 && <tr><td colSpan={6} className="text-muted">Sin invitaciones.</td></tr>}
+              {cargando && <tr><td colSpan={6} className="text-muted">Cargando…</td></tr>}
+              {invitaciones.map((i) => (
+                <tr key={i.id}>
+                  <td>{i.correo_destino}</td>
+                  <td>{nombreRol(i.rol)}</td>
+                  <td>{fechaCorta(i.created_at)}</td>
+                  <td>{fechaCorta(i.expira_en)}</td>
+                  <td>{i.estado}</td>
+                  <td>{i.estado === 'vigente' && <button className="btn-base btn-tertiary" style={{ width: 'auto', height: 26 }} disabled={ocupado} onClick={() => ejecutar(() => revocarInvitacion(i.id))}>Revocar</button>}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </section>
@@ -98,18 +123,21 @@ export default function InvitacionesPanel({ sesion, onClose }) {
         <section>
           <h4 style={{ marginBottom: 8 }}>Usuarios</h4>
           <table className="tabla-sesim">
-            <thead><tr><th>Correo</th><th>Perfil</th><th>Último acceso</th><th>Estado</th><th></th></tr></thead>
+            <thead><tr><th>Nombre</th><th>Correo</th><th>Perfil</th><th>Último acceso</th><th>Estado</th><th></th></tr></thead>
             <tbody>
-              {op.usuario.map((u) => (
-                <tr key={u.id}>
-                  <td>{u.correo}</td>
-                  <td>{perfilPorId.get(u.id_perfil)?.nombre}</td>
+              {usuarios.map((u) => (
+                <tr key={u.id_usuario}>
+                  <td>{u.nombre}</td>
+                  <td>{u.correo ?? '—'}</td>
+                  <td>{nombreRol(u.rol)}</td>
                   <td>{fechaCorta(u.ultimo_acceso)}</td>
-                  <td>{u.activo === false ? `Baja · ${fechaCorta(u.fecha_baja)}` : 'Activo'}</td>
+                  <td>{u.activo ? 'Activo' : 'Baja'}</td>
                   <td>
-                    {u.activo !== false && u.id !== sesion.id && (
-                      <button className="btn-base btn-peligro" style={{ width: 'auto', height: 26 }} onClick={() => ejecutar(() => darDeBaja(sesion, u.id))}><UserX size={13} /> Dar de baja</button>
-                    )}
+                    {u.id_usuario !== sesion.id && (u.activo ? (
+                      <button className="btn-base btn-peligro" style={{ width: 'auto', height: 26 }} disabled={ocupado} onClick={() => ejecutar(() => darDeBajaUsuario(u.id_usuario))}><UserX size={13} /> Dar de baja</button>
+                    ) : (
+                      <button className="btn-base btn-tertiary" style={{ width: 'auto', height: 26 }} disabled={ocupado} onClick={() => ejecutar(() => reactivarUsuario(u.id_usuario))}><UserCheck size={13} /> Reactivar</button>
+                    ))}
                   </td>
                 </tr>
               ))}

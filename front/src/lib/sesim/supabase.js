@@ -214,7 +214,7 @@ export function crearCliente({
     }
   }
 
-  async function llamar(ruta, opts = {}) {
+  async function llamar(ruta, { mensajeServidor = false, ...opts } = {}) {
     exigirConfig();
     let token = await tokenVigente();
     let r = await pedir(ruta, { ...opts, token });
@@ -230,7 +230,7 @@ export function crearCliente({
       const d = r.datos && typeof r.datos === 'object' ? r.datos : {};
       const det = Array.isArray(d.detail) ? d.detail.map((x) => x?.msg ?? JSON.stringify(x)).join('; ') : d.detail;
       const msg = d.message || det || (typeof r.datos === 'string' ? r.datos : '') || `Error ${r.status}`;
-      throw new ErrorSesim(r.status === 403 ? 'No tiene permiso para esta operación.' : msg, { status: r.status, codigo: d.code || (typeof d.detail === 'string' ? d.detail : null) });
+      throw new ErrorSesim(r.status === 403 && !mensajeServidor ? 'No tiene permiso para esta operación.' : msg, { status: r.status, codigo: d.code || (typeof d.detail === 'string' ? d.detail : null) });
     }
     return r.datos;
   }
@@ -271,6 +271,24 @@ export function crearCliente({
     }
   };
 
+  /**
+   * Llamada a una función de escritura del esquema `api` (Ciclo 4): POST /rest/v1/rpc/<nombre>.
+   * La función decide por rol y devuelve un mensaje claro (permiso, compuerta, cuatro ojos); aquí se conserva tal cual.
+   */
+  const rpc = (nombre, args = {}) =>
+    llamar(`/rest/v1/rpc/${nombre}`, { metodo: 'POST', cuerpo: args, esquema: 'api', mensajeServidor: true });
+
+  /** Llamada a servicio-procesos SIN sesión (canje de invitación: la persona aún no tiene cuenta). */
+  const procesosPublico = async (ruta, { metodo = 'GET', cuerpo } = {}) => {
+    const r = await pedir(ruta, { metodo, cuerpo, raiz: baseProcesos });
+    if (!r.ok) {
+      const d = r.datos && typeof r.datos === 'object' ? r.datos : {};
+      const det = Array.isArray(d.detail) ? d.detail.map((x) => x?.msg ?? JSON.stringify(x)).join('; ') : d.detail;
+      throw new ErrorSesim(typeof det === 'string' ? det : `Error ${r.status}`, { status: r.status, codigo: typeof d.detail === 'string' ? d.detail : null });
+    }
+    return r.datos;
+  };
+
   /** Llamada a servicio-procesos (alta de usuarios, cargas). */
   const procesos = (ruta, { metodo = 'POST', cuerpo } = {}) => llamar(ruta, { metodo, cuerpo, raiz: baseProcesos });
 
@@ -299,7 +317,9 @@ export function crearCliente({
     restaurar,
     rest,
     leer,
+    rpc,
     procesos,
+    procesosPublico,
     altaUsuario,
     cambiarActivo,
     sesionGuardada: () => sesion,
