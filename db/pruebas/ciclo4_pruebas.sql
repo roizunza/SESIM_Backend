@@ -73,7 +73,7 @@ declare
   ti uuid := '00000000-0000-0000-0000-0000000000a7'; t2 uuid := '00000000-0000-0000-0000-0000000000a8';
   au uuid := '00000000-0000-0000-0000-0000000000a0';
   ficha jsonb := '{"custodio":"SEDUMOP","fuente_origen":"Prueba","linaje":"Levantamiento de prueba","sistema_coordenadas":"EPSG:6372","restriccion_uso":"pública"}';
-  r text; j jsonb; tok text; n bigint; v_inst text;
+  r text; j jsonb; tok text; n bigint; v_inst text; v_dic uuid; v_dic2 uuid;
 begin
   ---------------------------------------------------------------- CATALOGOS
   perform pg_temp.yo(ad);
@@ -427,6 +427,158 @@ begin
   r := pg_temp.intenta($q$select api.fn_dar_de_baja_usuario('00000000-0000-0000-0000-0000000000a7')$q$);
   perform pg_temp.reg('U27 No se da de baja al ultimo Titular activo (42501 por ser el mismo, o 55000)', r <> 'OK', r);
 
+  ---------------------------------------------------------------- ER-4: PLAZO Y DECISION SOBRE RECHAZOS
+  perform pg_temp.sin_identidad();
+  perform pg_temp.reg('R01 Dias habiles: 1 dia habil despues de un viernes es el lunes',
+    core.sumar_dias_habiles('2026-10-30', 1) = date '2026-11-02', core.sumar_dias_habiles('2026-10-30', 1)::text);
+  perform pg_temp.reg('R02 Dias habiles: 10 dias habiles desde un viernes caen en el viernes de dos semanas despues',
+    core.sumar_dias_habiles('2026-10-30', 10) = date '2026-11-13', core.sumar_dias_habiles('2026-10-30', 10)::text);
+  insert into core.dia_inhabil(fecha, descripcion) values ('2026-11-16', 'Revolucion (prueba)');
+  perform pg_temp.reg('R03 Un dia inhabil del calendario no cuenta en el plazo',
+    core.sumar_dias_habiles('2026-11-13', 1) = date '2026-11-17', core.sumar_dias_habiles('2026-11-13', 1)::text);
+  perform pg_temp.reg('R04 El plazo es de 10 dias habiles', core.plazo_rechazo_dias() = 10, '');
+
+  perform pg_temp.yo(ca);
+  perform pg_temp.intenta(format($q$select api.fn_guardar_capa(%L)$q$,
+     jsonb_build_object('id','TC4-R1','titulo','Capa rechazos 1','tipo_geometria','Punto','srid_origen',6372,'metadatos_extra',ficha)));
+  perform pg_temp.yo(ca); perform pg_temp.intenta($q$select api.fn_enviar_capa_revision('TC4-R1')$q$);
+  perform pg_temp.yo(ad); r := pg_temp.intenta($q$select api.fn_dictaminar_capa('TC4-R1','rechazar','Corrige la fuente')$q$);
+  perform pg_temp.sin_identidad();
+  perform pg_temp.reg('R05 Al rechazar se crea el seguimiento: destinatario = quien envio, estado pendiente, plazo de 10 dias habiles',
+    r = 'OK' and (select count(*) from core.rechazo_seguimiento s where s.objeto_id='TC4-R1' and s.id_destinatario=ca and s.estado='pendiente'
+                    and s.fecha_limite = core.sumar_dias_habiles(core.hoy_mx(), 10)) = 1, r);
+  select id_dictamen into v_dic from core.rechazo_seguimiento where objeto_id='TC4-R1';
+
+  perform pg_temp.yo(ca);
+  perform pg_temp.reg('R06 El Capturista ve el rechazo en su lista con motivo y dias habiles restantes',
+    pg_temp.cuenta($q$select 1 from api.fn_pendientes_rechazo() where objeto_id='TC4-R1' and motivo='Corrige la fuente' and dias_habiles_restantes = 10$q$) = 1, '');
+  perform pg_temp.yo(cb);
+  perform pg_temp.reg('R07 El Capturista B no ve los rechazos del A', pg_temp.cuenta($q$select 1 from api.fn_pendientes_rechazo() where objeto_id='TC4-R1'$q$) = 0, '');
+  perform pg_temp.yo(ad);
+  perform pg_temp.reg('R08 El Administrador y el Auditor ven todos los rechazos',
+    pg_temp.cuenta($q$select 1 from api.fn_pendientes_rechazo() where objeto_id='TC4-R1'$q$) = 1, '');
+  perform pg_temp.yo(au);
+  perform pg_temp.reg('R08b El Auditor ve todos los rechazos', pg_temp.cuenta($q$select 1 from api.fn_pendientes_rechazo() where objeto_id='TC4-R1'$q$) = 1, '');
+
+  perform pg_temp.yo(cb); r := pg_temp.intenta(format($q$select api.fn_decidir_rechazo(%L,'retomar')$q$, v_dic));
+  perform pg_temp.reg('R09 Otro Capturista no decide sobre un rechazo ajeno (42501)', r like '42501%', r);
+  perform pg_temp.yo(ad); r := pg_temp.intenta(format($q$select api.fn_decidir_rechazo(%L,'descartar')$q$, v_dic));
+  perform pg_temp.reg('R10 Ni siquiera el Administrador decide por el Capturista (42501)', r like '42501%', r);
+  perform pg_temp.yo(au); r := pg_temp.intenta(format($q$select api.fn_decidir_rechazo(%L,'descartar')$q$, v_dic));
+  perform pg_temp.reg('R11 El Auditor no decide (42501)', r like '42501%', r);
+  perform pg_temp.yo(ca); r := pg_temp.intenta(format($q$select api.fn_decidir_rechazo(%L,'quizas')$q$, v_dic));
+  perform pg_temp.reg('R12 Una decision que no es retomar ni descartar se rechaza (22023)', r like '22023%', r);
+  perform pg_temp.yo(ca); r := pg_temp.intenta(format($q$select api.fn_decidir_rechazo(%L,'retomar')$q$, v_dic));
+  perform pg_temp.sin_identidad();
+  perform pg_temp.reg('R13 El Capturista retoma el rechazo: queda retomada, con auditoria',
+    r = 'OK' and (select estado from core.rechazo_seguimiento where id_dictamen=v_dic) = 'retomada'
+    and (select count(*) from core.bitacora_cambio where tabla_afectada='rechazo_seguimiento' and id_registro=v_dic::text and id_usuario=ca) >= 1, r);
+  perform pg_temp.yo(ca);
+  perform pg_temp.reg('R14 Una retomada sigue en su lista de pendientes',
+    pg_temp.cuenta($q$select 1 from api.fn_pendientes_rechazo() where objeto_id='TC4-R1' and estado='retomada'$q$) = 1, '');
+  perform pg_temp.yo(ca); r := pg_temp.intenta(format($q$select api.fn_decidir_rechazo(%L,'retomar')$q$, v_dic));
+  perform pg_temp.reg('R15 Retomar dos veces no pasa (55000)', r like '55000%', r);
+  perform pg_temp.yo(ca); perform pg_temp.intenta($q$select api.fn_enviar_capa_revision('TC4-R1')$q$);
+  perform pg_temp.sin_identidad();
+  perform pg_temp.reg('R16 Al reenviar a revision el seguimiento queda atendida y sale de la lista',
+    (select estado from core.rechazo_seguimiento where id_dictamen=v_dic) = 'atendida'
+    and (select estatus from core.capa where id='TC4-R1') = 'revision', '');
+  perform pg_temp.yo(ca);
+  perform pg_temp.reg('R17 Una atendida ya no aparece entre los pendientes',
+    pg_temp.cuenta($q$select 1 from api.fn_pendientes_rechazo() where objeto_id='TC4-R1'$q$) = 0
+    and pg_temp.cuenta($q$select 1 from api.fn_pendientes_rechazo(true) where objeto_id='TC4-R1'$q$) = 1, '');
+
+  -- Descartar
+  perform pg_temp.yo(ca);
+  perform pg_temp.intenta(format($q$select api.fn_guardar_capa(%L)$q$,
+     jsonb_build_object('id','TC4-R2','titulo','Capa rechazos 2','tipo_geometria','Punto','srid_origen',6372,'metadatos_extra',ficha)));
+  perform pg_temp.yo(ca); perform pg_temp.intenta($q$select api.fn_enviar_capa_revision('TC4-R2')$q$);
+  perform pg_temp.yo(a2); perform pg_temp.intenta($q$select api.fn_dictaminar_capa('TC4-R2','rechazar','No cumple')$q$);
+  perform pg_temp.sin_identidad();
+  select id_dictamen into v_dic2 from core.rechazo_seguimiento where objeto_id='TC4-R2';
+  perform pg_temp.yo(ca); r := pg_temp.intenta(format($q$select api.fn_decidir_rechazo(%L,'descartar')$q$, v_dic2));
+  perform pg_temp.sin_identidad();
+  perform pg_temp.reg('R18 El Capturista quita el rechazo de su lista (descartada); la capa sigue en borrador y nada se borra',
+    r = 'OK' and (select estado from core.rechazo_seguimiento where id_dictamen=v_dic2) = 'descartada'
+    and (select estatus from core.capa where id='TC4-R2') = 'borrador'
+    and (select count(*) from core.dictamen where id = v_dic2) = 1, r);
+  perform pg_temp.yo(ca);
+  perform pg_temp.reg('R19 Una descartada sale de la lista, pero se ve con el historial',
+    pg_temp.cuenta($q$select 1 from api.fn_pendientes_rechazo() where objeto_id='TC4-R2'$q$) = 0
+    and pg_temp.cuenta($q$select 1 from api.fn_pendientes_rechazo(true) where objeto_id='TC4-R2' and estado='descartada'$q$) = 1, '');
+  perform pg_temp.yo(ca); r := pg_temp.intenta($q$select api.fn_enviar_capa_revision('TC4-R2')$q$);
+  perform pg_temp.reg('R20 El Capturista no reenvia una capa que descarto (55000)', r like '55000%', r);
+  perform pg_temp.yo(ca); r := pg_temp.intenta(format($q$select api.fn_reabrir_rechazo(%L)$q$, v_dic2));
+  perform pg_temp.reg('R21 El Capturista no reabre rechazos (42501)', r like '42501%', r);
+  perform pg_temp.yo(ad); r := pg_temp.intenta(format($q$select api.fn_reabrir_rechazo(%L)$q$, v_dic2));
+  perform pg_temp.sin_identidad();
+  perform pg_temp.reg('R22 El Administrador reabre la descartada: pendiente con plazo nuevo',
+    r = 'OK' and (select estado from core.rechazo_seguimiento where id_dictamen=v_dic2) = 'pendiente'
+    and (select fecha_limite from core.rechazo_seguimiento where id_dictamen=v_dic2) = core.sumar_dias_habiles(core.hoy_mx(), 10), r);
+  perform pg_temp.yo(ad); r := pg_temp.intenta(format($q$select api.fn_reabrir_rechazo(%L)$q$, v_dic2));
+  perform pg_temp.reg('R23 No se reabre lo que esta pendiente (55000)', r like '55000%', r);
+
+  -- Vencimiento
+  perform pg_temp.sin_identidad();
+  update core.rechazo_seguimiento set fecha_limite = core.hoy_mx() - 1 where id_dictamen = v_dic2;
+  perform pg_temp.yo(ca);
+  perform pg_temp.reg('R24 Pasado el plazo el rechazo sale solo de la lista (vencida) y conserva el historial',
+    pg_temp.cuenta($q$select 1 from api.fn_pendientes_rechazo() where objeto_id='TC4-R2'$q$) = 0
+    and pg_temp.cuenta($q$select 1 from api.fn_pendientes_rechazo(true) where objeto_id='TC4-R2' and estado='vencida'$q$) = 1, '');
+  perform pg_temp.yo(ca); r := pg_temp.intenta(format($q$select api.fn_decidir_rechazo(%L,'retomar')$q$, v_dic2));
+  perform pg_temp.reg('R25 No se decide sobre un rechazo vencido (55000)', r like '55000%', r);
+  perform pg_temp.yo(ca); r := pg_temp.intenta($q$select api.fn_enviar_capa_revision('TC4-R2')$q$);
+  perform pg_temp.reg('R26 El Capturista no reenvia una capa con rechazo vencido (55000)', r like '55000%', r);
+  perform pg_temp.yo(ad); r := pg_temp.intenta(format($q$select api.fn_reabrir_rechazo(%L)$q$, v_dic2));
+  perform pg_temp.sin_identidad();
+  perform pg_temp.reg('R27 El Administrador reabre un vencido con plazo nuevo', r = 'OK' and (select estado from core.rechazo_seguimiento where id_dictamen=v_dic2)='pendiente', r);
+  perform pg_temp.yo(ca); r := pg_temp.intenta($q$select api.fn_enviar_capa_revision('TC4-R2')$q$);
+  perform pg_temp.sin_identidad();
+  perform pg_temp.reg('R28 Reabierto, el Capturista reenvia y queda atendida', r = 'OK' and (select estado from core.rechazo_seguimiento where id_dictamen=v_dic2)='atendida', r);
+
+  -- Un Administrador puede reenviar aunque haya vencido (no esta sujeto al plazo del Capturista)
+  perform pg_temp.yo(ad);
+  perform pg_temp.intenta(format($q$select api.fn_guardar_capa(%L)$q$,
+     jsonb_build_object('id','TC4-R3','titulo','Capa rechazos 3','tipo_geometria','Punto','srid_origen',6372,'metadatos_extra',ficha)));
+  perform pg_temp.yo(ad); perform pg_temp.intenta($q$select api.fn_enviar_capa_revision('TC4-R3')$q$);
+  perform pg_temp.yo(a2); perform pg_temp.intenta($q$select api.fn_dictaminar_capa('TC4-R3','rechazar','Falta')$q$);
+  perform pg_temp.sin_identidad();
+  perform pg_temp.reg('R29 El destinatario de un rechazo puede ser un Administrador (si el envio fue suyo)',
+    (select count(*) from core.rechazo_seguimiento where objeto_id='TC4-R3' and id_destinatario=ad) = 1, '');
+
+  -- Instrumentos
+  perform pg_temp.yo(ad);
+  j := api.fn_guardar_instrumento('{"clave":"PRUEBA-R","nombre":"Instrumento de prueba R","ambito":"Estatal","ruta_pdf":"pruebas/r.pdf"}'::jsonb);
+  v_inst := j ->> 'id';
+  perform pg_temp.yo(ad); perform pg_temp.intenta(format($q$select api.fn_enviar_instrumento_revision(%L)$q$, v_inst));
+  perform pg_temp.yo(ti); r := pg_temp.intenta(format($q$select api.fn_dictaminar_instrumento(%L,'rechazar','Sin vigencia')$q$, v_inst));
+  perform pg_temp.sin_identidad();
+  perform pg_temp.reg('R30 Rechazar un instrumento tambien crea seguimiento para quien lo envio',
+    r = 'OK' and (select count(*) from core.rechazo_seguimiento where objeto_tipo='instrumento' and objeto_id=v_inst and id_destinatario=ad and estado='pendiente') = 1, r);
+  perform pg_temp.yo(ad); 
+  perform pg_temp.reg('R31 El rechazo del instrumento aparece en la lista de su destinatario',
+    pg_temp.cuenta(format($q$select 1 from api.fn_pendientes_rechazo() where objeto_tipo='instrumento' and objeto_id=%L$q$, v_inst)) = 1, '');
+
+  -- Calendario
+  perform pg_temp.yo(ad); r := pg_temp.intenta($q$select api.fn_guardar_dia_inhabil('2026-12-25','Navidad')$q$);
+  perform pg_temp.reg('R32 El Administrador no edita el calendario de inhabiles (42501)', r like '42501%', r);
+  perform pg_temp.yo(ti); r := pg_temp.intenta($q$select api.fn_guardar_dia_inhabil('2026-12-25','Navidad')$q$);
+  perform pg_temp.sin_identidad();
+  perform pg_temp.reg('R33 El Titular agrega un dia inhabil, con auditoria',
+    r = 'OK' and (select count(*) from core.dia_inhabil where fecha='2026-12-25') = 1
+    and (select count(*) from core.bitacora_cambio where tabla_afectada='dia_inhabil' and id_registro='2026-12-25' and id_usuario=ti) = 1, r);
+  perform pg_temp.yo(ca);
+  perform pg_temp.reg('R34 Todos los perfiles leen el calendario', pg_temp.cuenta($q$select 1 from api.dia_inhabil where fecha='2026-12-25'$q$) = 1, '');
+  perform pg_temp.yo(ti); r := pg_temp.intenta($q$select api.fn_quitar_dia_inhabil('2026-12-25')$q$);
+  perform pg_temp.reg('R35 El Titular quita el dia inhabil', r = 'OK' and pg_temp.cuenta($q$select 1 from core.dia_inhabil where fecha='2026-12-25'$q$) = 0, r);
+  perform pg_temp.anonimo();
+  perform pg_temp.reg('R36 El anonimo no ejecuta las funciones de rechazos',
+    pg_temp.intenta($q$select api.fn_pendientes_rechazo()$q$) like '42501%'
+    and pg_temp.intenta($q$select api.fn_decidir_rechazo(gen_random_uuid(),'retomar')$q$) like '42501%', '');
+  perform pg_temp.yo(ca);
+  perform pg_temp.reg('R37 Nadie lee la tabla de seguimiento directamente: solo por la funcion',
+    pg_temp.intenta($q$select 1 from core.rechazo_seguimiento$q$) like '42501%', '');
+
   ---------------------------------------------------------------- AUDITORIA Y LECTURA
   perform pg_temp.yo(au);
   perform pg_temp.reg('A01 El Auditor lee toda la bitacora de cambios, incluidas invitaciones',
@@ -440,7 +592,7 @@ begin
     (select count(*) from pg_trigger t join pg_class c on c.oid = t.tgrelid
       where t.tgname = 'trg_auditoria' and not t.tgisinternal
         and c.relname in ('instrumento_origen','eje_tematico','sector','fuente_informacion','matriz_instrumento','indicador_instrumento',
-                          'indicador_eje','capa_indicador','invitacion','capa','indicador','umbral_semaforo')) = 12, '');
+                          'indicador_eje','capa_indicador','invitacion','capa','indicador','umbral_semaforo','dia_inhabil','rechazo_seguimiento')) = 14, '');
   perform pg_temp.reg('A04 Ningun rol de la API tiene INSERT/UPDATE/DELETE directo sobre el nucleo',
     (select count(*) from information_schema.role_table_grants where grantee in ('anon','authenticated')
        and table_schema = 'core' and privilege_type in ('INSERT','UPDATE','DELETE')) = 0, '');

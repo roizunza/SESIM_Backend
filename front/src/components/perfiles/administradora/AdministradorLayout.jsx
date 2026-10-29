@@ -8,6 +8,8 @@ import DashboardKPIs from './DashboardKPIs';
 import PanelDictamen from './PanelDictamen';
 import CapaCargaModal from './CapaCargaModal';
 import InvitacionesPanel from './InvitacionesPanel';
+import RechazosPanel from '../comun/RechazosPanel';
+import { pendientesRechazo } from '../../../lib/sesim/catalogoApi';
 import MapaPerfil from '../comun/MapaPerfil';
 import DetalleMedicion from '../comun/DetalleMedicion';
 import { useCatalogoOperativo } from '../comun/useCatalogoOperativo';
@@ -46,6 +48,13 @@ const AdministradorLayout = () => {
   const [cargada, setCargada] = useState(null); // { capa, geojson } de CapaCargaModal
   const [modalCarga, setModalCarga] = useState(false);
   const [invitaciones, setInvitaciones] = useState(false);
+  const [rechazos, setRechazos] = useState(false);
+  const [nRechazos, setNRechazos] = useState(0);
+  useEffect(() => {
+    let vivo = true;
+    pendientesRechazo().then((r) => { if (vivo && Array.isArray(r)) setNRechazos(r.length); }).catch(() => {});
+    return () => { vivo = false; };
+  }, []);
   const [filtro, setFiltro] = useState({ instrumento: '', eje: '', indicador: '', periodo: '' });
   const [resumen, setResumen] = useState(null);
 
@@ -152,6 +161,8 @@ const AdministradorLayout = () => {
           onVerCapa={(id) => { setCapaVista(capaVista === id ? null : id); setCargada(null); }}
           onCargarCapa={() => { setModalCarga(true); if (esMovil) setIsSidebarOpen(false); }}
           onInvitaciones={() => { setInvitaciones(true); if (esMovil) setIsSidebarOpen(false); }}
+          onRechazos={() => { setRechazos(true); if (esMovil) setIsSidebarOpen(false); }}
+          nRechazos={nRechazos}
         />
       </div>
 
@@ -170,6 +181,7 @@ const AdministradorLayout = () => {
 
       <CapaCargaModal isOpen={modalCarga} onClose={() => setModalCarga(false)} catalogo={catalogo} onVerificar={(r) => { setCargada(r); setCapaVista(null); }} />
 
+      {rechazos && <RechazosPanel sesion={sesion} onClose={() => setRechazos(false)} onCambio={setNRechazos} />}
       {invitaciones && sesion?.perfil === 'administrador_titular' && <InvitacionesPanel sesion={sesion} onClose={() => setInvitaciones(false)} />}
 
       <div className={`fullwidth-bottom-banner${filtrosAbiertos ? ' abierto' : ''}`} style={{ left: !esMovil && isSidebarOpen ? '280px' : '0', transition: 'left 0.3s ease' }}>

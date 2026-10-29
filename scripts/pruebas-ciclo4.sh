@@ -3,7 +3,7 @@
 # Cada caso actua con la identidad de un perfil (Capturista, Administrador, Titular, Auditor, ciudadano) y comprueba
 # permisos, compuertas (D-16, D-17, D-20), cuatro ojos, ausencia de borrado y la huella de cada escritura en la bitacora. No deja huella (todo corre dentro de una transaccion que termina en ROLLBACK).
 #
-# Uso:  ./scripts/pruebas-ciclo4.sh          (con el ambiente arriba y migrado hasta la 224)
+# Uso:  ./scripts/pruebas-ciclo4.sh          (con el ambiente arriba y migrado hasta la 225)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 source scripts/_ambiente.sh

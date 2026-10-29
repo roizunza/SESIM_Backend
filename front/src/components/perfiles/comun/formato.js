@@ -9,6 +9,13 @@ export function fechaCorta(iso) {
   }
 }
 
+/** Fecha sin hora (AAAA-MM-DD) tal como viene de la base, sin correrla por zona horaria. */
+export function fechaDia(d) {
+  if (!d) return '—';
+  const [a, m, dia] = String(d).slice(0, 10).split('-').map(Number);
+  return new Date(a, m - 1, dia).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
 /** Nombre legible de una unidad territorial (municipio o localidad). */
 export function nombreUnidad(unidadesPorId, id) {
   const u = unidadesPorId?.get(id);

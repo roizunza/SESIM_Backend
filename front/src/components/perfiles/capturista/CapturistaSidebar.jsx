@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserCircle, LogOut, ChevronLeft, ChevronRight, Plus, History } from 'lucide-react';
+import { UserCircle, LogOut, ChevronLeft, ChevronRight, Plus, History, AlertCircle } from 'lucide-react';
 import BandejaMediciones from '../comun/BandejaMediciones';
 import { cerrarSesion } from '../../../lib/sesim/sesion';
 import './Capturista.css';
@@ -9,7 +9,7 @@ import './Capturista.css';
  * Barra lateral del Capturista: botón «Capturar medición» y bandeja de SUS
  * mediciones por estado (borrador, en revisión, rechazado, validado, publicado).
  */
-const CapturistaSidebar = ({ isSidebarOpen, setIsSidebarOpen, sesion, catalogo, mediciones, periodosPorId, seleccion, onNueva, onSeleccionar }) => {
+const CapturistaSidebar = ({ isSidebarOpen, setIsSidebarOpen, sesion, catalogo, mediciones, periodosPorId, seleccion, onNueva, onSeleccionar, onRechazos, nRechazos = 0 }) => {
   const navigate = useNavigate();
   const ambito = sesion?.id_unidad && catalogo ? catalogo.unidades.get(sesion.id_unidad)?.nom_mun : null;
 
@@ -42,6 +42,12 @@ const CapturistaSidebar = ({ isSidebarOpen, setIsSidebarOpen, sesion, catalogo, 
           <div style={{ padding: '0 20px', marginBottom: 16 }}>
             <button className="btn-base btn-white" onClick={onNueva} disabled={!catalogo} style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', color: '#9F2241', padding: '10px 16px' }}>
               <Plus size={18} /> Capturar medición
+            </button>
+          </div>
+
+          <div style={{ padding: '0 20px', marginBottom: 16 }}>
+            <button className="btn-base btn-white" onClick={onRechazos} style={{ width: '100%', display: 'flex', justifyContent: 'flex-start', gap: 8, color: '#9F2241', padding: '10px 16px' }}>
+              <AlertCircle size={18} /> Mis rechazos por atender{nRechazos > 0 && <span style={{ marginLeft: 'auto', background: '#9F2241', color: '#fff', borderRadius: 10, padding: '0 8px', fontSize: 12 }}>{nRechazos}</span>}
             </button>
           </div>
 

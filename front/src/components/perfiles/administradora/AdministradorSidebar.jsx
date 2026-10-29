@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { UserCircle, LogOut, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Settings, BarChart3, Layers, Upload, KeyRound } from 'lucide-react';
+import { UserCircle, LogOut, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Settings, BarChart3, Layers, Upload, KeyRound, AlertCircle } from 'lucide-react';
 import BandejaMediciones from '../comun/BandejaMediciones';
 import { cerrarSesion } from '../../../lib/sesim/sesion';
 import '../capturista/Capturista.css';
@@ -16,7 +16,7 @@ import '../comun/Comun.css';
  */
 const AdministradorSidebar = ({
   isSidebarOpen, setIsSidebarOpen, sesion, catalogo, mediciones, periodosPorId, seleccion, onSeleccionar,
-  capasBorrador, capaVista, onVerCapa, onCargarCapa, onInvitaciones,
+  capasBorrador, capaVista, onVerCapa, onCargarCapa, onInvitaciones, onRechazos, nRechazos = 0,
 }) => {
   const navigate = useNavigate();
   const [medOpen, setMedOpen] = useState(true);
@@ -84,6 +84,12 @@ const AdministradorSidebar = ({
               ))}
             </div>
           )}
+
+          <button className="admin-nav-link" onClick={onRechazos}>
+            <AlertCircle size={18} />
+            <span style={{ fontWeight: 600 }}>Rechazos y plazos</span>
+            {nRechazos > 0 && <span style={{ marginLeft: 'auto', background: '#9F2241', color: '#fff', borderRadius: 10, padding: '0 8px', fontSize: 12 }}>{nRechazos}</span>}
+          </button>
 
           {titular && (
             <button className="admin-nav-link" onClick={onInvitaciones} >

@@ -58,3 +58,11 @@ export const enlaceInvitacion = (token, origen = globalThis.location?.origin ?? 
 export const invitacionVigente = (token) => backend.procesosPublico(`/invitacion/${encodeURIComponent(token)}`);
 export const canjearInvitacion = ({ token, password, nombre, ambito = 'estatal', cve_mun = null, dependencia = null }) =>
   backend.procesosPublico('/invitacion/canjear', { metodo: 'POST', cuerpo: { token, password, nombre, ambito, cve_mun, dependencia } });
+
+// ---- Rechazos con plazo (ER-4) ----
+export const pendientesRechazo = (incluirCerrados = false) => rpc('fn_pendientes_rechazo', { p_incluir_cerrados: incluirCerrados });
+export const decidirRechazo = (idDictamen, decision) => rpc('fn_decidir_rechazo', { p_id_dictamen: idDictamen, p_decision: decision });
+export const reabrirRechazo = (idDictamen) => rpc('fn_reabrir_rechazo', { p_id_dictamen: idDictamen });
+export const guardarDiaInhabil = (fecha, descripcion) => rpc('fn_guardar_dia_inhabil', { p_fecha: fecha, p_descripcion: descripcion });
+export const quitarDiaInhabil = (fecha) => rpc('fn_quitar_dia_inhabil', { p_fecha: fecha });
+export const listarDiasInhabiles = () => backend.leer('dia_inhabil', { query: 'select=*&order=fecha' });

@@ -1,10 +1,12 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Send, Pencil, Trash2 } from 'lucide-react';
 import CapturistaSidebar from './CapturistaSidebar';
 import MedicionModal from './MedicionModal';
 import MapaPerfil from '../comun/MapaPerfil';
 import DetalleMedicion from '../comun/DetalleMedicion';
 import { useCatalogoOperativo } from '../comun/useCatalogoOperativo';
+import RechazosPanel from '../comun/RechazosPanel';
+import { pendientesRechazo } from '../../../lib/sesim/catalogoApi';
 import PanelFab from '../comun/PanelFab';
 import { usePanelLateral } from '../../../lib/sesim/usePanelLateral';
 import { useSesion } from '../../../lib/sesim/sesion';
@@ -30,6 +32,14 @@ const CapturistaLayout = () => {
   const [modal, setModal] = useState({ abierto: false, id: null });
   const [seleccion, setSeleccion] = useState(null);
   const [errorAccion, setErrorAccion] = useState('');
+  const [rechazos, setRechazos] = useState(false);
+  const [nRechazos, setNRechazos] = useState(0);
+
+  useEffect(() => {
+    let vivo = true;
+    pendientesRechazo().then((r) => { if (vivo && Array.isArray(r)) setNRechazos(r.length); }).catch(() => {});
+    return () => { vivo = false; };
+  }, []);
 
   const mias = useMemo(() => medicionesVisibles(sesion, op), [sesion, op]);
   const periodosPorId = useMemo(() => new Map(op.periodo.map((p) => [p.id, p])), [op.periodo]);
@@ -69,8 +79,12 @@ const CapturistaLayout = () => {
           seleccion={seleccion}
           onNueva={() => { setModal({ abierto: true, id: null }); if (esMovil) setIsSidebarOpen(false); }}
           onSeleccionar={abrir}
+          onRechazos={() => { setRechazos(true); if (esMovil) setIsSidebarOpen(false); }}
+          nRechazos={nRechazos}
         />
       </div>
+
+      {rechazos && <RechazosPanel sesion={sesion} onClose={() => setRechazos(false)} onCambio={setNRechazos} />}
 
       {error && <div className="aviso aviso-error" style={{ position: 'absolute', top: 24, right: 24, zIndex: 1200 }}>No se pudo cargar el catálogo: {error}</div>}
 
