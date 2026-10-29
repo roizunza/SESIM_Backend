@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { MapContainer, ScaleControl, Polyline, Marker, Tooltip, useMapEvents, useMap, GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
-import { Map as MapIcon, List, Plus, Minus, Ruler, ChevronDown, ChevronUp } from 'lucide-react';
+import { Map as MapIcon, List, Plus, Minus, Ruler, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import GuiaGeovisor from '../../geovisor/GuiaGeovisor';
 import EsriBasemap from '../../geovisor/EsriBasemap';
 import { geojsonUnidades } from '../../../lib/sesim/api';
 import 'leaflet/dist/leaflet.css';
@@ -99,11 +100,25 @@ const CapaMunicipios = ({ resaltar, coropleta, mapa }) => {
   );
 };
 
+/** Guía del geovisor privado: los pasos que no aplican al perfil (p. ej. filtros del Administrador) se omiten solos. */
+const PASOS_GUIA = [
+  { sel: '.rolbar', etiqueta: 'Tu perfil y tu flujo', lado: 'abajo', largo: 30, texto: 'Muestra tu perfil, en qué tramo del flujo (Borrador → Revisión → Vigente interno → Público) trabajas y qué acciones puedes hacer.' },
+  { sel: '.admin-profile-section', etiqueta: 'Tu panel de trabajo', lado: 'abajo', largo: 18, texto: 'Aquí están tus solicitudes y accesos según tu perfil. En el celular se abre con el botón flotante.' },
+  { sel: '.banner-filter-row', etiqueta: 'Filtros de indicadores', lado: 'arriba', largo: 28, texto: 'Elige instrumento, eje, indicador y periodo; después pulsa Generar para ver el resultado en el mapa.' },
+  { sel: '.floating-panel .panel-section-title', etiqueta: 'Simbología activa', lado: 'der', largo: 60, texto: 'Indica qué se está pintando en el mapa y qué significan los colores.' },
+  { sel: '.floating-panel .accordion-header', etiqueta: 'Mapa base', lado: 'der', largo: 60, texto: 'Cambia entre mapa claro y vista satelital.' },
+  { sel: '.external-toolbar [title="Acercar"]', etiqueta: 'Acercar', lado: 'der', texto: 'Acerca el mapa.' },
+  { sel: '.external-toolbar [title="Alejar"]', etiqueta: 'Alejar', lado: 'der', texto: 'Aleja el mapa.' },
+  { sel: '.external-toolbar [title="Medir distancia"]', etiqueta: 'Medir distancia', lado: 'der', texto: 'Activa la regla: haz clic en varios puntos y verás los kilómetros.' },
+  { sel: '.external-toolbar [data-guia="boton"]', etiqueta: 'Abrir esta guía', lado: 'der', texto: 'Vuelve a mostrar esta guía cuando la necesites.' },
+];
+
 export default function MapaPerfil({ resaltarUnidad, coropleta, simbologia, children, onMapa, colorMedicion = '#9F2241' }) {
   const [mapa, setMapa] = useState(null);
   const [baseAbierta, setBaseAbierta] = useState(false);
   const [base, setBase] = useState('claro');
   const [midiendo, setMidiendo] = useState(false);
+  const [guiaAbierta, setGuiaAbierta] = useState(false);
   const [pos, setPos] = useState({ x: 300, y: 24 });
   const [arrastrando, setArrastrando] = useState(false);
   const inicio = useRef({ sx: 0, sy: 0, x: 0, y: 0 });
@@ -160,8 +175,11 @@ export default function MapaPerfil({ resaltarUnidad, coropleta, simbologia, chil
           <button onClick={() => mapa?.zoomIn()} title="Acercar"><Plus size={16} /></button>
           <button onClick={() => mapa?.zoomOut()} title="Alejar"><Minus size={16} /></button>
           <button className={midiendo ? 'active' : ''} onClick={() => setMidiendo(!midiendo)} title="Medir distancia"><Ruler size={16} /></button>
+          <button type="button" onClick={() => setGuiaAbierta(true)} title="Guía de uso" aria-label="Abrir la guía de uso del geovisor" data-guia="boton"><HelpCircle size={16} /></button>
         </div>
       </div>
+
+      <GuiaGeovisor abierto={guiaAbierta} onCerrar={() => setGuiaAbierta(false)} pasos={PASOS_GUIA} titulo="Cómo usar el geovisor" />
 
       <MapContainer center={[19.3, -90.5]} zoom={8} minZoom={6} maxBounds={CAMPECHE_BOUNDS} zoomControl={false} style={{ width: '100%', height: '100%', zIndex: 1 }} preferCanvas={true}>
         <MapInstanceCapture onMapa={registrarMapa} />

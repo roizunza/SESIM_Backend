@@ -1,0 +1,40 @@
+/* Guía del geovisor: colores planos institucionales, sin degradados. */
+.guia-overlay { position: fixed; inset: 0; z-index: 3000; background: rgba(8, 20, 17, 0.7); cursor: pointer; user-select: none; overflow: hidden; animation: guia-in .2s ease both; }
+@keyframes guia-in { from { opacity: 0; } to { opacity: 1; } }
+.guia-lineas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.guia-lineas line { stroke: rgba(255, 255, 255, 0.8); stroke-width: 1.2; stroke-dasharray: 4 4; }
+.guia-lineas circle { fill: #fff; }
+.guia-etiqueta {
+  position: absolute; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; pointer-events: none;
+  background: #9f2241; color: #fff; border-radius: 4px; padding: 4px 9px;
+  font: 700 10px/1.2 var(--font-mono, ui-monospace, monospace); letter-spacing: .08em; text-transform: uppercase; box-shadow: 0 1px 4px rgba(0, 0, 0, .5);
+}
+.guia-etiqueta--fija { position: static; }
+.guia-cerrar {
+  position: absolute; top: 10px; right: 12px; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+  background: rgba(255, 255, 255, .12); color: #fff; border: 1px solid rgba(255, 255, 255, .4);
+}
+.guia-cerrar:hover { background: rgba(255, 255, 255, .24); }
+.guia-salir { position: absolute; top: 20px; right: 56px; color: rgba(255, 255, 255, .85); font-size: 11px; font-weight: 500; pointer-events: none; }
+.guia-gestos {
+  position: absolute; left: 50%; top: 58%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none;
+}
+.guia-raton { color: #fff; animation: guia-pulso 2.4s ease-in-out infinite; }
+@keyframes guia-pulso { 0%, 100% { transform: scale(1); opacity: .95; } 50% { transform: scale(1.12); opacity: .7; } }
+
+/* Móvil: hoja inferior con la lista de pasos */
+.guia-movil { position: fixed; inset: 0; z-index: 3000; background: rgba(8, 20, 17, 0.6); display: flex; align-items: flex-end; }
+.guia-movil-hoja { width: 100%; max-height: 82dvh; overflow: auto; background: #fff; border-radius: 16px 16px 0 0; border-top: 4px solid #9f2241; padding: 14px 16px calc(18px + env(safe-area-inset-bottom)); }
+.guia-movil-cab { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.guia-movil-cab h3 { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 16px; color: #691c32; }
+.guia-movil-cab button { width: 36px; height: 36px; border-radius: 50%; border: 1px solid #d9dfdc; background: #fff; display: grid; place-items: center; }
+.guia-movil-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.guia-movil-lista li { display: grid; gap: 2px; padding: 10px 12px; border: 1px solid #e3e8e5; border-radius: 10px; }
+.guia-movil-lista strong { font: 700 11px/1.2 var(--font-mono, ui-monospace, monospace); letter-spacing: .08em; text-transform: uppercase; color: #9f2241; }
+.guia-movil-lista span { font-size: 13px; color: #33413c; }
+
+/* Botón de la guía junto a los controles */
+.guia-boton-mapa { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 8px; cursor: pointer; background: #fff; border: 1px solid #d9dfdc; color: #10312b; }
+.guia-boton-mapa:hover { background: #f1f4f2; }
+@media (prefers-reduced-motion: reduce) { .guia-overlay, .guia-raton { animation: none; } }
+@media print { .guia-overlay, .guia-movil { display: none; } }

@@ -6,6 +6,7 @@ import html2canvas from 'html2canvas';
 import 'leaflet/dist/leaflet.css';
 import './MapViewer.css';
 import PanelFab from '../perfiles/comun/PanelFab';
+import GuiaGeovisor, { BotonGuia } from './GuiaGeovisor';
 import { usePanelLateral } from '../../lib/sesim/usePanelLateral';
 import { toSwatchSvg } from '../../lib/leafletSymbology';
 import { cargarArbolCapas, CAPAS_FIJAS, CAPAS_CON_ETIQUETA, ESTATUS_CAPA } from '../../lib/sesim/capas';
@@ -59,10 +60,28 @@ function Muestra({ entrada }) {
   return <span className="capa-legend-swatch-plano" style={{ backgroundColor: entrada.color }} />;
 }
 
+/** Pasos de la guía del geovisor público (cada selector apunta a un control real). */
+const PASOS_GUIA = [
+  { sel: '.capa-buscador', etiqueta: 'Buscar capas', lado: 'der', texto: 'Escribe el nombre o la clave de una capa para encontrarla.' },
+  { sel: '.sidebar-section .eje-group-header .switch-container', etiqueta: 'Encender / apagar', lado: 'der', largo: 120, texto: 'El interruptor muestra u oculta todas las capas de la categoría.' },
+  { sel: '.sidebar-section .eje-expand-btn', etiqueta: 'Abrir o cerrar la lista', lado: 'der', largo: 60, texto: 'La flecha despliega las capas de la categoría; cada una se enciende por separado.' },
+  { sel: '.capa-info-btn', etiqueta: 'Ficha técnica', lado: 'der', largo: 70, texto: 'La “i” abre la ficha con los metadatos de la capa: fuente, escala, fecha y uso.' },
+  { sel: '.capa-opacidad-slider', etiqueta: 'Transparencia', lado: 'der', largo: 60, texto: 'Controla qué tan opaca se ve la capa sobre el mapa.' },
+  { sel: '.sidebar-toggle-btn', etiqueta: 'Contraer el panel', lado: 'der', largo: 40, texto: 'Oculta el panel para ver más mapa.' },
+  { sel: '.leyenda-flotante', etiqueta: 'Simbología', lado: 'arriba', largo: 26, texto: 'Explica los colores y símbolos de las capas encendidas.' },
+  { sel: '.map-custom-controls [aria-label="Cambiar mapa base"]', etiqueta: 'Mapa base', lado: 'izq', texto: 'Cambia entre mapa claro y vista satelital.' },
+  { sel: '.map-custom-controls [aria-label="Acercar"]', etiqueta: 'Acercar', lado: 'izq', texto: 'Acerca el mapa.' },
+  { sel: '.map-custom-controls [aria-label="Alejar"]', etiqueta: 'Alejar', lado: 'izq', texto: 'Aleja el mapa.' },
+  { sel: '.map-custom-controls [aria-label^="Descargar"]', etiqueta: 'Descargar capas', lado: 'izq', texto: 'Baja las capas encendidas en formato GeoJSON.' },
+  { sel: '.map-custom-controls [aria-label^="Tomar captura"]', etiqueta: 'Descargar imagen', lado: 'izq', texto: 'Guarda una imagen del mapa tal como lo ves.' },
+  { sel: '.map-custom-controls [data-guia="boton"]', etiqueta: 'Abrir esta guía', lado: 'izq', texto: 'Vuelve a mostrar esta guía cuando la necesites.' },
+];
+
 const MapViewer = ({ incluirBorrador = false }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [mapInstance, setMapInstance] = useState(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
+  const [guiaAbierta, setGuiaAbierta] = useState(false);
   const [activeBaseLayer, setActiveBaseLayer] = useState('claro');
   const [isSidebarOpen, setIsSidebarOpen, esMovil] = usePanelLateral();
 
@@ -383,8 +402,10 @@ const MapViewer = ({ incluirBorrador = false }) => {
           <button onClick={handleScreenshot} className="map-ctrl-btn" aria-label="Tomar captura de pantalla del mapa" title="Tomar captura de pantalla">
             <Camera size={16} />
           </button>
+          <BotonGuia className="map-ctrl-btn" onClick={() => setGuiaAbierta(true)} />
         </div>
       </div>
+      <GuiaGeovisor abierto={guiaAbierta} onCerrar={() => setGuiaAbierta(false)} pasos={PASOS_GUIA} titulo="Cómo usar el geovisor" />
 
       <MapContainer center={[19.3, -90.5]} zoom={8} minZoom={6} maxBounds={CAMPECHE_BOUNDS} maxBoundsViscosity={0.8} zoomControl={false} className="leaflet-map" preferCanvas={true}>
         <MapInstanceCapture setMapInstance={setMapInstance} />
