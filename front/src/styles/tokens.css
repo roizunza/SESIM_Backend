@@ -1,0 +1,55 @@
+/* =====================================================================
+   Base de estilo SESIM · tipografía
+   Quatro Slab (títulos y datos) + Averta (textos) — manual de identidad institucional.
+   Mientras no se carguen los archivos de las fuentes, la pila cae a Roboto Slab e Inter.
+   Para activarlas: colocar los .woff2 en public/fonts/ y descomentar los url() de abajo.
+   ===================================================================== */
+@font-face { font-family: 'Quatro Slab'; font-weight: 400; font-display: swap; src: local('Quatro Slab'), local('QuatroSlab-Regular'); /* , url('/fonts/QuatroSlab-Regular.woff2') format('woff2') */ }
+@font-face { font-family: 'Quatro Slab'; font-weight: 600; font-display: swap; src: local('Quatro Slab Semibold'), local('QuatroSlab-Semibold'); /* , url('/fonts/QuatroSlab-Semibold.woff2') format('woff2') */ }
+@font-face { font-family: 'Quatro Slab'; font-weight: 700; font-display: swap; src: local('Quatro Slab Bold'), local('QuatroSlab-Bold'); /* , url('/fonts/QuatroSlab-Bold.woff2') format('woff2') */ }
+@font-face { font-family: 'Quatro Slab'; font-weight: 900; font-display: swap; src: local('Quatro Slab Ultra Black'), local('QuatroSlab-UltraBlack'); /* , url('/fonts/QuatroSlab-UltraBlack.woff2') format('woff2') */ }
+@font-face { font-family: 'Averta'; font-weight: 400; font-display: swap; src: local('Averta'), local('Averta Regular'); /* , url('/fonts/Averta-Regular.woff2') format('woff2') */ }
+@font-face { font-family: 'Averta'; font-weight: 600; font-display: swap; src: local('Averta Semibold'); /* , url('/fonts/Averta-Semibold.woff2') format('woff2') */ }
+@font-face { font-family: 'Averta'; font-weight: 700; font-display: swap; src: local('Averta Bold'); /* , url('/fonts/Averta-Bold.woff2') format('woff2') */ }
+
+:root {
+  /* Familias: una por función */
+  --fuente-titulo: 'Quatro Slab', 'Roboto Slab', Georgia, serif;
+  --fuente-texto: 'Averta', 'Inter', system-ui, -apple-system, sans-serif;
+  --fuente-codigo: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Escala fluida (móvil → escritorio). Mínimo absoluto 12 px. */
+  --t-display: clamp(2.75rem, 1.6rem + 4.6vw, 4.75rem);   /* 44 → 76 px · títulos de capítulo */
+  --t-h1: clamp(1.875rem, 1.4rem + 1.6vw, 2.5rem);        /* 30 → 40 px · título de página */
+  --t-h2: clamp(1.5rem, 1.2rem + 0.8vw, 1.875rem);        /* 24 → 30 px · título de sección */
+  --t-h3: clamp(1.125rem, 1rem + 0.45vw, 1.375rem);       /* 18 → 22 px · subtítulo */
+  --t-dato: clamp(2rem, 1.5rem + 1.6vw, 2.75rem);         /* 32 → 44 px · cifras */
+  --t-sin: clamp(1rem, 0.94rem + 0.25vw, 1.125rem);       /* 16 → 18 px · sinopsis */
+  --t-h4: 1rem;                                            /* 16 px · título de ítem */
+  --t-cu: 0.9375rem;                                       /* 15 px · cuerpo */
+  --t-de: 0.8125rem;                                       /* 13 px · detalle */
+  --t-et: 0.75rem;                                         /* 12 px · etiqueta en mayúsculas */
+  --t-nota: 0.75rem;                                       /* 12 px · notas y pies (mínimo) */
+  --t-co: 0.8125rem;                                       /* 13 px · códigos */
+
+  /* Interlínea, espaciado y medida */
+  --lh-titulo: 1.2;
+  --lh-display: 1;
+  --lh-texto: 1.6;
+  --lh-detalle: 1.5;
+  --ls-etiqueta: 0.14em;
+  --medida: 62ch;
+}
+
+/* Clases utilitarias de la escala (para páginas nuevas) */
+.t-display { font: 900 var(--t-display)/var(--lh-display) var(--fuente-titulo); letter-spacing: -0.01em; }
+.t-h1 { font: 700 var(--t-h1)/1.15 var(--fuente-titulo); }
+.t-h2 { font: 700 var(--t-h2)/var(--lh-titulo) var(--fuente-titulo); }
+.t-h3 { font: 600 var(--t-h3)/1.25 var(--fuente-titulo); }
+.t-dato { font: 700 var(--t-dato)/1 var(--fuente-titulo); }
+.t-sin { font: 400 var(--t-sin)/var(--lh-texto) var(--fuente-texto); max-width: var(--medida); }
+.t-h4 { font: 600 var(--t-h4)/1.35 var(--fuente-texto); }
+.t-cu { font: 400 var(--t-cu)/var(--lh-texto) var(--fuente-texto); }
+.t-de { font: 400 var(--t-de)/var(--lh-detalle) var(--fuente-texto); }
+.t-et { font: 700 var(--t-et)/1.2 var(--fuente-texto); letter-spacing: var(--ls-etiqueta); text-transform: uppercase; }
+.t-co { font: 500 var(--t-co)/1.4 var(--fuente-codigo); }

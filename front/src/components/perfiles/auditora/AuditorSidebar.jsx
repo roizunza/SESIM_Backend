@@ -6,6 +6,7 @@ import { cerrarSesion } from '../../../lib/sesim/sesion';
 import '../capturista/Capturista.css';
 import '../comun/Comun.css';
 import './Auditor.css';
+import EnlaceSeguimiento from '../comun/EnlaceSeguimiento';
 
 /**
  * Barra lateral del Auditor (solo lectura): búsqueda y rango de fechas sobre
@@ -34,6 +35,9 @@ const AuditorSidebar = ({ isSidebarOpen, setIsSidebarOpen, sesion, catalogo, med
       </div>
 
       <nav className="admin-nav">
+        <div className="admin-nav-group">
+          <EnlaceSeguimiento />
+        </div>
         <div className="admin-nav-group">
           <div className="sidebar-search-container">
             <div className="search-input-wrapper">

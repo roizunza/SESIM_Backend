@@ -66,7 +66,7 @@
 .navbar {
   background: var(--c-guinda);
   position: sticky;
-  top: 76px;
+  top: var(--alto-header, 76px);
   z-index: 1040;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
@@ -79,7 +79,7 @@
   justify-content: space-between;
   gap: 16px;
 }
-.navbar__nav { display: flex; align-items: stretch; gap: 0; }
+.navbar__nav { display: flex; align-items: stretch; gap: 0; list-style: none; margin: 0; padding: 0; overflow-x: auto; scrollbar-width: none; }
 .navbar__link {
   display: flex;
   align-items: center;
@@ -235,3 +235,15 @@
   .underfooter__inner { flex-direction: column; text-align: center; }
   .header__inner { padding: 8px 16px; }
 }
+
+.navbar__corta { display: none; }
+@media (max-width: 700px) {
+  .navbar__larga { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+  .navbar__corta { display: inline; }
+}
+
+/* Las animaciones de entrada laterales no deben ensanchar la página en móvil (clip no rompe sticky). */
+.app-container { overflow-x: clip; }
+
+.aviso-pie { max-width: 1280px; width: 100%; margin: 24px auto 0; padding: 12px 24px; border-top: 1px solid var(--border-color); }
+@media (max-width: 600px) { .aviso-pie { padding: 12px 16px; } }

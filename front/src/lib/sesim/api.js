@@ -25,6 +25,12 @@ import { backend } from './supabase.js';
 
 const BASE_ESTATICA = '/sesim/catalogo';
 
+/**
+ * Lecturas complementarias: si fallan (p. ej. un backend sin la migración que las crea) se tratan
+ * como vacías para no bloquear la vista. `umbral_publico` vacío = umbral por omisión (90/70) del semáforo.
+ */
+const TABLAS_COMPLEMENTARIAS = new Set(['umbral_publico']);
+
 /** Tablas que se leen de la API de Supabase (con su orden de lectura). */
 const TABLAS_API = {
   indicador: 'order=id',
@@ -37,12 +43,26 @@ const TABLAS_API = {
   indicador_instrumento: '',
   capa_indicador: '',
   periodo: 'order=id',
+  umbral_publico: 'order=id',
   // Vista pública: el filtro es explícito porque con sesión la RLS deja ver también borradores.
   medicion_publica: 'estado=eq.vigente_publico&order=id',
 };
 
-/** Tablas estáticas que aún no se conectan. */
-const TABLAS_ESTATICAS = ['perfil', 'unidad_territorial', 'capa', 'v_capa_por_municipio'];
+/**
+ * Tablas estáticas que aún no se conectan. `instrumento_normativo`, `fuente_documental` y
+ * `relacion_normativa` salen del Banco documental (scripts/datos/04_exportar_banco_documental.py).
+ */
+const TABLAS_ESTATICAS = ['perfil', 'unidad_territorial', 'capa', 'v_capa_por_municipio', 'instrumento_normativo', 'fuente_documental', 'relacion_normativa', 'proceso_capa', 'indice'];
+
+/**
+ * Recursos que el modelo v2.2 todavía no publica. Su nombre en el esquema `api` se configura en
+ * `.env`; sin variable, el front informa que el servicio no está disponible en vez de suponerlo.
+ */
+const env = import.meta.env ?? {};
+export const RECURSOS_OPCIONALES = {
+  proyectos: env.VITE_SESIM_RECURSO_PROYECTOS || '',
+  puntoCritico: env.VITE_SESIM_RPC_PUNTO_CRITICO || '',
+};
 
 export const TABLAS = [...Object.keys(TABLAS_API), ...TABLAS_ESTATICAS];
 
@@ -67,6 +87,7 @@ export function tabla(nombre) {
     let promesa;
     if (nombre in TABLAS_API) {
       promesa = cliente.leer(nombre, { query: ['select=*', TABLAS_API[nombre]].filter(Boolean).join('&') });
+      if (TABLAS_COMPLEMENTARIAS.has(nombre)) promesa = promesa.catch(() => []);
     } else {
       promesa = fetch(`${BASE_ESTATICA}/${nombre}.json`).then((r) => {
         if (!r.ok) throw new Error(`${nombre}: HTTP ${r.status}`);
@@ -90,6 +111,49 @@ export async function tablas(nombres) {
 /** Índice por llave primaria (o la columna que se indique). */
 export function indexar(filas, llave = 'id') {
   return new Map(filas.map((f) => [f[llave], f]));
+}
+
+const cacheContenido = new Map();
+
+/** Contenido editorial versionado (`public/sesim/contenido/<nombre>.json`): textos y estructuras de presentación. */
+export function contenido(nombre) {
+  if (!cacheContenido.has(nombre)) {
+    cacheContenido.set(
+      nombre,
+      fetch(`/sesim/contenido/${nombre}.json`, { cache: 'no-cache' })
+        .then((r) => {
+          if (!r.ok) throw new Error(`${nombre}: HTTP ${r.status}`);
+          return r.json();
+        })
+        .catch((err) => {
+          cacheContenido.delete(nombre);
+          throw err;
+        }),
+    );
+  }
+  return cacheContenido.get(nombre);
+}
+
+/** Lee un recurso opcional del esquema `api`; rechaza con `codigo: 'sin_servicio'` si no está configurado. */
+export async function recursoOpcional(clave, query = 'select=*') {
+  const nombre = RECURSOS_OPCIONALES[clave];
+  if (!nombre) {
+    const err = new Error('El backend aún no publica este servicio.');
+    err.codigo = 'sin_servicio';
+    throw err;
+  }
+  return cliente.leer(nombre, { query });
+}
+
+/** Llama una función opcional del esquema `api`; rechaza con `codigo: 'sin_servicio'` si no está configurada. */
+export async function rpcOpcional(clave, args) {
+  const nombre = RECURSOS_OPCIONALES[clave];
+  if (!nombre) {
+    const err = new Error('El backend aún no publica este servicio.');
+    err.codigo = 'sin_servicio';
+    throw err;
+  }
+  return cliente.rpc(nombre, args);
 }
 
 /* ------------------------------------------------------------------ capas */

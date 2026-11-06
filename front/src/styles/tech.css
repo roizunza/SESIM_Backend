@@ -86,8 +86,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .admin-nav-header span,
 .geo-card-header,
 .form-group label,
-.filtros-fila label,
-.rolbar__k {
+.filtros-fila label {
   font-family: var(--font-mono) !important;
   font-size: 10.5px !important;
   font-weight: 600 !important;
@@ -221,7 +220,10 @@ button { -webkit-tap-highlight-color: transparent; }
 .hd-chip {
   display: flex; align-items: center; gap: 10px; padding: 5px 12px 5px 6px;
   background: var(--rol-soft); border: 1px solid var(--rol-line); border-radius: 999px; min-width: 0;
+  color: inherit; text-decoration: none;
 }
+a.hd-chip:hover { border-color: var(--rol); }
+a.hd-chip:focus-visible { outline: 3px solid var(--rol); outline-offset: 2px; }
 .hd-chip__ico { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--rol); color: #fff; flex: none; box-shadow: var(--glow); }
 [data-rol='administrador_titular'] .hd-chip__ico { color: #1b1403; }
 .hd-chip__txt { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
@@ -246,43 +248,6 @@ button { -webkit-tap-highlight-color: transparent; }
   background: radial-gradient(60% 100% at 50% 100%, rgba(233, 216, 168, .55), transparent); pointer-events: none;
 }
 
-/* ----------------------------------------------------------------------
-   Aviso de modo local y barra de perfil (AdminLayout)
-   ---------------------------------------------------------------------- */
-.modo-local {
-  display: flex; align-items: center; gap: 8px; padding: 5px 24px;
-  font-family: var(--font-mono); font-size: 11px; letter-spacing: .01em;
-  background: #fffaf0; color: #7a5b00; border-bottom: 1px solid #efdfaa;
-}
-.modo-local::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: #e8a900; box-shadow: 0 0 8px #e8a900; flex: none; animation: tech-pulse 2s infinite; }
-@keyframes tech-pulse { 50% { opacity: .35; } }
-
-.rolbar {
-  display: flex; align-items: center; gap: 14px; padding: 8px 24px; min-height: 46px;
-  background: linear-gradient(90deg, rgba(var(--rol-rgb), .12), rgba(var(--rol-rgb), .03) 55%, transparent);
-  border-bottom: 1px solid var(--line);
-  overflow-x: auto; white-space: nowrap;
-}
-.rolbar__badge {
-  display: inline-flex; align-items: center; gap: 8px; flex: none;
-  font-weight: 700; font-size: 12.5px; color: var(--rol-ink);
-}
-.rolbar__badge svg { color: var(--rol); }
-.rolbar__scope { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-secondary); flex: none; padding: 2px 8px; border: 1px solid var(--line-strong); border-radius: 999px; background: #fff; }
-.rolbar__sep { width: 1px; height: 22px; background: var(--line-strong); flex: none; }
-.rolbar__flujo { display: flex; align-items: center; gap: 0; list-style: none; flex: none; }
-.rolbar__flujo li {
-  display: flex; align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .04em;
-  color: #7b8480; padding: 3px 10px; border-radius: 999px; border: 1px dashed var(--line-strong);
-}
-.rolbar__flujo li + li { margin-left: 14px; position: relative; }
-.rolbar__flujo li + li::before { content: ''; position: absolute; left: -12px; top: 50%; width: 10px; height: 1px; background: var(--line-strong); }
-.rolbar__flujo li.es-mio { color: var(--rol-ink); border: 1px solid var(--rol-line); background: rgba(var(--rol-rgb), .12); font-weight: 600; }
-.rolbar__flujo li.es-mio::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--rol); box-shadow: 0 0 8px var(--rol); }
-.rolbar__can { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); flex: none; }
-.rolbar__can b { color: var(--ink-800); font-weight: 600; }
-.rolbar__can .rolbar__k { margin-right: 4px; color: var(--rol-ink); }
-.rolbar__ro { display: inline-flex; align-items: center; gap: 5px; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: #0f5d75; background: rgba(47,166,204,.12); border: 1px solid rgba(47,166,204,.35); padding: 2px 9px; border-radius: 999px; }
 
 /* ----------------------------------------------------------------------
    Panel lateral de cada perfil ("consola")
@@ -323,6 +288,8 @@ button { -webkit-tap-highlight-color: transparent; }
 .admin-nav-link::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 3px; border-radius: 0 3px 3px 0; background: var(--rol); transform: scaleY(0); transition: transform .2s var(--ease); }
 .admin-nav-link:hover, .admin-nav-link.active { background: rgba(255, 255, 255, 0.07) !important; }
 .admin-nav-link:hover::before, .admin-nav-link.active::before { transform: scaleY(1); }
+.enlace-seguimiento { font-weight: 600; background: rgba(255, 255, 255, 0.1) !important; border-radius: 8px; margin: 4px 0 8px; }
+.enlace-seguimiento:hover { background: rgba(255, 255, 255, 0.18) !important; }
 .admin-nav-link svg:first-child { color: var(--on-dark); }
 .text-logout { opacity: .75; }
 
@@ -428,7 +395,6 @@ button { -webkit-tap-highlight-color: transparent; }
    RESPONSIVO
    ---------------------------------------------------------------------- */
 @media (max-width: 1100px) {
-  .rolbar__flujo { display: none; }
   .hd-chip__mail { max-width: 130px; }
 }
 
@@ -438,10 +404,6 @@ button { -webkit-tap-highlight-color: transparent; }
   .header__logo-img--gobierno { width: 116px !important; }
   .hd-chip__txt .hd-chip__mail { display: none; }
   .hd-chip { padding: 4px 10px 4px 4px; }
-  .modo-local { padding: 4px 12px; font-size: 10px; }
-  .modo-local span { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-  .rolbar { padding: 6px 12px; gap: 10px; min-height: 40px; -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
-  .rolbar__can { gap: 8px; }
 
   /* Panel lateral: cajón fuera de pantalla + botón flotante */
   .floating-sidebar-wrapper { pointer-events: none; }
@@ -495,7 +457,6 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 
 @media (max-width: 480px) {
-  .rolbar__can .rolbar__k { display: none; }
   .navbar__link { padding: 11px 12px !important; font-size: 13px !important; }
   .admin-login-card { padding: 28px 20px 24px !important; border-radius: 16px !important; }
 }
@@ -505,7 +466,7 @@ button { -webkit-tap-highlight-color: transparent; }
 }
 
 @media print {
-  .header, .navbar, .rolbar, .modo-local, .admin-sidebar, .panel-fab { display: none !important; }
+  .header, .navbar, .admin-sidebar, .panel-fab { display: none !important; }
 }
 
 /* ----------------------------------------------------------------------

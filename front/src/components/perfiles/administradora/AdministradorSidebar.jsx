@@ -5,6 +5,7 @@ import BandejaMediciones from '../comun/BandejaMediciones';
 import { cerrarSesion } from '../../../lib/sesim/sesion';
 import '../capturista/Capturista.css';
 import '../comun/Comun.css';
+import EnlaceSeguimiento from '../comun/EnlaceSeguimiento';
 
 /**
  * Barra lateral del Administrador / Administrador Titular.
@@ -41,6 +42,9 @@ const AdministradorSidebar = ({
       </div>
 
       <nav className="admin-nav">
+        <div className="admin-nav-group">
+          <EnlaceSeguimiento />
+        </div>
         <div className="admin-nav-group">
           <div className="admin-nav-header" >
             <span className="nav-title" >CONTROL DE SOLICITUDES</span>

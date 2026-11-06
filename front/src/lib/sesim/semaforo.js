@@ -5,7 +5,8 @@
  *   sin línea base   → el indicador todavía no tiene línea base
  *   con meta numérica (valor_meta ≠ linea_base):
  *        avance = (valor − linea_base) / (valor_meta − linea_base)
- *        verde ≥ 0.90 · amarillo ≥ 0.70 · rojo < 0.70
+ *        verde ≥ verde_desde · amarillo ≥ amarillo_desde · rojo debajo
+ *        (umbral vigente de api.umbral_publico: el del indicador o el global; 90/70 si no hay)
  *   sin meta numérica: compara contra la línea base según la tendencia
  *        mejora · estable · retrocede
  *
@@ -22,7 +23,19 @@ export const COLORES_SEMAFORO = {
   'sin dato': '#D1D5DB',
 };
 
-export function fnSemaforo({ valor, linea_base, valor_meta, tendencia }) {
+/** Umbral por omisión: mismo default que core.umbral_semaforo (verde_desde 90, amarillo_desde 70). */
+export const UMBRAL_BASE = Object.freeze({ verde_desde: 90, amarillo_desde: 70 });
+
+/**
+ * Umbral vigente a una fecha para un indicador: primero el suyo, luego el global (id_indicador null).
+ * `umbrales` son filas de api.umbral_publico.
+ */
+export function umbralVigente(umbrales, idIndicador, fecha = new Date().toISOString().slice(0, 10)) {
+  const vigentes = (umbrales ?? []).filter((u) => String(u.vigente_desde) <= fecha && (!u.vigente_hasta || String(u.vigente_hasta) >= fecha));
+  return vigentes.find((u) => u.id_indicador === idIndicador) ?? vigentes.find((u) => u.id_indicador == null) ?? UMBRAL_BASE;
+}
+
+export function fnSemaforo({ valor, linea_base, valor_meta, tendencia, umbral = UMBRAL_BASE }) {
   if (valor === null || valor === undefined || valor === '' || Number.isNaN(Number(valor))) return 'sin dato';
   if (linea_base === null || linea_base === undefined || linea_base === '') return 'sin línea base';
   const v = Number(valor);
@@ -30,8 +43,8 @@ export function fnSemaforo({ valor, linea_base, valor_meta, tendencia }) {
   const s = tendencia === 'Descendente' ? -1 : 1;
   if (valor_meta !== null && valor_meta !== undefined && valor_meta !== '' && Number(valor_meta) !== lb) {
     const avance = (v - lb) / (Number(valor_meta) - lb);
-    if (avance >= 0.9) return 'verde';
-    if (avance >= 0.7) return 'amarillo';
+    if (avance * 100 >= Number(umbral.verde_desde)) return 'verde';
+    if (avance * 100 >= Number(umbral.amarillo_desde)) return 'amarillo';
     return 'rojo';
   }
   if (s * (v - lb) > 0) return 'mejora';

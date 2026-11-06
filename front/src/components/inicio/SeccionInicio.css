@@ -1,0 +1,13 @@
+/* Lenguaje común de las secciones de Inicio (Visión, Marco jurídico) */
+.seccion-inicio { width: 100%; text-align: left; display: flex; flex-direction: column; gap: 22px; scroll-margin-top: calc(var(--alto-cabecera, 122px) + 70px); }
+.seccion-inicio__cabecera { max-width: none; }
+.seccion-inicio__antetitulo {
+  display: inline-block; font-family: var(--font-mono, monospace); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-guinda);
+  padding: 4px 10px; border-radius: 999px; background: var(--rol-soft, rgba(159, 34, 65, 0.08));
+}
+.seccion-inicio__cabecera h2 {
+  font-family: var(--font-heading); font-size: clamp(1.45rem, 2.6vw, 1.95rem); line-height: 1.25;
+  color: var(--c-guinda-dk); margin: 12px 0 10px;
+}
+.seccion-inicio__cabecera p { color: var(--text-secondary); font-size: 1.02rem; line-height: 1.65; }

@@ -23,13 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 
-# SESIM
-_to_delete/
-scripts/datos/salida/fragmentos/
-__pycache__/
-
-# Conexion local con el backend (contiene la ANON_KEY del ambiente)
+# Variables locales y copias de respaldo del entorno
 .env
-.env.local
-.env.*.local
-.e2e-tmp/
+.env.*
+!.env.example
+
+# Carpetas de trabajo
+_to_delete/
+_respaldo*/
+front_anterior*/

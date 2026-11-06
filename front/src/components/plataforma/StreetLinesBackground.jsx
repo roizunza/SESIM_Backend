@@ -1,11 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { geoMercator, geoPath } from 'd3-geo';
 
-const ASSET_URL = '/assets/carmen-streets.json';
+const ASSET_URL = '/assets/campeche-streets.json';
 
-// Grosor por tipo de vía (misma categoría "a/b/c" — arterial, avenida, calle
-// — que ya usa MapViewer para Red Vial), para que el trazo tenga jerarquía
-// visual en vez de verse como una maraña plana.
+// Grosor por tipo de vía (scripts/datos/06_exportar_traza_fondo.py): a = red
+// troncal federal o estatal, b = otras vías administradas o sin dato,
+// c = vialidades urbanas. Da jerarquía visual al trazo.
 const ESTILO_POR_CLASE = {
   a: { width: 1.3 },
   b: { width: 0.9 },
@@ -25,7 +25,7 @@ function claveNodo(lon, lat) {
 /**
  * Arma un grafo real (nodos = intersecciones, aristas = tramos de calle) a
  * partir del GeoJSON recortado de calles — nada de esto está escrito a
- * mano: sale de las coordenadas reales de `carmen-streets.json`. Cada
+ * mano: sale de las coordenadas reales de `campeche-streets.json`. Cada
  * arista guarda su geometría completa (para dibujarse tal cual, no como una
  * línea recta entre sus dos extremos) y su longitud geográfica real (para
  * que Dijkstra la trate como peso — una avenida larga tarda más en cruzarse
@@ -145,8 +145,9 @@ function dijkstra(grafo, origen) {
 }
 
 /**
- * Fondo decorativo: la traza urbana real de Ciudad del Carmen (recortada de
- * Red_vial.geojson a su bounding box, ver public/assets/carmen-streets.json)
+ * Fondo decorativo: la traza urbana real de San Francisco de Campeche (Red
+ * Nacional de Caminos IMT-INEGI 2024 recortada a la ciudad, ver
+ * public/assets/campeche-streets.json y scripts/datos/06_exportar_traza_fondo.py)
  * dibujada en un <canvas>, animada como una expansión de Dijkstra real desde
  * un nodo origen aleatorio — cada tramo de calle se "enciende" en el
  * instante en que la ola alcanza su distancia real (una avenida larga tarda
@@ -162,7 +163,13 @@ function dijkstra(grafo, origen) {
  * nunca compite con el texto. Respeta `prefers-reduced-motion` quedándose
  * estático en un solo frame.
  */
-const StreetLinesBackground = () => {
+const StreetLinesBackground = ({
+  factorZoom = 1.7,
+  colorBase = [100, 116, 139],
+  colorPulso = [65, 71, 76],
+  alphaBase = 0.14,
+  grosor = 1,
+} = {}) => {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -225,7 +232,7 @@ const StreetLinesBackground = () => {
       // zoom sobre la propia traza (misma proyección, más escala) alrededor
       // del centro visual del lienzo — dando la ilusión de una traza más
       // grande/densa sin empujar el resto de la página hacia abajo.
-      const FACTOR_ZOOM = 1.7;
+      const FACTOR_ZOOM = factorZoom;
       const centro = [width / 2, height / 2];
       const [tx, ty] = proyeccion.translate();
       proyeccion
@@ -265,8 +272,8 @@ const StreetLinesBackground = () => {
           // Tramo desconectado de la red alcanzable desde el origen actual
           // (p. ej. un fragmento aislado en los datos): color base fijo, sin
           // animar — nunca invisible.
-          ctx.strokeStyle = 'rgba(100, 116, 139, 0.16)';
-          ctx.lineWidth = grosorBase;
+          ctx.strokeStyle = `rgba(${colorBase[0]}, ${colorBase[1]}, ${colorBase[2]}, ${alphaBase + 0.02})`;
+          ctx.lineWidth = grosorBase * grosor;
           ctx.stroke(pathsPorArista[i]);
           return;
         }
@@ -275,15 +282,15 @@ const StreetLinesBackground = () => {
         // Sube de golpe al llegar la ola y decae exponencialmente después —
         // continuo, nunca un salto discreto, así que nunca "parpadea".
         const intensidad = delta >= 0 ? Math.exp(-delta / anchoPulso) : 0;
-        const alpha = Math.min(0.14 + intensidad * 0.75, 0.95);
+        const alpha = Math.min(alphaBase + intensidad * 0.75, 0.95);
         // De gris azulado tenue (apagada) a gris oxford (recién iluminada) —
         // el mismo tono neutro que el interruptor de encendido del
         // Geovisualizador; nunca un color vivo que compita con el título.
-        const r = Math.round(100 + intensidad * (65 - 100));
-        const g = Math.round(116 + intensidad * (71 - 116));
-        const b = Math.round(139 + intensidad * (76 - 139));
+        const r = Math.round(colorBase[0] + intensidad * (colorPulso[0] - colorBase[0]));
+        const g = Math.round(colorBase[1] + intensidad * (colorPulso[1] - colorBase[1]));
+        const b = Math.round(colorBase[2] + intensidad * (colorPulso[2] - colorBase[2]));
         ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        ctx.lineWidth = grosorBase + intensidad * 0.9;
+        ctx.lineWidth = (grosorBase + intensidad * 0.9) * grosor;
         ctx.stroke(pathsPorArista[i]);
       });
     }
@@ -341,6 +348,7 @@ const StreetLinesBackground = () => {
       if (resizeFrameId) cancelAnimationFrame(resizeFrameId);
       observer.disconnect();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return <canvas ref={canvasRef} className="street-lines-background" aria-hidden="true" />;

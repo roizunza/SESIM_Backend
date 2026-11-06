@@ -167,3 +167,8 @@ export function useSesion() {
     () => actual,
   );
 }
+
+/** Acceso a los módulos institucionales (seguimiento de proyectos e indicadores): requiere sesión activa. */
+export function useAccesoInstitucional() {
+  return !!useSesion();
+}

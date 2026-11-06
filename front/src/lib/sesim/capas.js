@@ -46,6 +46,30 @@ const ORDEN_MAPA_BASE = ['Límites administrativos', 'Localidades y asentamiento
 /** Capas que siempre están encendidas (contexto administrativo mínimo). */
 export const CAPAS_FIJAS = new Set(['Lim03', 'Lim04']);
 
+/** Capas encendidas al abrir el geovisor, además de las fijas (si están en el catálogo visible). */
+export const CAPAS_INICIALES = ['Lim02', 'Loc01', 'Nat01', 'Nat06', 'Inf03', 'Inf07', 'Inf11'];
+
+/**
+ * Tamaño relativo de los símbolos puntuales por capa (o por capa y clase `clasif`), respecto de su simbología QGIS.
+ * Las estaciones del Tren Maya y los puertos y aeropuertos se dibujan a la mitad.
+ */
+const ESCALA_SIMBOLOS = {
+  Inf07: 0.5,
+  DIt03: 0.5,
+  Inf01: 0.5,
+  'Inf08|Puerto': 0.5,
+  'Inf08|Aeropuerto': 0.5,
+  'DIt05|Puerto': 0.5,
+  'DIt05|Aeropuerto': 0.5,
+};
+export const escalaSimbolo = (idCapa, clasif) => ESCALA_SIMBOLOS[`${idCapa}|${clasif}`] ?? ESCALA_SIMBOLOS[idCapa] ?? 1;
+
+/** Capas que se dibujan como máscara (atenúan lo que queda fuera de Campeche) y no se filtran por municipio. */
+export const CAPAS_MASCARA = new Set(['Lim02']);
+
+/** Capas de puntos con pesos espaciales por población (ver lib/sesim/poblacion.js). */
+export const CAPAS_POBLACION = new Set(['Loc02']);
+
 /** Capas que llevan etiqueta de texto permanente con su `nombre`. */
 export const CAPAS_CON_ETIQUETA = new Set(['Lim04']);
 
@@ -78,7 +102,7 @@ export async function cargarArbolCapas({ incluirBorrador = false, perfil = null 
         const eje = m ? EJES_ESTRATEGICOS.find((e) => e.numero === Number(m[1])) : null;
         if (eje) {
           pertenencias.push({ clave: eje.id, etiqueta: eje.tituloCorto, eje });
-          colorBase = colorBase === COLOR_POR_GRUPO.diagnostico ? eje.color : colorBase;
+          colorBase = colorBase === COLOR_POR_GRUPO.diagnostico ? (eje.colorMapa ?? eje.color) : colorBase;
         }
       } else if (c.categoria === 'mapa_base') {
         pertenencias.push({ clave: g.grupo, etiqueta: g.grupo });
@@ -111,9 +135,16 @@ export async function cargarArbolCapas({ incluirBorrador = false, perfil = null 
     return lista.sort((a, b) => a.etiqueta.localeCompare(b.etiqueta, 'es'));
   };
 
+  // En diagnóstico, un subtema cuyas capas ya están todas en otro grupo (p. ej. «Recubrimiento de la
+  // red carretera» dentro de «Infraestructura de Transporte») no se repite en el control de capas.
+  const sinDuplicados = (catId, lista) =>
+    catId !== 'diagnostico'
+      ? lista
+      : lista.filter((g) => !lista.some((otro) => otro !== g && otro.capas.length > g.capas.length && g.capas.every((c) => otro.capas.includes(c))));
+
   const categorias = CATEGORIAS.map((cat) => ({
     ...cat,
-    grupos: ordenar(cat.id, Array.from(grupos[cat.id].values())).map((g) => ({
+    grupos: ordenar(cat.id, sinDuplicados(cat.id, Array.from(grupos[cat.id].values()))).map((g) => ({
       ...g,
       capas: g.capas.sort((a, b) => a.id.localeCompare(b.id, 'es', { numeric: true })),
     })),

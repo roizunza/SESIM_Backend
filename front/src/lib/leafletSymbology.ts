@@ -486,13 +486,17 @@ function composeMarkerSvg(symbol: ResolvedSymbol): { body: string; box: number }
 export function toPointLayer(
   symbol: ResolvedSymbol | null,
   latlng: L.LatLng,
-  userOpacity: number
+  userOpacity: number,
+  escala = 1
 ): L.Layer | null {
   if (!symbol) return null
   const alpha = symbol.opacity * userOpacity
 
   const circle = asSimpleCircle(symbol)
-  if (circle) return L.circleMarker(latlng, circleOptions(circle, alpha))
+  if (circle) {
+    const opciones = circleOptions(circle, alpha)
+    return L.circleMarker(latlng, { ...opciones, radius: (opciones.radius ?? 4) * escala })
+  }
 
   const { body, box } = composeMarkerSvg(symbol)
   const center = box / 2
@@ -503,8 +507,10 @@ export function toPointLayer(
   // `null` deja que quien llama los omita en vez de crear un icono vacío.
   if (!body) return null
 
+  // `escala` reduce o amplía el icono en pantalla sin recomponer el SVG (mismo viewBox).
+  const lado = box * escala
   const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${box}" height="${box}"` +
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${lado}" height="${lado}"` +
     ` viewBox="0 0 ${box} ${box}">${body}</svg>`
 
   // La opacidad va en el marcador, no en el SVG, para que `setOpacity` la pueda
@@ -514,9 +520,9 @@ export function toPointLayer(
     icon: L.divIcon({
       html: svg,
       className: 'qgis-marker',
-      iconSize: [box, box],
-      iconAnchor: [center, center],
-      popupAnchor: [0, -center],
+      iconSize: [lado, lado],
+      iconAnchor: [center * escala, center * escala],
+      popupAnchor: [0, -center * escala],
     }),
   })
 }

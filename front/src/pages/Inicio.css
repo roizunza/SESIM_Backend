@@ -5,11 +5,11 @@
   justify-content: center;
   min-height: 80vh;
   text-align: center;
-  padding: var(--spacing-xl) var(--spacing-lg);
+  padding: var(--spacing-lg) clamp(16px, 2.5vw, 40px);
   position: relative;
-  max-width: 1200px;
+  max-width: 1680px;
   margin: 0 auto;
-  gap: 3.5rem;
+  gap: 2rem;
 }
 
 .hero-section {
@@ -91,7 +91,7 @@
   padding: var(--spacing-xl);
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
-  text-align: left;
+  text-align: justify;
   position: relative;
   overflow: hidden;
 }
@@ -155,9 +155,9 @@
 
 /* Intro Section */
 .intro-section {
-  max-width: 1000px;
+  max-width: none;
   width: 100%;
-  text-align: left;
+  text-align: justify;
   /* Contorno institucional, mismo lenguaje visual que .module-card. */
   background: var(--c-white);
   border: 1px solid var(--surface-border);
@@ -203,7 +203,7 @@
 /* Objectives Section */
 .objectives-section {
   width: 100%;
-  text-align: left;
+  text-align: justify;
 }
 
 .objectives-section h2 {
@@ -265,7 +265,7 @@
 /* Ejes Estratégicos EEMSV Section */
 .ejes-ee-section {
   width: 100%;
-  text-align: left;
+  text-align: justify;
 }
 
 .ejes-ee-section h2 {
@@ -355,7 +355,7 @@
 /* Methodology Section */
 .methodology-section {
   width: 100%;
-  text-align: left;
+  text-align: justify;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xl);
@@ -458,7 +458,7 @@
 /* Modules Section */
 .modules-section {
   width: 100%;
-  text-align: left;
+  text-align: justify;
 }
 
 .modules-section h2 {

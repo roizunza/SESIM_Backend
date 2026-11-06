@@ -1,34 +1,37 @@
-import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { RUTAS } from '../../lib/rutas';
+
+const ENTRADAS = [
+  { etiqueta: 'Inicio', ruta: RUTAS.inicio, fin: true },
+  { etiqueta: 'Tablero de seguimiento', corta: 'Tablero', ruta: RUTAS.tableroPublico },
+  { etiqueta: 'Geovisor', ruta: RUTAS.geovisor },
+  { etiqueta: 'Catálogo de instrumentos', corta: 'Catálogo', ruta: RUTAS.catalogo },
+];
 
 export default function Navbar() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const lista = useRef(null);
+  const { pathname } = useLocation();
 
-  const isActive = (path) => {
-    if (path === '/') return location.pathname === '/';
-    return location.pathname.startsWith(path);
-  };
-
-  const navItems = [
-    { label: 'Inicio', path: '/' },
-    { label: 'Geovisualizador', path: '/geovisor' },
-    { label: 'Monitoreo de Indicadores', path: '/monitoreo' }
-  ];
+  // En pantallas angostas el menú se desplaza: la entrada activa siempre queda a la vista.
+  useEffect(() => {
+    lista.current?.querySelector('[aria-current="page"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }, [pathname]);
 
   return (
-    <nav className="navbar" role="navigation" aria-label="Menú principal">
+    <nav className="navbar" aria-label="Menú principal">
       <div className="navbar__inner">
-        <ul className="navbar__nav" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
-          {navItems.map((item) => (
-            <li key={item.path}>
-              <button
-                className={`navbar__link${isActive(item.path) ? ' navbar__link--active' : ''}`}
-                onClick={() => navigate(item.path)}
-                aria-current={isActive(item.path) ? 'page' : undefined}
-              >
-                {item.label}
-              </button>
+        <ul className="navbar__nav" ref={lista}>
+          {ENTRADAS.map(({ etiqueta, corta, ruta, fin }) => (
+            <li key={ruta}>
+              <NavLink to={ruta} end={fin} className={({ isActive }) => `navbar__link${isActive ? ' navbar__link--active' : ''}`}>
+                {corta ? (
+                  <>
+                    <span className="navbar__larga">{etiqueta}</span>
+                    <span className="navbar__corta" aria-hidden="true">{corta}</span>
+                  </>
+                ) : etiqueta}
+              </NavLink>
             </li>
           ))}
         </ul>

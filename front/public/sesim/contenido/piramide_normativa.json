@@ -1,0 +1,569 @@
+{
+ "fuente": "Elaborado con el texto vigente de los ordenamientos citados y con el banco documental del SESIM, cotejados contra la Cámara de Diputados, el DOF/SIDOF, el Periódico Oficial del Estado de Campeche, la Consejería Jurídica, el H. Congreso del Estado, SEDUMOP y CESP Campeche. El texto con validez jurídica es el publicado en los medios oficiales.",
+ "lema": {
+  "texto": "El sistema es el mecanismo que permite dar seguimiento a la aplicación territorial de la política estatal de movilidad y seguridad vial, vinculando los compromisos normativos, los objetivos de planeación y los resultados observables.",
+  "citas": [
+   {
+    "ordenamiento": "LMSV_CAM",
+    "articulo": "art. 29, fr. VIII"
+   },
+   {
+    "ordenamiento": "LMSV_CAM",
+    "articulo": "art. 29, fr. XII, inciso i)"
+   }
+  ]
+ },
+ "escalas": {
+  "F": "Federal",
+  "E": "Estatal",
+  "M": "Municipal",
+  "T": "Transversal"
+ },
+ "niveles": [
+  {
+   "nivel": 1,
+   "titulo": "Fundamento Constitucional",
+   "subtitulo": "Constitución Federal · Constitución de Campeche",
+   "escala": "F",
+   "icono": "constitucion",
+   "descripcion": {
+    "texto": "Ambas constituciones reconocen el derecho de toda persona a la movilidad en condiciones de seguridad vial, accesibilidad, eficiencia, sostenibilidad, calidad, inclusión e igualdad. De este derecho derivan las leyes, estrategias y programas de los peldaños superiores.",
+    "citas": [
+     {
+      "ordenamiento": "CPEUM",
+      "articulo": "art. 4.º"
+     },
+     {
+      "ordenamiento": "CPCAM",
+      "articulo": "art. 6"
+     }
+    ]
+   },
+   "concordancia": [
+    {
+     "con": "Ley Suprema de toda la Unión",
+     "texto": "La Constitución, las leyes del Congreso de la Unión que emanan de ella y los tratados internacionales son la Ley Suprema; los peldaños siguientes deben ajustarse a ella.",
+     "ordenamiento": "CPEUM",
+     "articulo": "art. 133"
+    }
+   ],
+   "orientacion": [
+    {
+     "con": "Plan Nacional de Desarrollo",
+     "texto": "Organiza el sistema de planeación democrática del desarrollo nacional, con un Plan Nacional de Desarrollo al que se sujetan obligatoriamente los programas de la Administración Pública Federal.",
+     "ordenamiento": "CPEUM",
+     "articulo": "art. 26, apartado A"
+    },
+    {
+     "con": "Ley General de Movilidad y Seguridad Vial",
+     "texto": "La Ley General se expide en términos del párrafo décimo séptimo del artículo 4o. (derecho a la movilidad) y del artículo 73, fracción XXIX-C, de la Constitución.",
+     "ordenamiento": "LGMSV",
+     "articulo": "art. 1"
+    }
+   ]
+  },
+  {
+   "nivel": 2,
+   "titulo": "Marco Jurídico Federal",
+   "subtitulo": "LGMSV · LGAHOTDU · LGEEPA · NOM aplicables",
+   "escala": "F",
+   "icono": "federal",
+   "descripcion": {
+    "texto": "Leyes generales que fijan la política nacional en la materia. La Ley General de Movilidad y Seguridad Vial establece la jerarquía de la movilidad y la Estrategia Nacional; la Ley General de Asentamientos Humanos define el sistema de planeación territorial. Las Normas Oficiales Mexicanas aplicables fijan especificaciones técnicas para vías, señalización, zonas de obra, vehículos y espacio público.",
+    "citas": [
+     {
+      "ordenamiento": "LGMSV",
+      "articulo": "arts. 6 y 24"
+     },
+     {
+      "ordenamiento": "LGAHOTDU",
+      "articulo": "arts. 22 y 23"
+     },
+     {
+      "ordenamiento": "LGAHOTDU",
+      "articulo": "arts. 28 y 45"
+     }
+    ]
+   },
+   "concordancia": [
+    {
+     "con": "Constitución Federal",
+     "texto": "La planeación del ordenamiento territorial y el desarrollo urbano forma parte del Sistema Nacional de Planeación Democrática.",
+     "ordenamiento": "LGAHOTDU",
+     "articulo": "art. 22"
+    },
+    {
+     "con": "Instrumentos de planeación territorial",
+     "texto": "La planeación de la movilidad y la seguridad vial se integra a los instrumentos de planeación territorial, urbana y metropolitana vigentes.",
+     "ordenamiento": "LGMSV",
+     "articulo": "art. 31"
+    },
+    {
+     "con": "LGEEPA",
+     "texto": "Los planes y programas de desarrollo urbano consideran los ordenamientos ecológicos y los criterios de regulación ecológica de la Ley General del Equilibrio Ecológico y la Protección al Ambiente.",
+     "ordenamiento": "LGAHOTDU",
+     "articulo": "art. 45"
+    }
+   ],
+   "orientacion": [
+    {
+     "con": "Estrategia Nacional de Movilidad y Seguridad Vial (ENAMOV)",
+     "texto": "Crea la Estrategia Nacional como base para la movilidad y la seguridad vial del país a corto, mediano y largo plazo.",
+     "ordenamiento": "LGMSV",
+     "articulo": "art. 24"
+    },
+    {
+     "con": "Programas estatales, metropolitanos y municipales",
+     "texto": "Define los instrumentos de planeación territorial —estrategia nacional, programas estatales, metropolitanos y municipales—, que son obligatorios y deben ser congruentes entre sí.",
+     "ordenamiento": "LGAHOTDU",
+     "articulo": "art. 23"
+    },
+    {
+     "con": "Planes de desarrollo urbano",
+     "texto": "Los planes de desarrollo urbano consideran las Normas Oficiales Mexicanas en materia de movilidad y transporte.",
+     "ordenamiento": "LGMSV",
+     "articulo": "art. 31, fr. XIX"
+    }
+   ]
+  },
+  {
+   "nivel": 3,
+   "titulo": "Estrategia Nacional",
+   "subtitulo": "ENAMOV · ENOT · PND",
+   "escala": "F",
+   "icono": "estrategia",
+   "descripcion": {
+    "texto": "Instrumentos nacionales de planeación publicados en el Diario Oficial de la Federación: la Estrategia Nacional de Movilidad y Seguridad Vial 2023-2042 (DOF 10/10/2023), la Estrategia Nacional de Ordenamiento Territorial (DOF 09/04/2021) y el Plan Nacional de Desarrollo 2025-2030 (DOF 15/04/2025).",
+    "citas": [
+     {
+      "ordenamiento": "LGMSV",
+      "articulo": "art. 24"
+     },
+     {
+      "ordenamiento": "LGAHOTDU",
+      "articulo": "arts. 24 y 25"
+     },
+     {
+      "ordenamiento": "LPLAN",
+      "articulo": "art. 21"
+     }
+    ]
+   },
+   "concordancia": [
+    {
+     "con": "Ley de Planeación",
+     "texto": "El Plan Nacional de Desarrollo rige el contenido de los programas que se generen en el sistema nacional de planeación democrática.",
+     "ordenamiento": "LPLAN",
+     "articulo": "art. 21"
+    },
+    {
+     "con": "Ley General de Asentamientos Humanos",
+     "texto": "La Estrategia Nacional de Ordenamiento Territorial configura la dimensión espacial del desarrollo del país en el mediano y largo plazo.",
+     "ordenamiento": "LGAHOTDU",
+     "articulo": "art. 24"
+    },
+    {
+     "con": "Plan Nacional de Desarrollo",
+     "texto": "La Estrategia Nacional de Movilidad y Seguridad Vial se formula en congruencia con el Plan Nacional de Desarrollo y con los programas sectoriales, regionales, estatales y municipales.",
+     "ordenamiento": "LGMSV",
+     "articulo": "art. 24"
+    }
+   ],
+   "orientacion": [
+    {
+     "con": "Entidades federativas y municipios",
+     "texto": "Las dependencias federales, las entidades federativas y los municipios ajustan sus políticas y acciones a la Estrategia Nacional de Movilidad y Seguridad Vial.",
+     "ordenamiento": "LGMSV",
+     "articulo": "art. 26, fr. III"
+    },
+    {
+     "con": "Procesos de planeación estatales y municipales",
+     "texto": "Publicada en el DOF, la Administración Pública Federal, las entidades federativas y los municipios ajustan sus procesos de planeación a la Estrategia Nacional de Ordenamiento Territorial.",
+     "ordenamiento": "LGAHOTDU",
+     "articulo": "art. 25"
+    },
+    {
+     "con": "Planeación estatal",
+     "texto": "Los convenios de coordinación con las entidades federativas procuran que la planeación del desarrollo de cada entidad y de sus municipios sea congruente con la planeación nacional.",
+     "ordenamiento": "LPLAN",
+     "articulo": "arts. 33 y 34, fr. II"
+    }
+   ]
+  },
+  {
+   "nivel": 4,
+   "titulo": "Marco Jurídico Estatal",
+   "subtitulo": "Ley de Movilidad · Ley de Vialidad · Reglamentos",
+   "escala": "E",
+   "icono": "estatal",
+   "descripcion": {
+    "texto": "Ley de Movilidad y Seguridad Vial del Estado de Campeche (Decreto 250, POE No. 1976, Segunda Sección, 28/07/2023), Ley de Vialidad, Tránsito y Control Vehicular del Estado de Campeche (Decreto 161, POE No. 4055, 09/06/2008), Reglamento en Materia de Transporte (POE No. 2065, Segunda Sección, 08/12/2023) y Ley de Asentamientos Humanos, Ordenamiento Territorial y Desarrollo Urbano para el Estado (Decreto 98, POE No. 2459, Segunda Sección, 25/07/2025).",
+    "citas": [
+     {
+      "ordenamiento": "LMSV_CAM",
+      "articulo": "arts. 7 y 29"
+     },
+     {
+      "ordenamiento": "LAHOTDU_CAM",
+      "articulo": "Título Cuarto"
+     }
+    ]
+   },
+   "concordancia": [
+    {
+     "con": "Ley General de Movilidad y Seguridad Vial",
+     "texto": "La jerarquía estatal de la movilidad —peatones, vehículos no motorizados, transporte público, transporte de mercancías y vehículos particulares— concuerda con la de la ley general.",
+     "ordenamiento": "LMSV_CAM",
+     "articulo": "art. 7"
+    },
+    {
+     "con": "Plan Nacional de Desarrollo y ENOT",
+     "texto": "La planeación estatal y municipal de la movilidad se sujeta al Plan Nacional de Desarrollo y guarda congruencia con la Estrategia Nacional de Ordenamiento Territorial.",
+     "ordenamiento": "LMSV_CAM",
+     "articulo": "art. 18"
+    },
+    {
+     "con": "Programa Nacional de Ordenamiento Territorial",
+     "texto": "El Poder Ejecutivo asegura la congruencia del Programa Estatal de Ordenamiento Territorial y Desarrollo Urbano con el Programa Nacional.",
+     "ordenamiento": "LAHOTDU_CAM",
+     "articulo": "art. 13, fr. II"
+    }
+   ],
+   "orientacion": [
+    {
+     "con": "Estrategia Estatal de Movilidad y Seguridad Vial",
+     "texto": "El Sistema Estatal de Movilidad y Seguridad Vial emite la Estrategia Estatal de Movilidad y Seguridad Vial.",
+     "ordenamiento": "LMSV_CAM",
+     "articulo": "art. 29, fr. I"
+    },
+    {
+     "con": "Instrumentos de planeación territorial y urbana",
+     "texto": "La Secretaría asegura la inclusión de la movilidad, su congruencia y vinculación en los instrumentos de planeación territorial y urbana.",
+     "ordenamiento": "LMSV_CAM",
+     "articulo": "art. 33, fr. V"
+    },
+    {
+     "con": "Sistema estatal de planeación territorial",
+     "texto": "Integra la Estrategia Estatal de Ordenamiento Territorial, el Programa Estatal de Ordenamiento Territorial y Desarrollo Urbano y los programas regionales, metropolitanos, sectoriales y municipales de desarrollo urbano.",
+     "ordenamiento": "LAHOTDU_CAM",
+     "articulo": "Título Cuarto"
+    }
+   ],
+   "instrumentos": [
+    {
+     "nombre": "Ley de Movilidad y Seguridad Vial del Estado de Campeche",
+     "detalle": "Decreto 250 · POE No. 1976, Segunda Sección · 28/07/2023"
+    },
+    {
+     "nombre": "Ley de Vialidad, Tránsito y Control Vehicular del Estado de Campeche",
+     "detalle": "Decreto 161 · POE No. 4055 · 09/06/2008"
+    },
+    {
+     "nombre": "Reglamento en Materia de Transporte",
+     "detalle": "POE No. 2065, Segunda Sección · 08/12/2023"
+    },
+    {
+     "nombre": "Ley de Asentamientos Humanos, Ordenamiento Territorial y Desarrollo Urbano para el Estado",
+     "detalle": "Decreto 98 · POE No. 2459, Segunda Sección · 25/07/2025"
+    }
+   ]
+  },
+  {
+   "nivel": 5,
+   "titulo": "Estrategias de Planeación Estatal",
+   "subtitulo": "EEMSV · PED · PEOTDU · Programas sectoriales",
+   "escala": "E",
+   "icono": "planeacion",
+   "descripcion": {
+    "texto": "Instrumentos de planeación del Gobierno del Estado de Campeche: Plan Estatal de Desarrollo 2024-2027 (POE Año IX No. 2185, Cuarta Sección, 10/06/2024), Estrategia de Movilidad y Seguridad Vial, Campeche 2024 —componente de la obra «Modernización del Sistema de Movilidad Integrada en el Estado de Campeche», licitación SEDUMOP-DGAGOP-LPC-026-2024—, Programa Estatal de Ordenamiento Territorial y Desarrollo Urbano y programas sectoriales (p. ej., POE Año X No. 2446, Tercera Sección, 08/07/2025).",
+    "citas": [
+     {
+      "ordenamiento": "LMSV_CAM",
+      "articulo": "art. 29, fr. I"
+     },
+     {
+      "ordenamiento": "LPLAN_CAM",
+      "articulo": "arts. 39 y 45"
+     }
+    ]
+   },
+   "concordancia": [
+    {
+     "con": "Plan Nacional de Desarrollo",
+     "texto": "El Plan Estatal de Desarrollo es el instrumento rector de la planeación estatal y se alinea al Plan Nacional de Desarrollo y a los Objetivos de Desarrollo Sostenible.",
+     "ordenamiento": "LPLAN_CAM",
+     "articulo": "art. 39"
+    },
+    {
+     "con": "Estrategia Nacional de Ordenamiento Territorial",
+     "texto": "Los programas estatales de ordenamiento territorial y desarrollo urbano guardan congruencia con la estrategia nacional y el programa nacional.",
+     "ordenamiento": "LGAHOTDU",
+     "articulo": "art. 29"
+    },
+    {
+     "con": "Estrategia Nacional de Movilidad y Seguridad Vial",
+     "texto": "Las entidades federativas ajustan sus políticas y acciones de movilidad a la Estrategia Nacional.",
+     "ordenamiento": "LGMSV",
+     "articulo": "art. 26, fr. III"
+    }
+   ],
+   "orientacion": [
+    {
+     "con": "Planes municipales de desarrollo",
+     "texto": "Los planes municipales de desarrollo se alinean al Plan Estatal de Desarrollo, al Plan Nacional de Desarrollo y a los Objetivos de Desarrollo Sostenible.",
+     "ordenamiento": "LPLAN_CAM",
+     "articulo": "art. 42"
+    },
+    {
+     "con": "Instrumentos de planeación municipales",
+     "texto": "La Secretaría emite el Dictamen de Congruencia de los instrumentos de planeación municipales, previo a su inscripción en el Registro Público.",
+     "ordenamiento": "LAHOTDU_CAM",
+     "articulo": "art. 14, fr. XL"
+    },
+    {
+     "con": "Programas sectoriales",
+     "texto": "Los programas sectoriales son congruentes con el Plan Estatal de Desarrollo.",
+     "ordenamiento": "LPLAN_CAM",
+     "articulo": "art. 45"
+    }
+   ]
+  },
+  {
+   "nivel": 6,
+   "titulo": "Instrumentos Municipales",
+   "subtitulo": "PIMUS · Planeación municipal de movilidad",
+   "escala": "M",
+   "icono": "municipal",
+   "descripcion": {
+    "texto": "Planes Integrales de Movilidad Urbana Sustentable (PIMUS) de Campeche, Carmen, Champotón, Escárcega y Calkiní, componentes de la obra estatal de modernización del sistema de movilidad (licitación SEDUMOP-DGAGOP-LPC-026-2024). Los municipios integran la planeación de la movilidad y la seguridad vial en sus instrumentos de planeación.",
+    "citas": [
+     {
+      "ordenamiento": "LGMSV",
+      "articulo": "art. 31"
+     }
+    ]
+   },
+   "concordancia": [
+    {
+     "con": "Instrumentos de planeación territorial vigentes",
+     "texto": "La Federación, las entidades federativas y los municipios integran la planeación de la movilidad y la seguridad vial en los instrumentos de planeación territorial, metropolitana, urbana, rural e insular vigentes.",
+     "ordenamiento": "LGMSV",
+     "articulo": "art. 31"
+    },
+    {
+     "con": "Plan Estatal de Desarrollo",
+     "texto": "Los planes municipales de desarrollo se alinean al Plan Estatal y al Plan Nacional de Desarrollo.",
+     "ordenamiento": "LPLAN_CAM",
+     "articulo": "art. 42"
+    }
+   ],
+   "orientacion": [
+    {
+     "con": "Programas y proyectos de movilidad",
+     "texto": "Impulsar programas y proyectos de movilidad con políticas de proximidad que faciliten la accesibilidad entre la vivienda, el trabajo y servicios educativos, de salud, culturales y complementarios, a fin de reducir las externalidades negativas del transporte urbano.",
+     "ordenamiento": "LGMSV",
+     "articulo": "art. 31, fr. III"
+    },
+    {
+     "con": "Transporte público y estructura vial",
+     "texto": "Priorizar la planeación de los sistemas de transporte público, de la estructura vial y de la movilidad no motorizada y tracción humana.",
+     "ordenamiento": "LGMSV",
+     "articulo": "art. 31, fr. VI"
+    }
+   ]
+  },
+  {
+   "nivel": 7,
+   "titulo": "Instrumentos de Implementación y Seguimiento",
+   "subtitulo": "SESIM · Indicadores · Proyectos · Evaluación",
+   "escala": "T",
+   "icono": "seguimiento",
+   "descripcion": {
+    "texto": "Sistema Estatal de Seguimiento de Indicadores de Movilidad y Seguridad Vial (SESIM): plataforma que integra, monitorea y evalúa los indicadores de movilidad y seguridad vial de Campeche, a partir de las variables e indicadores que el Sistema Estatal propone y del informe anual de cumplimiento que la ley le encomienda.",
+    "citas": [
+     {
+      "ordenamiento": "LMSV_CAM",
+      "articulo": "art. 29, fr. VIII"
+     },
+     {
+      "ordenamiento": "LMSV_CAM",
+      "articulo": "art. 29, fr. XII, inciso i)"
+     }
+    ]
+   },
+   "concordancia": [
+    {
+     "con": "Ley de Movilidad y Seguridad Vial del Estado",
+     "texto": "El Sistema Estatal propone variables e indicadores de los programas, planes o sistemas de ordenamiento territorial y mecanismos para recopilar y analizar la información.",
+     "ordenamiento": "LMSV_CAM",
+     "articulo": "art. 29, fr. VIII"
+    },
+    {
+     "con": "Estrategia Nacional de Movilidad y Seguridad Vial (ENAMOV)",
+     "texto": "La Estrategia Nacional prevé las bases de planeación, implementación y evaluación de la política de movilidad y seguridad vial.",
+     "ordenamiento": "LGMSV",
+     "articulo": "art. 25"
+    }
+   ],
+   "orientacion": [
+    {
+     "con": "Informe anual de cumplimiento",
+     "texto": "El Sistema Estatal elabora un informe anual sobre el cumplimiento del objeto y objetivos de la ley y lo remite a las autoridades competentes.",
+     "ordenamiento": "LMSV_CAM",
+     "articulo": "art. 29, fr. XII, inciso i)"
+    },
+    {
+     "con": "Planes y programas estatales y municipales",
+     "texto": "Los planes estatales y municipales se ejecutan, vigilan y evalúan por las autoridades locales conforme a la legislación estatal.",
+     "ordenamiento": "LGAHOTDU",
+     "articulo": "art. 28"
+    }
+   ],
+   "fundamenta_en": [
+    {
+     "nivel": 4,
+     "texto": "Ley de Movilidad y Seguridad Vial del Estado de Campeche, art. 29"
+    },
+    {
+     "nivel": 5,
+     "texto": "Estrategia Estatal de Movilidad y Seguridad Vial (EEMSV)"
+    },
+    {
+     "nivel": 6,
+     "texto": "Planes Integrales de Movilidad Urbana Sustentable (PIMUS)"
+    }
+   ]
+  }
+ ],
+ "jerarquia": {
+  "titulo": "Eje transversal: jerarquía de movilidad",
+  "texto": "Orden de prioridad en el uso y disposición de las vías que aplica a todos los peldaños.",
+  "citas": [
+   {
+    "ordenamiento": "LGMSV",
+    "articulo": "art. 6"
+   },
+   {
+    "ordenamiento": "LMSV_CAM",
+    "articulo": "art. 7"
+   }
+  ],
+  "grupos": [
+   {
+    "fraccion": "I",
+    "etiqueta": "Peatones",
+    "detalle": "Personas peatonas, con enfoque equitativo y diferenciado en razón de género, personas con discapacidad y movilidad limitada",
+    "icono": "peaton"
+   },
+   {
+    "fraccion": "II",
+    "etiqueta": "Ciclistas",
+    "detalle": "Personas ciclistas y usuarias de vehículos no motorizados",
+    "icono": "ciclista"
+   },
+   {
+    "fraccion": "III",
+    "etiqueta": "Usuarios del transporte público",
+    "detalle": "Personas usuarias del servicio de transporte público de pasajeros",
+    "icono": "autobus"
+   },
+   {
+    "fraccion": "III",
+    "etiqueta": "Prestadores del transporte público",
+    "detalle": "Personas prestadoras del servicio de transporte público de pasajeros",
+    "icono": "prestador"
+   },
+   {
+    "fraccion": "IV",
+    "etiqueta": "Transporte de carga",
+    "detalle": "Personas prestadoras de servicios de transporte y distribución de bienes y mercancías",
+    "icono": "carga"
+   },
+   {
+    "fraccion": "V",
+    "etiqueta": "Vehículos particulares",
+    "detalle": "Personas usuarias de vehículos motorizados particulares",
+    "icono": "particular"
+   }
+  ]
+ },
+ "portales": [
+  {
+   "nombre": "SIDOF – Diario Oficial de la Federación",
+   "url": "https://sidof.segob.gob.mx"
+  },
+  {
+   "nombre": "Cámara de Diputados – Leyes federales vigentes",
+   "url": "https://www.diputados.gob.mx/LeyesBiblio/index.htm"
+  },
+  {
+   "nombre": "Consejería Jurídica del Gobierno de Campeche",
+   "url": "https://consejeria.campeche.gob.mx"
+  },
+  {
+   "nombre": "Periódico Oficial del Estado de Campeche",
+   "url": "https://periodicooficial.campeche.gob.mx"
+  },
+  {
+   "nombre": "SEDUMOP Campeche",
+   "url": "https://sedumop.campeche.gob.mx"
+  },
+  {
+   "nombre": "CESP Campeche",
+   "url": "https://cespcampeche.gob.mx"
+  }
+ ],
+ "ordenamientos": {
+  "CPEUM": {
+   "sigla": "CPEUM",
+   "nombre": "Constitución Política de los Estados Unidos Mexicanos",
+   "publicacion": "DOF 05/02/1917; última reforma DOF 07/10/2026",
+   "url": "https://www.diputados.gob.mx/LeyesBiblio/pdf/CPEUM.pdf"
+  },
+  "CPCAM": {
+   "sigla": "Constitución de Campeche",
+   "nombre": "Constitución Política del Estado de Campeche",
+   "publicacion": "POE No. 3181, 05/07/1917; última reforma Decreto 285, POE No. 2731, Segunda Sección, 04/09/2026",
+   "url": "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/est/100008.pdf"
+  },
+  "LGMSV": {
+   "sigla": "LGMSV",
+   "nombre": "Ley General de Movilidad y Seguridad Vial",
+   "publicacion": "DOF 17/05/2022; última reforma DOF 29/12/2023",
+   "url": "https://www.diputados.gob.mx/LeyesBiblio/pdf/LGMSV.pdf"
+  },
+  "LGAHOTDU": {
+   "sigla": "LGAHOTDU",
+   "nombre": "Ley General de Asentamientos Humanos, Ordenamiento Territorial y Desarrollo Urbano",
+   "publicacion": "DOF 28/11/2016; última reforma DOF 01/04/2024",
+   "url": "https://www.diputados.gob.mx/LeyesBiblio/pdf/LGAHOTDU.pdf"
+  },
+  "LPLAN": {
+   "sigla": "Ley de Planeación",
+   "nombre": "Ley de Planeación",
+   "publicacion": "DOF 05/01/1983; última reforma DOF 15/01/2026",
+   "url": "https://www.diputados.gob.mx/LeyesBiblio/pdf/LPlan.pdf"
+  },
+  "LMSV_CAM": {
+   "sigla": "Ley de Movilidad de Campeche",
+   "nombre": "Ley de Movilidad y Seguridad Vial del Estado de Campeche",
+   "publicacion": "Decreto 250, POE No. 1976, Segunda Sección, 28/07/2023; última reforma Decreto 249, POE No. 2676, Cuarta Sección, 18/06/2026",
+   "url": "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/est/100059.1.pdf"
+  },
+  "LAHOTDU_CAM": {
+   "sigla": "LAHOTDU de Campeche",
+   "nombre": "Ley de Asentamientos Humanos, Ordenamiento Territorial y Desarrollo Urbano para el Estado de Campeche",
+   "publicacion": "Decreto 98, POE No. 2459, Segunda Sección, 25/07/2025",
+   "url": "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/est/100022.pdf"
+  },
+  "LPLAN_CAM": {
+   "sigla": "Ley de Planeación de Campeche",
+   "nombre": "Ley de Planeación del Estado de Campeche y sus Municipios",
+   "publicacion": "Decreto 319, POE No. 0792, 16/10/2018",
+   "url": "https://legislacion.congresocam.gob.mx/index.php/etiquetas-x-materia/64-ley-de-planeacion-del-estado-de-campeche"
+  }
+ },
+ "tipos_excluidos": [
+  "Programa Municipal de Desarrollo Urbano"
+ ]
+}

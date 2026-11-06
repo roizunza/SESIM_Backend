@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { autenticar, activarSesion, descartarCandidata, useSesion, useVerificandoSesion } from '../lib/sesim/sesion';
 import { registrarAcceso } from '../lib/sesim/operacion';
+import { MODO_DEMOSTRACION } from '../lib/modo';
 import './Administracion.css';
 
 /*
@@ -114,6 +115,11 @@ const Administracion = () => {
           <p className="admin-login-ayuda">
             Las cuentas las da de alta el Administrador Titular. Si no tiene una, solicítela a la Secretaría.
           </p>
+          {MODO_DEMOSTRACION && (
+            <p className="admin-login-ayuda admin-login-demo">
+              Entorno de demostración: los registros se conservan mientras el servidor del portal esté en marcha.
+            </p>
+          )}
         </form>
       </div>
 

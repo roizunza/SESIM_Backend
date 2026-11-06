@@ -1,10 +1,8 @@
 import React, { useRef } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
-import RolBar from './RolBar';
 import { useTablasApilables } from '../../lib/sesim/useTablasApilables';
 import { useSesion, useVerificandoSesion } from '../../lib/sesim/sesion';
-import { OPERACION_CONECTADA } from '../../lib/sesim/operacion';
 
 /**
  * Layout de las rutas internas. GUARDIA: sin sesión real (token vigente y
@@ -24,12 +22,6 @@ const AdminLayout = () => {
   return (
     <div className="app-shell" ref={raiz} data-rol={sesion.perfil} style={{ display: 'flex', flexDirection: 'column', height: '100dvh', overflow: 'hidden' }}>
       <Header isAdmin={true} />
-      <RolBar sesion={sesion} />
-      {!OPERACION_CONECTADA && (
-        <div role="status" className="modo-local">
-          <span>Acceso real conectado al backend. Usuarios, invitaciones, catálogos, capas e instrumentos ya operan contra el servidor (Ciclo 4). Las mediciones y sus evidencias aún trabajan en modo local de este navegador (se conectan en los Ciclos 6 a 8): lo que capture aquí no se guarda en el servidor.</span>
-        </div>
-      )}
       <main style={{ flex: 1, display: 'flex', position: 'relative', overflow: 'hidden', minHeight: 0 }}>
         <Outlet />
       </main>

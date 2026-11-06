@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { MapContainer, ScaleControl, Polyline, Marker, Tooltip, useMapEvents, useMap, GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
 import { Map as MapIcon, List, Plus, Minus, Ruler, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
@@ -102,7 +102,6 @@ const CapaMunicipios = ({ resaltar, coropleta, mapa }) => {
 
 /** Guía del geovisor privado: los pasos que no aplican al perfil (p. ej. filtros del Administrador) se omiten solos. */
 const PASOS_GUIA = [
-  { sel: '.rolbar', etiqueta: 'Tu perfil y tu flujo', lado: 'abajo', largo: 30, texto: 'Muestra tu perfil, en qué tramo del flujo (Borrador → Revisión → Vigente interno → Público) trabajas y qué acciones puedes hacer.' },
   { sel: '.admin-profile-section', etiqueta: 'Tu panel de trabajo', lado: 'abajo', largo: 18, texto: 'Aquí están tus solicitudes y accesos según tu perfil. En el celular se abre con el botón flotante.' },
   { sel: '.banner-filter-row', etiqueta: 'Filtros de indicadores', lado: 'arriba', largo: 28, texto: 'Elige instrumento, eje, indicador y periodo; después pulsa Generar para ver el resultado en el mapa.' },
   { sel: '.floating-panel .panel-section-title', etiqueta: 'Simbología activa', lado: 'der', largo: 60, texto: 'Indica qué se está pintando en el mapa y qué significan los colores.' },
@@ -119,9 +118,35 @@ export default function MapaPerfil({ resaltarUnidad, coropleta, simbologia, chil
   const [base, setBase] = useState('claro');
   const [midiendo, setMidiendo] = useState(false);
   const [guiaAbierta, setGuiaAbierta] = useState(false);
-  const [pos, setPos] = useState({ x: 300, y: 24 });
+  const [pos, setPos] = useState(null);
   const [arrastrando, setArrastrando] = useState(false);
   const inicio = useRef({ sx: 0, sy: 0, x: 0, y: 0 });
+  const area = useRef(null);
+  const caja = useRef(null);
+  const movida = useRef(false);
+
+  // La caja de herramientas arranca en la esquina inferior derecha del mapa, por encima de la barra
+  // inferior de filtros si existe; se reacomoda al cambiar el tamaño hasta que la persona la arrastra.
+  useLayoutEffect(() => {
+    const contenedor = area.current;
+    if (!contenedor) return undefined;
+    const MARGEN = 24;
+    const acomodar = () => {
+      if (movida.current || !caja.current) return;
+      const r = contenedor.getBoundingClientRect();
+      const c = caja.current.getBoundingClientRect();
+      const barra = document.querySelector('.fullwidth-bottom-banner')?.getBoundingClientRect();
+      const piso = barra?.height && barra.top < r.bottom && barra.right > r.right - c.width ? barra.top - r.top : r.height;
+      setPos({ x: Math.max(MARGEN, r.width - c.width - MARGEN), y: Math.max(MARGEN, piso - c.height - MARGEN) });
+    };
+    acomodar();
+    const observador = new ResizeObserver(acomodar);
+    observador.observe(contenedor);
+    if (caja.current) observador.observe(caja.current);
+    const barra = document.querySelector('.fullwidth-bottom-banner');
+    if (barra) observador.observe(barra);
+    return () => observador.disconnect();
+  }, []);
 
   useEffect(() => {
     if (!arrastrando) return undefined;
@@ -141,10 +166,10 @@ export default function MapaPerfil({ resaltarUnidad, coropleta, simbologia, chil
   };
 
   return (
-    <div className={`dashboard-map-area ${midiendo ? 'measuring-mode' : ''}`}>
-      <div className="draggable-wrapper" style={{ left: pos.x, top: pos.y, position: 'absolute', zIndex: 1000, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
+    <div ref={area} className={`dashboard-map-area ${midiendo ? 'measuring-mode' : ''}`}>
+      <div ref={caja} className="draggable-wrapper" style={{ left: pos?.x ?? 0, top: pos?.y ?? 0, visibility: pos ? 'visible' : 'hidden', position: 'absolute', zIndex: 1000, display: 'flex', alignItems: 'flex-start', gap: 8 }}>
         <div className="floating-panel" style={{ position: 'relative', top: 'auto', left: 'auto', width: 280, margin: 0 }}>
-          <div className="panel-header drag-handle" onMouseDown={(e) => { setArrastrando(true); inicio.current = { sx: e.clientX, sy: e.clientY, x: pos.x, y: pos.y }; }}>
+          <div className="panel-header drag-handle" onMouseDown={(e) => { movida.current = true; setArrastrando(true); inicio.current = { sx: e.clientX, sy: e.clientY, x: pos?.x ?? 0, y: pos?.y ?? 0 }; }}>
             <List size={18} /><h4>Herramientas del Mapa</h4>
           </div>
           <div className="panel-content" style={{ borderBottom: '1px solid var(--border-color)' }}>

@@ -73,7 +73,7 @@
   gap: 12px;
   transition: all 0.2s ease;
   cursor: pointer;
-  text-align: left;
+  text-align: justify;
   width: 100%;
   position: relative;
   outline: none;

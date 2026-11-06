@@ -16,6 +16,24 @@
 export const ROLES = ['capturista', 'administrador', 'administrador_titular', 'auditor'];
 const CLAVE = 'sesim_auth';
 const MARGEN_SEG = 30;
+/** Reintentos de lecturas ante una caída transitoria del gateway o de PostgREST (502/503/504). */
+const ESTADOS_TRANSITORIOS = new Set([502, 503, 504]);
+const ESPERAS_MS = [500, 1500];
+const ESPERA_MAX_MS = 5000;
+
+/** Mensaje claro para una respuesta 5xx según quién la emitió (gateway Envoy, PostgREST o GoTrue). */
+export function describirFallaServidor(status, datos) {
+  const texto = typeof datos === 'string' ? datos : '';
+  const codigo = datos && typeof datos === 'object' ? datos.code : null;
+  if (/no healthy upstream|upstream connect error|connection refused/i.test(texto)) {
+    return `El gateway del backend no encuentra el servicio solicitado (${status}): el contenedor está detenido o reiniciándose.`;
+  }
+  if (codigo === 'PGRST001' || codigo === 'PGRST002') {
+    return `La API no puede consultar la base de datos (${codigo}): la base está reiniciándose o falló la carga de su esquema.`;
+  }
+  if (status === 503) return 'El servicio no está disponible temporalmente (503). Intente de nuevo en unos segundos.';
+  return null;
+}
 
 export class ErrorSesim extends Error {
   constructor(mensaje, { status = null, codigo = null } = {}) {
@@ -58,6 +76,7 @@ export function crearCliente({
   almacen = almacenPorDefecto(),
   fetchImpl = (...a) => globalThis.fetch(...a),
   ahora = () => Math.floor(Date.now() / 1000),
+  esperar = (ms) => new Promise((resolver) => setTimeout(resolver, ms)),
 } = {}) {
   const base = url.replace(/\/$/, '');
   const baseProcesos = procesosUrl.replace(/\/$/, '');
@@ -100,11 +119,17 @@ export function crearCliente({
     if (token) h.Authorization = `Bearer ${token}`;
     if (esquema) h[metodo === 'GET' || metodo === 'HEAD' ? 'Accept-Profile' : 'Content-Profile'] = esquema;
     if (cuerpo !== undefined) h['Content-Type'] = 'application/json';
+    const idempotente = metodo === 'GET' || metodo === 'HEAD';
     let r;
-    try {
-      r = await fetchImpl(raiz + ruta, { method: metodo, headers: h, body: cuerpo !== undefined ? JSON.stringify(cuerpo) : undefined });
-    } catch {
-      throw new ErrorSesim('No se pudo conectar con el servidor. Verifique que el backend esté en marcha.', { codigo: 'red' });
+    for (let intento = 0; ; intento++) {
+      try {
+        r = await fetchImpl(raiz + ruta, { method: metodo, headers: h, body: cuerpo !== undefined ? JSON.stringify(cuerpo) : undefined });
+      } catch {
+        throw new ErrorSesim('No se pudo conectar con el servidor. Verifique que el backend esté en marcha.', { codigo: 'red' });
+      }
+      if (!idempotente || !ESTADOS_TRANSITORIOS.has(r.status) || intento >= ESPERAS_MS.length) break;
+      const sugerida = Number(r.headers?.get?.('Retry-After')) * 1000;
+      await esperar(Math.min(ESPERA_MAX_MS, Number.isFinite(sugerida) && sugerida > 0 ? sugerida : ESPERAS_MS[intento]));
     }
     const texto = await r.text();
     let datos = null;
@@ -119,7 +144,7 @@ export function crearCliente({
     if (/banned/i.test(codigo) || /banned/i.test(msg)) return new ErrorSesim('Esta cuenta fue dada de baja por el Administrador Titular.', { status: r.status, codigo: 'baja' });
     if (codigo === 'invalid_credentials' || /invalid login credentials/i.test(msg)) return new ErrorSesim('Correo o contraseña incorrectos.', { status: r.status, codigo: 'credenciales' });
     if (r.status === 429 || codigo === 'over_request_rate_limit') return new ErrorSesim('Demasiados intentos. Espere un momento e intente de nuevo.', { status: r.status, codigo: 'limite' });
-    if (r.status >= 500) return new ErrorSesim('El servicio de acceso no está disponible en este momento.', { status: r.status, codigo: 'servidor' });
+    if (r.status >= 500) return new ErrorSesim(describirFallaServidor(r.status, r.datos) || 'El servicio de acceso no está disponible en este momento.', { status: r.status, codigo: 'servidor' });
     return new ErrorSesim(`No se pudo iniciar sesión (${r.status}).`, { status: r.status, codigo: 'auth' });
   }
 
@@ -229,7 +254,7 @@ export function crearCliente({
     if (!r.ok) {
       const d = r.datos && typeof r.datos === 'object' ? r.datos : {};
       const det = Array.isArray(d.detail) ? d.detail.map((x) => x?.msg ?? JSON.stringify(x)).join('; ') : d.detail;
-      const msg = d.message || det || (typeof r.datos === 'string' ? r.datos : '') || `Error ${r.status}`;
+      const msg = describirFallaServidor(r.status, r.datos) || d.message || det || (typeof r.datos === 'string' ? r.datos : '') || `Error ${r.status}`;
       throw new ErrorSesim(r.status === 403 && !mensajeServidor ? 'No tiene permiso para esta operación.' : msg, { status: r.status, codigo: d.code || (typeof d.detail === 'string' ? d.detail : null) });
     }
     return r.datos;
@@ -260,7 +285,7 @@ export function crearCliente({
         if (e.codigo !== 'sin_sesion' && e.codigo !== 'sesion_expirada') throw e;
         const r = await pedir(ruta, { token: anonKey, esquema: 'api', extra });
         if (!r.ok) {
-          const msg = r.datos?.message || `Error ${r.status}`;
+          const msg = describirFallaServidor(r.status, r.datos) || r.datos?.message || `Error ${r.status}`;
           throw new ErrorSesim(`No se pudo leer ${tabla}: ${msg}`, { status: r.status, codigo: r.datos?.code ?? null });
         }
         pagina = r.datos;
@@ -284,7 +309,7 @@ export function crearCliente({
     if (!r.ok) {
       const d = r.datos && typeof r.datos === 'object' ? r.datos : {};
       const det = Array.isArray(d.detail) ? d.detail.map((x) => x?.msg ?? JSON.stringify(x)).join('; ') : d.detail;
-      throw new ErrorSesim(typeof det === 'string' ? det : `Error ${r.status}`, { status: r.status, codigo: typeof d.detail === 'string' ? d.detail : null });
+      throw new ErrorSesim(describirFallaServidor(r.status, r.datos) || (typeof det === 'string' ? det : `Error ${r.status}`), { status: r.status, codigo: typeof d.detail === 'string' ? d.detail : null });
     }
     return r.datos;
   };
@@ -306,6 +331,36 @@ export function crearCliente({
     return filas;
   };
 
+  /** Sube un archivo a Supabase Storage con la sesión de la persona (las políticas del bucket deciden). */
+  async function subirObjeto(bucket, ruta, archivo, mime) {
+    exigirConfig();
+    const token = await tokenVigente();
+    let r;
+    try {
+      r = await fetchImpl(`${base}/storage/v1/object/${bucket}/${ruta.split('/').map(encodeURIComponent).join('/')}`, {
+        method: 'POST', headers: { apikey: anonKey, Authorization: `Bearer ${token}`, 'Content-Type': mime, 'x-upsert': 'false' }, body: archivo,
+      });
+    } catch {
+      throw new ErrorSesim('No se pudo conectar con el servidor. Verifique que el backend esté en marcha.', { codigo: 'red' });
+    }
+    if (!r.ok) {
+      let d = {}; try { d = await r.json(); } catch { /* sin cuerpo */ }
+      const msg = r.status === 400 || r.status === 403
+        ? 'No se pudo subir el archivo: la medición no es suya, no está en borrador o rechazada, o el archivo no cumple (PDF, JPG o PNG de hasta 10 MB).'
+        : (d.message || d.error || `No se pudo subir el archivo (${r.status}).`);
+      throw new ErrorSesim(msg, { status: r.status, codigo: d.error || 'subida' });
+    }
+    return true;
+  }
+
+  /** Enlace temporal para abrir un archivo privado (la política de lectura del bucket decide quién puede). */
+  async function urlFirmada(bucket, ruta, segundos = 300) {
+    const d = await llamar(`/storage/v1/object/sign/${bucket}/${ruta.split('/').map(encodeURIComponent).join('/')}`, { metodo: 'POST', cuerpo: { expiresIn: segundos } });
+    const rel = d?.signedURL ?? d?.signedUrl;
+    if (!rel) throw new ErrorSesim('No se pudo generar el enlace del archivo.', { codigo: 'firma' });
+    return `${base}/storage/v1${rel.startsWith('/') ? '' : '/'}${rel}`;
+  }
+
   return {
     configurado,
     autenticar,
@@ -322,6 +377,8 @@ export function crearCliente({
     procesosPublico,
     altaUsuario,
     cambiarActivo,
+    subirObjeto,
+    urlFirmada,
     sesionGuardada: () => sesion,
     suscribir: (fn) => { oyentes.add(fn); return () => oyentes.delete(fn); },
     releer: () => { sesion = leerAlmacen(); },

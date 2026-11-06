@@ -8,6 +8,7 @@ const ETIQUETA = {
   cambio_ambito: 'Cambio de ámbito',
   baja: 'Baja',
   reactivacion: 'Reactivación',
+  acceso: 'Inicio de sesión',
 };
 
 function detalle(b) {

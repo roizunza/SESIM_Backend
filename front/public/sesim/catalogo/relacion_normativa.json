@@ -1,0 +1,34 @@
+[
+ {
+  "id": "DOC-E008>DOC-F005",
+  "instrumento_origen": "DOC-E008",
+  "instrumento_destino": "DOC-F005",
+  "tipo_relacion": "concordancia",
+  "descripcion": "ENAMOV · LGMSV · LGAHOTDU · ENOT. La relación puntual debe fundamentarse en el contenido de cada instrumento.",
+  "estatus": "por_validar"
+ },
+ {
+  "id": "DOC-E008>DOC-F002",
+  "instrumento_origen": "DOC-E008",
+  "instrumento_destino": "DOC-F002",
+  "tipo_relacion": "concordancia",
+  "descripcion": "ENAMOV · LGMSV · LGAHOTDU · ENOT. La relación puntual debe fundamentarse en el contenido de cada instrumento.",
+  "estatus": "por_validar"
+ },
+ {
+  "id": "DOC-E008>DOC-F003",
+  "instrumento_origen": "DOC-E008",
+  "instrumento_destino": "DOC-F003",
+  "tipo_relacion": "concordancia",
+  "descripcion": "ENAMOV · LGMSV · LGAHOTDU · ENOT. La relación puntual debe fundamentarse en el contenido de cada instrumento.",
+  "estatus": "por_validar"
+ },
+ {
+  "id": "DOC-E008>DOC-F006",
+  "instrumento_origen": "DOC-E008",
+  "instrumento_destino": "DOC-F006",
+  "tipo_relacion": "concordancia",
+  "descripcion": "ENAMOV · LGMSV · LGAHOTDU · ENOT. La relación puntual debe fundamentarse en el contenido de cada instrumento.",
+  "estatus": "por_validar"
+ }
+]

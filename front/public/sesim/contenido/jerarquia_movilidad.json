@@ -1,0 +1,76 @@
+{
+ "fundamento": "NOM-004-SEDATU-2023, Estructura y diseño para vías urbanas. Especificaciones y aplicación, numeral 4.34 (DOF 12/04/2024)",
+ "id_instrumento_fundamento": "DOC-N001",
+ "concordancia": "Ley General de Movilidad y Seguridad Vial, artículo 6, y Ley de Movilidad y Seguridad Vial del Estado de Campeche, artículo 7",
+ "id_instrumento_concordancia": "DOC-E001",
+ "introduccion": "Prioridad en la planeación, diseño e implementación de las políticas públicas, planes y programas en materia de movilidad favoreciendo en todo momento a la persona, los grupos en situación de vulnerabilidad y sus necesidades, garantizando la prioridad en el uso y disposición de las vías, de acuerdo con la siguiente jerarquía:",
+ "fuente_texto": "https://sidof.segob.gob.mx/notas/5723137",
+ "niveles": [
+  {
+   "id": "peatones",
+   "fraccion": "I",
+   "orden": 1,
+   "nombre": "Personas peatonas",
+   "texto": "Personas peatonas, con un enfoque equitativo y diferenciado en razón de género, personas con discapacidad y movilidad limitada",
+   "imagen": {
+    "archivo": "/sesim/contenido/jerarquia/peatones.jpg",
+    "alt": "Personas caminando por una calle del Centro Histórico de San Francisco de Campeche",
+    "credito": "Fernando Eloy, 2021",
+    "enfoque": "50% 42%"
+   }
+  },
+  {
+   "id": "ciclistas",
+   "fraccion": "II",
+   "orden": 2,
+   "nombre": "Personas ciclistas",
+   "texto": "Personas ciclistas y personas usuarias de vehículos no motorizados",
+   "imagen": {
+    "archivo": "/sesim/contenido/jerarquia/ciclistas.jpg",
+    "alt": "Persona ciclista cruzando una calle del Centro Histórico de San Francisco de Campeche",
+    "credito": "Rub Explora, 2025",
+    "enfoque": "50% 70%"
+   }
+  },
+  {
+   "id": "transporte_publico",
+   "fraccion": "III",
+   "orden": 3,
+   "nombre": "Transporte público",
+   "texto": "Personas usuarias y prestadoras del servicio de transporte público de pasajeros, con un enfoque equitativo pero diferenciado",
+   "imagen": {
+    "archivo": "/sesim/contenido/jerarquia/transporte_publico.jpg",
+    "alt": "Tren ligero frente a la Estación S. F. Campeche del Tren Maya",
+    "credito": "Gobierno de México",
+    "enfoque": "50% 62%"
+   }
+  },
+  {
+   "id": "carga",
+   "fraccion": "IV",
+   "orden": 4,
+   "nombre": "Transporte de bienes y mercancías",
+   "texto": "Personas prestadoras de servicios de transporte y distribución de bienes y mercancías",
+   "imagen": {
+    "archivo": "/sesim/contenido/jerarquia/carga.jpg",
+    "alt": "Vehículos de carga y reparto frente a un buque portacontenedores",
+    "credito": "JSV Logistic",
+    "enfoque": "50% 72%"
+   }
+  },
+  {
+   "id": "particulares",
+   "fraccion": "V",
+   "orden": 5,
+   "nombre": "Vehículos particulares",
+   "texto": "Personas usuarias de vehículos motorizados particulares",
+   "imagen": {
+    "archivo": "/sesim/contenido/jerarquia/particulares.jpg",
+    "alt": "Vehículos particulares en circulación sobre una vialidad",
+    "credito": "W Radio",
+    "enfoque": "50% 50%"
+   }
+  }
+ ],
+ "nota_texto": "Cada cita reproduce el texto de la fracción sin el signo que la enlaza con la siguiente en la lista del numeral 4.34."
+}

@@ -15,9 +15,9 @@ export function useRevelar(refContenedor, deps = []) {
   useEffect(() => {
     const raiz = refContenedor.current;
     if (!raiz) return undefined;
-    const elementos = Array.from(raiz.querySelectorAll('[data-revelar]:not(.revelado)'));
+    const pendientes = () => Array.from(raiz.querySelectorAll('[data-revelar]:not(.revelado)'));
     if (!('IntersectionObserver' in window)) {
-      elementos.forEach((el) => el.classList.add('revelado'));
+      pendientes().forEach((el) => el.classList.add('revelado'));
       return undefined;
     }
     const obs = new IntersectionObserver(
@@ -31,8 +31,14 @@ export function useRevelar(refContenedor, deps = []) {
       },
       { threshold: 0.15, rootMargin: '0px 0px -8% 0px' },
     );
-    elementos.forEach((el) => obs.observe(el));
-    return () => obs.disconnect();
+    pendientes().forEach((el) => obs.observe(el));
+    // Los bloques que llegan después (secciones que esperan sus datos) también se observan.
+    const mut = new MutationObserver(() => pendientes().forEach((el) => obs.observe(el)));
+    mut.observe(raiz, { childList: true, subtree: true });
+    return () => {
+      obs.disconnect();
+      mut.disconnect();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 }

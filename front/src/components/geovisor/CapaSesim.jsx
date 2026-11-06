@@ -1,67 +1,81 @@
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
-import { geojsonDeCapa } from '../../lib/sesim/api';
+import { useDatosCapa } from '../../lib/sesim/useDatosCapa';
 import { estiloPorGeometria } from '../../lib/sesim/simbologia';
+import { CONFIG_INICIAL, cumpleFiltros, resolverEstilo } from '../../lib/sesim/estiloCapa';
 import { toPathOptions, toPointLayer } from '../../lib/leafletSymbology';
+import { escalaSimbolo } from '../../lib/sesim/capas';
+
+/** Trazo de contexto cuando la simbología de la capa está apagada: visible, sin protagonismo. */
+function estiloNeutro(geom, opacidad) {
+  if (geom === 'polygon') return { color: '#7B8189', weight: 0.8, opacity: 0.7 * opacidad, fillColor: '#B9BEC4', fillOpacity: 0.08 * opacidad };
+  if (geom === 'point') return { radius: 3, color: '#ffffff', weight: 0.6, fillColor: '#7B8189', fillOpacity: 0.6 * opacidad, opacity: opacidad };
+  return { color: '#8A8F96', weight: 1, opacity: 0.6 * opacidad };
+}
 
 /**
- * Dibuja UNA capa del catálogo (`capa` enriquecida por cargarArbolCapas):
- * pide su GeoJSON ligero recién al montarse (carga perezosa) y lo pinta con
- * la simbología que resolvió `construirSimbologia` (QGIS, categórica o
- * única). Un elemento sin símbolo resuelto cae al estilo de respaldo: nunca
- * se oculta.
- *
- * Al hacer clic en un elemento entrega `{ capa, propiedades }` — las
- * propiedades son las llaves del modelo: id (capa_vector.id), nombre,
- * clasif, cve_mun, id_unidad.
+ * Dibuja UNA capa del catálogo con su configuración visual:
+ *  · `config.simbologia` apagada → trazo neutro (la capa no se apaga);
+ *  · `config.estilo` → simbología original del catálogo o derivada de un campo;
+ *  · `config.filtros` → solo se dibujan los elementos que cumplen los filtros por atributo;
+ *  · `municipio` → solo los elementos de ese municipio (`id_unidad`, Ruta 5 territorial).
+ * Ningún elemento se oculta por falta de símbolo: cae al estilo de respaldo.
  */
-export default function CapaSesim({ capa, opacidad = 1, conEtiqueta = false, onSeleccionar }) {
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    let cancelado = false;
-    geojsonDeCapa(capa)
-      .then((d) => !cancelado && setData(d))
-      .catch((e) => !cancelado && setError(e.message));
-    return () => {
-      cancelado = true;
+export default function CapaSesim({ capa, config = CONFIG_INICIAL, opacidad = 1, conEtiqueta = false, municipio = '', onSeleccionar }) {
+  const { datos, error } = useDatosCapa(capa);
+  const estilo = useMemo(() => resolverEstilo(capa, config, datos?.features), [capa, config, datos]);
+  const pathDe = useMemo(() => {
+    const s = capa.simbologia;
+    return (props) => {
+      if (estilo.tipo === 'neutro') return estiloNeutro(capa.geom, opacidad);
+      if (estilo.tipo === 'campo') return estiloPorGeometria(estilo.colorDe(props), capa.geom, opacidad);
+      if (s.modo === 'qgis') {
+        const simbolo = s.simboloDe(props);
+        if (simbolo) return toPathOptions(simbolo, opacidad);
+      }
+      return estiloPorGeometria(s.colorDe(props), capa.geom, opacidad);
     };
-  }, [capa]);
+  }, [capa, estilo, opacidad]);
+  const estiloLeaflet = useMemo(
+    () => (f) => {
+      const ruta = pathDe(f.properties);
+      return ruta.radius ? { ...ruta, radius: ruta.radius * escalaSimbolo(capa.id, f.properties?.clasif) } : ruta;
+    },
+    [pathDe, capa.id],
+  );
 
   if (error) {
     console.error(`No se pudo cargar la capa ${capa.id}:`, error);
     return null;
   }
-  if (!data) return null;
+  if (!datos) return null;
 
   const s = capa.simbologia;
-  const respaldo = (props) => estiloPorGeometria(s.colorDe(props), capa.geom, opacidad);
-
-  const estilo = (feature) => {
-    if (s.modo === 'qgis') {
-      const simbolo = s.simboloDe(feature.properties);
-      if (simbolo) return toPathOptions(simbolo, opacidad);
-    }
-    return respaldo(feature.properties);
-  };
-
   const punto = (feature, latlng) => {
-    if (s.modo === 'qgis') {
+    if (estilo.tipo === 'original' && s.modo === 'qgis') {
       const simbolo = s.simboloDe(feature.properties);
-      if (simbolo) return toPointLayer(simbolo, latlng, opacidad);
+      if (simbolo) return toPointLayer(simbolo, latlng, opacidad, escalaSimbolo(capa.id, feature.properties?.clasif));
     }
-    return L.circleMarker(latlng, respaldo(feature.properties));
+    return L.circleMarker(latlng, estiloLeaflet(feature));
   };
 
   const onEachFeature = (feature, layer) => {
     if (onSeleccionar) layer.on('click', () => onSeleccionar({ capa, propiedades: feature.properties }));
     const texto = conEtiqueta ? feature.properties?.nombre : null;
-    if (texto) {
-      layer.bindTooltip(String(texto), { permanent: true, direction: 'center', className: 'capa-etiqueta-mapa' });
-    }
+    if (texto) layer.bindTooltip(String(texto), { permanent: true, direction: 'center', className: 'capa-etiqueta-mapa' });
   };
 
-  return <GeoJSON key={capa.id} data={data} style={estilo} pointToLayer={punto} onEachFeature={onEachFeature} />;
+  // Cambiar estilo o filtros reconstruye la capa; la opacidad solo reestiliza (setStyle).
+  const clave = `${capa.id}|${config.simbologia}|${JSON.stringify(config.estilo)}|${JSON.stringify(config.filtros)}|${municipio}`;
+  return (
+    <GeoJSON
+      key={clave}
+      data={datos}
+      style={estiloLeaflet}
+      pointToLayer={punto}
+      filter={(f) => (!municipio || f.properties?.id_unidad === municipio) && cumpleFiltros(f.properties, config.filtros)}
+      onEachFeature={onEachFeature}
+    />
+  );
 }

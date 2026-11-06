@@ -1,0 +1,1917 @@
+[
+ {
+  "id": "DOC-E001",
+  "clave": "DOC-E001",
+  "nombre": "Ley de Movilidad y Seguridad Vial del Estado de Campeche",
+  "nombre_oficial": null,
+  "tipo": "Ley",
+  "escala": "E",
+  "subtipo": "Ordenamiento estatal principal",
+  "nivel_piramide": 4,
+  "seccion_banco": "2.",
+  "dependencia": null,
+  "fuente": "Consejería Jurídica del Poder Ejecutivo del Estado de Campeche.",
+  "fecha_publicacion": "2023-07-28",
+  "ultima_actualizacion": "2026-06-18",
+  "estatus": "vigente_verificado",
+  "estatus_documental": "Verificado",
+  "descripcion": "Regula el derecho a la movilidad, atribuciones estatales y municipales e instrumentos de planeación; vincula movilidad con ordenamiento territorial, desarrollo urbano, medio ambiente y seguridad vial.",
+  "articulos": "Artículo 1; artículo 21; artículo 29; Título Sexto y apartados sobre el Sistema de Movilidad Integrada y la Agencia Reguladora del Transporte.",
+  "uso_sesim": "El artículo 29 ofrece fundamento para funciones del Sistema Estatal, incluyendo la formulación de indicadores y mecanismos de integración, sistematización y análisis de información.",
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": "La revisión documental posterior identificó una reforma más reciente, Decreto 249, de 18/06/2026. Confirmar portada, decreto y texto íntegro antes de fijar la versión de producción.",
+  "enlaces": [
+   {
+    "titulo": "Ley estatal actualizada (PDF)",
+    "url": "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/est/100059.1.pdf"
+   }
+  ],
+  "url_oficial": "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/est/100059.1.pdf",
+  "cobertura_geografica": "Estado de Campeche",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "H. Congreso del Estado de Campeche",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "POE",
+   "fecha": "2023-07-28",
+   "numero": "No. 1976, Segunda Sección",
+   "instrumento": "Decreto número 250"
+  },
+  "ultima_reforma": {
+   "medio": "POE",
+   "fecha": "2026-06-18",
+   "numero": "No. 2676, Cuarta Sección",
+   "instrumento": "Decreto número 249"
+  },
+  "articulos_verificados": [
+   {
+    "articulo": "7",
+    "materia": "Jerarquía de los modos de movilidad en la utilización del espacio público."
+   },
+   {
+    "articulo": "29",
+    "materia": "Facultades del Sistema Estatal de Movilidad y Seguridad Vial."
+   }
+  ],
+  "fuentes_verificacion": [
+   "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/est/100059.1.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-E002",
+  "clave": "DOC-E002",
+  "nombre": "Ley de Vialidad, Tránsito y Control Vehicular del Estado de Campeche",
+  "nombre_oficial": null,
+  "tipo": "Ley",
+  "escala": "E",
+  "subtipo": "Regulación vial",
+  "nivel_piramide": 4,
+  "seccion_banco": "2.",
+  "dependencia": null,
+  "fuente": "Consejería Jurídica del Poder Ejecutivo del Estado.",
+  "fecha_publicacion": "2008-06-09",
+  "ultima_actualizacion": "2026-06-08",
+  "estatus": "vigente_verificado",
+  "estatus_documental": "Verificado",
+  "descripcion": "Regula uso de vialidades, tránsito, infraestructura, servicios, señalización y condiciones de seguridad vial.",
+  "articulos": null,
+  "uso_sesim": "Indicadores de infraestructura vial, control de tránsito, señalización, siniestros y gestión de velocidades.",
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": "La revisión posterior identificó reforma del 08/06/2026, Decreto 240. Cotejar con el Periódico Oficial y versión consolidada.",
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/est/100083.pdf"
+   },
+   {
+    "titulo": "Ley estatal actualizada (PDF)",
+    "url": "https://www.consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/est/100083.pdf"
+   }
+  ],
+  "url_oficial": "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/est/100083.pdf",
+  "cobertura_geografica": "Estado de Campeche",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "H. Congreso del Estado de Campeche",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "POE",
+   "fecha": "2008-06-09",
+   "numero": "No. 4055",
+   "instrumento": "Decreto número 161"
+  },
+  "ultima_reforma": {
+   "medio": "POE",
+   "fecha": "2026-06-08",
+   "numero": "No. 2668, Quinta Sección",
+   "instrumento": "Decreto número 240"
+  },
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/est/100083.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-E003",
+  "clave": "DOC-E003",
+  "nombre": "Reglamento en Materia de Transporte de la Ley de Movilidad y Seguridad Vial del Estado de Campeche",
+  "nombre_oficial": null,
+  "tipo": "Reglamento",
+  "escala": "E",
+  "subtipo": "Reglamentación",
+  "nivel_piramide": 4,
+  "seccion_banco": "2.",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2023-12-08",
+  "ultima_actualizacion": "2025-06-20",
+  "estatus": "vigente_verificado",
+  "estatus_documental": "Verificado",
+  "descripcion": "Reglamenta disposiciones sobre transporte, concesiones, permisos, modalidades de prestación y sistemas de movilidad integrada.",
+  "articulos": null,
+  "uso_sesim": "Seguimiento de cobertura, unidades, concesiones, rutas, modalidades y operación de servicios.",
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Reglamento (PDF)",
+    "url": "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/regley/400025.pdf"
+   }
+  ],
+  "url_oficial": "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/regley/400025.pdf",
+  "cobertura_geografica": "Estado de Campeche",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Poder Ejecutivo del Estado de Campeche",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "POE",
+   "fecha": "2023-12-08",
+   "numero": "No. 2065, Segunda Sección",
+   "instrumento": "Acuerdo del Ejecutivo"
+  },
+  "ultima_reforma": {
+   "medio": "POE",
+   "fecha": "2025-06-20",
+   "numero": "No. 2434",
+   "instrumento": "Acuerdo del Ejecutivo"
+  },
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/regley/400025.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-E004",
+  "clave": "DOC-E004",
+  "nombre": "Constitución Política del Estado de Campeche",
+  "nombre_oficial": null,
+  "tipo": "Constitución",
+  "escala": "E",
+  "subtipo": "Marco constitucional estatal",
+  "nivel_piramide": 1,
+  "seccion_banco": "2.",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "1917-07-05",
+  "ultima_actualizacion": "2026-09-04",
+  "estatus": "vigente_verificado",
+  "estatus_documental": "Verificado",
+  "descripcion": "Marco constitucional para la organización de los poderes y municipios, las competencias públicas y la coordinación institucional.",
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": "Verificar fecha de reforma directamente contra el Periódico Oficial; en la revisión se detectó discrepancia entre encabezado y texto indexado.",
+  "enlaces": [
+   {
+    "titulo": "Constitución estatal (PDF)",
+    "url": "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/est/100008.pdf"
+   }
+  ],
+  "url_oficial": "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/est/100008.pdf",
+  "cobertura_geografica": "Estado de Campeche",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "H. Congreso del Estado de Campeche",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "POE",
+   "fecha": "1917-07-05",
+   "numero": "No. 3181"
+  },
+  "ultima_reforma": {
+   "medio": "POE",
+   "fecha": "2026-09-04",
+   "numero": "No. 2731, Segunda Sección",
+   "instrumento": "Decreto número 285"
+  },
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/docs/est/100008.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-E005",
+  "clave": "DOC-E005",
+  "nombre": "Reglamento Interior de la Agencia Reguladora del Transporte del Estado de Campeche (ARTEC)",
+  "nombre_oficial": null,
+  "tipo": "Reglamento",
+  "escala": "E",
+  "subtipo": "Organización administrativa",
+  "nivel_piramide": 4,
+  "seccion_banco": "2.",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": null,
+  "ultima_actualizacion": null,
+  "estatus": "por_validar",
+  "estatus_documental": "Registro identificado",
+  "descripcion": "Permite identificar atribuciones, estructura orgánica y responsabilidades institucionales en regulación y operación del transporte.",
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": "Integrar PDF y verificar reformas posteriores.",
+  "enlaces": [
+   {
+    "titulo": "Reglamentos interiores – Lexius Campeche",
+    "url": "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/reglamentosInt.php"
+   },
+   {
+    "titulo": "Portal oficial ARTEC",
+    "url": "https://artec.campeche.gob.mx/"
+   }
+  ],
+  "url_oficial": "https://consejeria.campeche.gob.mx/pagina/LEXIUSCAMPECHE/reglamentosInt.php",
+  "cobertura_geografica": "Estado de Campeche",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": null,
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": null,
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [],
+  "fecha_verificacion": null,
+  "publicable": false
+ },
+ {
+  "id": "DOC-E006",
+  "clave": "DOC-E006",
+  "nombre": "Estrategia de Movilidad y Seguridad Vial de Campeche 2024",
+  "nombre_oficial": "Estrategia de Movilidad y Seguridad Vial, Campeche 2024",
+  "tipo": "Estrategia",
+  "escala": "E",
+  "subtipo": "Estrategia estatal",
+  "nivel_piramide": 5,
+  "seccion_banco": "3.1",
+  "dependencia": "Sistema Estatal de Movilidad y Seguridad Vial / SEDUMOP.",
+  "fuente": null,
+  "fecha_publicacion": null,
+  "ultima_actualizacion": null,
+  "estatus": "pendiente_integracion",
+  "estatus_documental": "Pendiente de integración",
+  "descripcion": "Componente de la obra «Modernización del Sistema de Movilidad Integrada en el Estado de Campeche», licitación pública estatal SEDUMOP-DGAGOP-LPC-026-2024 (convocatoria 009-2024), publicada por SEDUMOP el 27 de enero de 2025.",
+  "articulos": null,
+  "uso_sesim": "Principal instrumento estratégico estatal. Extraer objetivos, estrategias, líneas de acción, metas, responsables, indicadores y horizonte de cumplimiento.",
+  "evidencia": "Aparece como producto de la contratación para la Modernización del Sistema de Movilidad Integrada del Estado de Campeche; la comparecencia gubernamental 2025 reporta su desarrollo.",
+  "vinculacion": null,
+  "observaciones": "Pendiente: PDF completo, acto de aprobación, versión definitiva, matriz de indicadores y anexos técnicos.",
+  "enlaces": [
+   {
+    "titulo": "Licitación SEDUMOP-DGAGOP-LPC-026-2024",
+    "url": "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+   },
+   {
+    "titulo": "Comparecencia 2025",
+    "url": "https://ucs.campeche.gob.mx/comparecencia-2025/"
+   }
+  ],
+  "url_oficial": null,
+  "cobertura_geografica": "Estado de Campeche",
+  "id_unidad": null,
+  "id_instrumento_origen": "Eemsv01",
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": null,
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": null,
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-E007",
+  "clave": "DOC-E007",
+  "nombre": "Plan Estatal de Desarrollo de Campeche 2024–2027 (PED)",
+  "nombre_oficial": null,
+  "tipo": "Plan",
+  "escala": "E",
+  "subtipo": "Planeación estatal",
+  "nivel_piramide": 5,
+  "seccion_banco": "3.1",
+  "dependencia": null,
+  "fuente": "Gobierno del Estado de Campeche.",
+  "fecha_publicacion": "2024-06-10",
+  "ultima_actualizacion": null,
+  "estatus": "vigente_verificado",
+  "estatus_documental": "Documento publicado",
+  "descripcion": "Incluye prioridades de modernización del transporte, tiempos de traslado, rutas e infraestructura vial.",
+  "articulos": "Diagnóstico de movilidad y transporte, objetivos, estrategias, líneas de acción e indicadores.",
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "PED 2024–2027 (PDF)",
+    "url": "https://transparenciafiscal.campeche.gob.mx/images/2024/PLAN_ESTATAL_DE_DESARROLLO_2024_2027.pdf"
+   }
+  ],
+  "url_oficial": "https://transparenciafiscal.campeche.gob.mx/images/2024/PLAN_ESTATAL_DE_DESARROLLO_2024_2027.pdf",
+  "cobertura_geografica": "Estado de Campeche",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Gobierno del Estado de Campeche",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "POE",
+   "fecha": "2024-06-10",
+   "numero": "Año IX No. 2185, Cuarta Sección"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://www.cespcampeche.gob.mx/web/public/descargas/plan_estatal/PLAN_ESTATAL_DE_DESARROLLO_2024-2027.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-E008",
+  "clave": "DOC-E008",
+  "nombre": "Programa Estatal de Ordenamiento Territorial y Desarrollo Urbano de Campeche (PEOTDU)",
+  "nombre_oficial": null,
+  "tipo": "Programa territorial",
+  "escala": "E",
+  "subtipo": "Planeación territorial",
+  "nivel_piramide": 5,
+  "seccion_banco": "3.1",
+  "dependencia": "SEDATU y Gobierno de Campeche, a través de SEDUMOP.",
+  "fuente": null,
+  "fecha_publicacion": null,
+  "ultima_actualizacion": null,
+  "estatus": "vigente_verificado",
+  "estatus_documental": "Publicado en POE",
+  "descripcion": "Instrumento estatal de ordenamiento territorial y desarrollo urbano. Incorpora diagnóstico territorial, estructura urbano-rural, infraestructura, conectividad, movilidad y estrategias territoriales.",
+  "articulos": null,
+  "uso_sesim": "Extraer estrategias de articulación regional, accesibilidad, infraestructura, conectividad, estructura de asentamientos y distribución territorial de servicios.",
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "PEOTDU (PDF)",
+    "url": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PEOTDU-CAMPECHE.pdf"
+   },
+   {
+    "titulo": "Portal de instrumentos SEDUMOP",
+    "url": "https://sedumop.campeche.gob.mx/programa-estatal-de-ordenamiento-territorial-y-desarrollo-del-estado-de-campeche/"
+   }
+  ],
+  "url_oficial": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PEOTDU-CAMPECHE.pdf",
+  "cobertura_geografica": "Estado de Campeche",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Gobierno del Estado de Campeche (SEDUMOP) con la Secretaría de Desarrollo Agrario, Territorial y Urbano",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": null,
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/programa-estatal-de-ordenamiento-territorial-y-desarrollo-del-estado-de-campeche/"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-E009",
+  "clave": "DOC-E009",
+  "nombre": "Programa Sectorial Desarrollo Económico con Visión al Futuro 2024–2027",
+  "nombre_oficial": null,
+  "tipo": "Programa sectorial",
+  "escala": "E",
+  "subtipo": "Planeación sectorial",
+  "nivel_piramide": 5,
+  "seccion_banco": "3.1",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2025-07-08",
+  "ultima_actualizacion": null,
+  "estatus": "vigente_verificado",
+  "estatus_documental": "Publicado en POE",
+  "descripcion": "Incluye acciones relacionadas con conectividad, movilidad de pasajeros e intercambio comercial.",
+  "articulos": null,
+  "uso_sesim": "Relacionar movilidad con logística, actividad económica e infraestructura.",
+  "evidencia": null,
+  "vinculacion": "Indirecta y complementaria.",
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Programa Sectorial (PDF)",
+    "url": "https://periodicooficial.campeche.gob.mx/sipoec/public/periodicos/202507/PO2446TS08072025.pdf"
+   }
+  ],
+  "url_oficial": "https://periodicooficial.campeche.gob.mx/sipoec/public/periodicos/202507/PO2446TS08072025.pdf",
+  "cobertura_geografica": "Estado de Campeche",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Secretaría de Desarrollo Económico, Secretaría de Desarrollo Agropecuario y Secretaría de Turismo del Estado de Campeche",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "POE",
+   "fecha": "2025-07-08",
+   "numero": "Año X No. 2446, Tercera Sección"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://periodicooficial.campeche.gob.mx/sipoec/public/periodicos/202507/PO2446TS08072025.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-F001",
+  "clave": "DOC-F001",
+  "nombre": "Constitución Política de los Estados Unidos Mexicanos",
+  "nombre_oficial": null,
+  "tipo": "Constitución",
+  "escala": "F",
+  "subtipo": "Constitucional",
+  "nivel_piramide": 1,
+  "seccion_banco": "1.1",
+  "dependencia": null,
+  "fuente": "Cámara de Diputados / Diario Oficial de la Federación",
+  "fecha_publicacion": "1917-02-05",
+  "ultima_actualizacion": "2026-10-07",
+  "estatus": "vigente_verificado",
+  "estatus_documental": "Verificado",
+  "descripcion": "El artículo 4.º reconoce el derecho de toda persona a la movilidad en condiciones de seguridad vial, accesibilidad, eficiencia, sostenibilidad, calidad, inclusión e igualdad.",
+  "articulos": "4.º, 26, 73 y 115, atendiendo al objeto específico de cada análisis.",
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": "Registrar fecha de reforma, autoridad emisora, artículos vinculantes y versión descargada.",
+  "enlaces": [
+   {
+    "titulo": "Constitución vigente (PDF)",
+    "url": "https://www.diputados.gob.mx/LeyesBiblio/pdf/CPEUM.pdf"
+   }
+  ],
+  "url_oficial": "https://www.diputados.gob.mx/LeyesBiblio/pdf/CPEUM.pdf",
+  "cobertura_geografica": "Nacional (aplicación en Campeche)",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Congreso de la Unión",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "DOF",
+   "fecha": "1917-02-05"
+  },
+  "ultima_reforma": {
+   "medio": "DOF",
+   "fecha": "2026-10-07"
+  },
+  "articulos_verificados": [
+   {
+    "articulo": "4.º",
+    "materia": "Derecho a la movilidad en condiciones de seguridad vial, accesibilidad, eficiencia, sostenibilidad, calidad, inclusión e igualdad."
+   }
+  ],
+  "fuentes_verificacion": [
+   "https://www.diputados.gob.mx/LeyesBiblio/pdf/CPEUM.pdf",
+   "https://www.diputados.gob.mx/LeyesBiblio/index.htm"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-F002",
+  "clave": "DOC-F002",
+  "nombre": "Ley General de Movilidad y Seguridad Vial (LGMSV)",
+  "nombre_oficial": null,
+  "tipo": "Ley",
+  "escala": "F",
+  "subtipo": "Legislación general",
+  "nivel_piramide": 2,
+  "seccion_banco": "1.1",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2022-05-17",
+  "ultima_actualizacion": "2023-12-29",
+  "estatus": "vigente_verificado",
+  "estatus_documental": "Verificado",
+  "descripcion": "Establece principios de política nacional, coordinación entre órdenes de gobierno, sistemas de movilidad y seguridad vial, jerarquía de movilidad e instrumentos de planeación.",
+  "articulos": "1, 4, 6, 7, 9, 10 y 31 a 35, entre otros aplicables.",
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": "La versión consultada en la revisión previa identificaba reforma al 29/12/2023. Verificar reformas posteriores antes de etiquetarla como versión vigente definitiva.",
+  "enlaces": [
+   {
+    "titulo": "LGMSV (PDF)",
+    "url": "https://www.diputados.gob.mx/LeyesBiblio/pdf/LGMSV.pdf"
+   }
+  ],
+  "url_oficial": "https://www.diputados.gob.mx/LeyesBiblio/pdf/LGMSV.pdf",
+  "cobertura_geografica": "Nacional (aplicación en Campeche)",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Congreso de la Unión",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "DOF",
+   "fecha": "2022-05-17"
+  },
+  "ultima_reforma": {
+   "medio": "DOF",
+   "fecha": "2023-12-29"
+  },
+  "articulos_verificados": [
+   {
+    "articulo": "6",
+    "materia": "Jerarquía de la movilidad: I. personas peatonas; II. personas ciclistas y usuarias de vehículos no motorizados; III. personas usuarias y prestadoras del servicio de transporte público de pasajeros; IV. personas prestadoras de servicios de transporte y distribución de bienes y mercancías; V. personas usuarias de vehículos motorizados particulares."
+   }
+  ],
+  "fuentes_verificacion": [
+   "https://www.diputados.gob.mx/LeyesBiblio/pdf/LGMSV.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-F003",
+  "clave": "DOC-F003",
+  "nombre": "Ley General de Asentamientos Humanos, Ordenamiento Territorial y Desarrollo Urbano (LGAHOTDU)",
+  "nombre_oficial": null,
+  "tipo": "Ley",
+  "escala": "F",
+  "subtipo": "Legislación general",
+  "nivel_piramide": 2,
+  "seccion_banco": "1.1",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2016-11-28",
+  "ultima_actualizacion": "2024-04-01",
+  "estatus": "vigente_verificado",
+  "estatus_documental": "Verificado",
+  "descripcion": "Vincula la planeación urbana, el ordenamiento territorial, los centros de población, el espacio público, la accesibilidad y la movilidad.",
+  "articulos": null,
+  "uso_sesim": "Relacionar movilidad con estructura urbana, planeación territorial, accesibilidad y sistema de asentamientos humanos.",
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": "La versión consultada en la revisión previa identificaba reforma al 01/04/2024; comprobar actualización vigente.",
+  "enlaces": [
+   {
+    "titulo": "LGAHOTDU (PDF)",
+    "url": "https://www.diputados.gob.mx/LeyesBiblio/pdf/LGAHOTDU.pdf"
+   }
+  ],
+  "url_oficial": "https://www.diputados.gob.mx/LeyesBiblio/pdf/LGAHOTDU.pdf",
+  "cobertura_geografica": "Nacional (aplicación en Campeche)",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Congreso de la Unión",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "DOF",
+   "fecha": "2016-11-28"
+  },
+  "ultima_reforma": {
+   "medio": "DOF",
+   "fecha": "2024-04-01"
+  },
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://www.diputados.gob.mx/LeyesBiblio/pdf/LGAHOTDU.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-F004",
+  "clave": "DOC-F004",
+  "nombre": "Ley General del Equilibrio Ecológico y la Protección al Ambiente (LGEEPA)",
+  "nombre_oficial": null,
+  "tipo": "Ley",
+  "escala": "F",
+  "subtipo": "Legislación ambiental",
+  "nivel_piramide": 2,
+  "seccion_banco": "1.1",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "1988-01-28",
+  "ultima_actualizacion": "2026-01-19",
+  "estatus": "referencia_federal",
+  "estatus_documental": "Referencia federal",
+  "descripcion": "Proporciona el marco ambiental que debe considerarse en la planeación territorial y en la evaluación de impactos de infraestructura y transporte.",
+  "articulos": null,
+  "uso_sesim": "Vincular movilidad sustentable, impactos ambientales y criterios territoriales.",
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": "Seleccionar y almacenar la versión consolidada vigente al integrarla.",
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://www.diputados.gob.mx/LeyesBiblio/pdf/LGEEPA.pdf"
+   },
+   {
+    "titulo": "Biblioteca de legislación federal",
+    "url": "https://www.diputados.gob.mx/LeyesBiblio/"
+   }
+  ],
+  "url_oficial": "https://www.diputados.gob.mx/LeyesBiblio/pdf/LGEEPA.pdf",
+  "cobertura_geografica": "Nacional (aplicación en Campeche)",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Congreso de la Unión",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "DOF",
+   "fecha": "1988-01-28"
+  },
+  "ultima_reforma": {
+   "medio": "DOF",
+   "fecha": "2026-01-19"
+  },
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://www.diputados.gob.mx/LeyesBiblio/pdf/LGEEPA.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-F005",
+  "clave": "DOC-F005",
+  "nombre": "Estrategia Nacional de Movilidad y Seguridad Vial 2023–2042 (ENAMOV)",
+  "nombre_oficial": null,
+  "tipo": "Estrategia",
+  "escala": "F",
+  "subtipo": "Planeación estratégica",
+  "nivel_piramide": 3,
+  "seccion_banco": "1.2",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2023-10-10",
+  "ultima_actualizacion": null,
+  "estatus": "vigente_verificado",
+  "estatus_documental": "Verificado",
+  "descripcion": "Principal referente estratégico nacional para articular las políticas de movilidad y seguridad vial. Contiene ejes, objetivos, líneas de acción, responsables y horizontes de implementación.",
+  "articulos": null,
+  "uso_sesim": "Relacionar objetivos y líneas de acción nacionales con objetivos de la estrategia estatal e indicadores de Campeche.",
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": "Extraer ejes, objetivos, acciones, responsables y metas a partir del documento íntegro.",
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sidof.segob.gob.mx/notas/5704444"
+   },
+   {
+    "titulo": "Acuerdo de aprobación en DOF",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5704444&fecha=10/10/2023"
+   }
+  ],
+  "url_oficial": "https://sidof.segob.gob.mx/notas/5704444",
+  "cobertura_geografica": "Nacional (aplicación en Campeche)",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Secretaría de Desarrollo Agrario, Territorial y Urbano",
+  "instrumento_publicacion": "Acuerdo por el que se expide la Estrategia Nacional de Movilidad y Seguridad Vial 2023-2042",
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "DOF",
+   "fecha": "2023-10-10"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sidof.segob.gob.mx/notas/5704444"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-F006",
+  "clave": "DOC-F006",
+  "nombre": "Estrategia Nacional de Ordenamiento Territorial 2020–2040 (ENOT)",
+  "nombre_oficial": null,
+  "tipo": "Estrategia",
+  "escala": "F",
+  "subtipo": "Planeación territorial",
+  "nivel_piramide": 3,
+  "seccion_banco": "1.2",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2021-04-09",
+  "ultima_actualizacion": null,
+  "estatus": "vigente_verificado",
+  "estatus_documental": "Verificado",
+  "descripcion": "Establece la visión territorial nacional de largo plazo y orienta la articulación de procesos de planeación federal, estatal y municipal.",
+  "articulos": null,
+  "uso_sesim": "Relacionar movilidad con asentamientos humanos, conectividad regional e infraestructura.",
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Acuerdo de expedición (PDF)",
+    "url": "https://www.dof.gob.mx/2021/SEDATU/SEDATU_090421.pdf"
+   }
+  ],
+  "url_oficial": "https://www.dof.gob.mx/2021/SEDATU/SEDATU_090421.pdf",
+  "cobertura_geografica": "Nacional (aplicación en Campeche)",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Secretaría de Desarrollo Agrario, Territorial y Urbano",
+  "instrumento_publicacion": "Acuerdo por el que se expide la Estrategia Nacional de Ordenamiento Territorial",
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "DOF",
+   "fecha": "2021-04-09"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://www.dof.gob.mx/2021/SEDATU/SEDATU_090421.pdf",
+   "https://biblioteca.semarnat.gob.mx/janium/Documentos/Ciga/agenda/DOFsr/DO8115.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-F007",
+  "clave": "DOC-F007",
+  "nombre": "Plan Nacional de Desarrollo 2025–2030 (PND)",
+  "nombre_oficial": null,
+  "tipo": "Plan",
+  "escala": "F",
+  "subtipo": "Planeación nacional",
+  "nivel_piramide": 3,
+  "seccion_banco": "1.2",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2025-04-15",
+  "ultima_actualizacion": null,
+  "estatus": "vigente_verificado",
+  "estatus_documental": "Verificado",
+  "descripcion": "Marco de planeación nacional para el periodo 2025–2030.",
+  "articulos": null,
+  "uso_sesim": "Alinear objetivos estatales con prioridades nacionales, sin tratar el PND como instrumento temático equivalente a la ENAMOV.",
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sidof.segob.gob.mx/notas/5755162"
+   },
+   {
+    "titulo": "PND 2025–2030 en DOF",
+    "url": "https://dof.gob.mx/nota_detalle.php?codigo=5755162&fecha=15/04/2025"
+   }
+  ],
+  "url_oficial": "https://sidof.segob.gob.mx/notas/5755162",
+  "cobertura_geografica": "Nacional (aplicación en Campeche)",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Presidencia de la República",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "DOF",
+   "fecha": "2025-04-15"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sidof.segob.gob.mx/notas/5755162"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M001",
+  "clave": "DOC-M001",
+  "nombre": "PMDU Campeche",
+  "nombre_oficial": "Programa Municipal de Desarrollo Urbano de Campeche 2020-2040",
+  "tipo": "Programa Municipal de Desarrollo Urbano",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.2",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2020-12-14",
+  "ultima_actualizacion": null,
+  "estatus": "vigente_verificado",
+  "estatus_documental": "PDF directo identificado",
+  "descripcion": null,
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "PMDU Campeche 2020–2040",
+    "url": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-CAMPECHE.pdf"
+   }
+  ],
+  "url_oficial": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-CAMPECHE.pdf",
+  "cobertura_geografica": "Municipio de Campeche",
+  "id_unidad": "04002",
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "H. Ayuntamiento del Municipio de Campeche",
+  "instrumento_publicacion": null,
+  "aprobacion": "Vigésima Tercera Sesión Ordinaria de Cabildo, 31 de agosto de 2020 (Acuerdo número 229)",
+  "publicacion": {
+   "medio": "POE",
+   "fecha": "2020-12-14",
+   "numero": "Año VI No. 1322, Sexta Sección"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-CAMPECHE.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M002",
+  "clave": "DOC-M002",
+  "nombre": "PMDU Champotón",
+  "nombre_oficial": "Programa Municipal de Desarrollo Urbano de Champotón 2024-2040",
+  "tipo": "Programa Municipal de Desarrollo Urbano",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.2",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2024-05-02",
+  "ultima_actualizacion": null,
+  "estatus": "vigente_verificado",
+  "estatus_documental": "PDF directo identificado",
+  "descripcion": null,
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "PMDU Champotón",
+    "url": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-CHAMPOTON.pdf"
+   }
+  ],
+  "url_oficial": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-CHAMPOTON.pdf",
+  "cobertura_geografica": "Municipio de Champotón",
+  "id_unidad": "04004",
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "H. Ayuntamiento del Municipio de Champotón",
+  "instrumento_publicacion": null,
+  "aprobacion": "Sesión Extraordinaria de Cabildo, 5 de abril de 2024 (Acta No. 951)",
+  "publicacion": {
+   "medio": "POE",
+   "fecha": "2024-05-02",
+   "numero": "Año IX No. 2158, Segunda Sección"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-CHAMPOTON.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M003",
+  "clave": "DOC-M003",
+  "nombre": "PMDU Calkiní",
+  "nombre_oficial": "Programa Municipal de Desarrollo Urbano de Calkiní",
+  "tipo": "Programa Municipal de Desarrollo Urbano",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.2",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2024-06-10",
+  "ultima_actualizacion": null,
+  "estatus": "por_validar",
+  "estatus_documental": "En repositorio; registrar versión",
+  "descripcion": null,
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-CALKINI.pdf"
+   },
+   {
+    "titulo": "Licitación SEDUMOP-DGAGOP-LPC-026-2024",
+    "url": "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+   }
+  ],
+  "url_oficial": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-CALKINI.pdf",
+  "cobertura_geografica": "Municipio de Calkiní",
+  "id_unidad": "04001",
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "H. Ayuntamiento de Calkiní",
+  "instrumento_publicacion": null,
+  "aprobacion": "Vigésima Novena Sesión Ordinaria del H. Cabildo 2021-2024, 29 de febrero de 2024",
+  "publicacion": {
+   "medio": "POE",
+   "fecha": "2024-06-10",
+   "numero": "Año IX No. 2185, Tercera Sección"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-CALKINI.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M004",
+  "clave": "DOC-M004",
+  "nombre": "PMDU Escárcega",
+  "nombre_oficial": "Programa Municipal de Desarrollo Urbano (PMDU) de Escárcega, Campeche",
+  "tipo": "Programa Municipal de Desarrollo Urbano",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.2",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2023-08-11",
+  "ultima_actualizacion": null,
+  "estatus": "por_validar",
+  "estatus_documental": "En repositorio; registrar versión",
+  "descripcion": null,
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-ESCARCEGA.pdf"
+   },
+   {
+    "titulo": "Licitación SEDUMOP-DGAGOP-LPC-026-2024",
+    "url": "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+   }
+  ],
+  "url_oficial": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-ESCARCEGA.pdf",
+  "cobertura_geografica": "Municipio de Escárcega",
+  "id_unidad": "04009",
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": null,
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "POE",
+   "fecha": "2023-08-11",
+   "numero": "Año IX No. 1985, Cuarta Sección"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-ESCARCEGA.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M005",
+  "clave": "DOC-M005",
+  "nombre": "PMDU Calakmul",
+  "nombre_oficial": "Programa Municipal de Desarrollo Urbano de Calakmul",
+  "tipo": "Programa Municipal de Desarrollo Urbano",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.2",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": null,
+  "ultima_actualizacion": null,
+  "estatus": "por_validar",
+  "estatus_documental": "En repositorio; registrar versión",
+  "descripcion": null,
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-CALAKMUL-.pdf"
+   },
+   {
+    "titulo": "Licitación SEDUMOP-DGAGOP-LPC-026-2024",
+    "url": "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+   }
+  ],
+  "url_oficial": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-CALAKMUL-.pdf",
+  "cobertura_geografica": "Municipio de Calakmul",
+  "id_unidad": "04010",
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": null,
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": null,
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/programa-estatal-de-ordenamiento-territorial-y-desarrollo-del-estado-de-campeche/"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M006",
+  "clave": "DOC-M006",
+  "nombre": "PMDU Candelaria",
+  "nombre_oficial": "Programa Municipal de Desarrollo Urbano de Candelaria",
+  "tipo": "Programa Municipal de Desarrollo Urbano",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.2",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": null,
+  "ultima_actualizacion": null,
+  "estatus": "por_validar",
+  "estatus_documental": "En repositorio; registrar versión",
+  "descripcion": null,
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-CANDELARIA.pdf"
+   },
+   {
+    "titulo": "Licitación SEDUMOP-DGAGOP-LPC-026-2024",
+    "url": "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+   }
+  ],
+  "url_oficial": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-CANDELARIA.pdf",
+  "cobertura_geografica": "Municipio de Candelaria",
+  "id_unidad": "04011",
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": null,
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": null,
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/programa-estatal-de-ordenamiento-territorial-y-desarrollo-del-estado-de-campeche/"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M007",
+  "clave": "DOC-M007",
+  "nombre": "PMDU Hecelchakán",
+  "nombre_oficial": "Programa Municipal de Desarrollo Urbano de Hecelchakán",
+  "tipo": "Programa Municipal de Desarrollo Urbano",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.2",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2022-07-04",
+  "ultima_actualizacion": null,
+  "estatus": "por_validar",
+  "estatus_documental": "En repositorio; registrar versión",
+  "descripcion": null,
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-HECELCHAKAN.pdf"
+   },
+   {
+    "titulo": "Licitación SEDUMOP-DGAGOP-LPC-026-2024",
+    "url": "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+   }
+  ],
+  "url_oficial": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-HECELCHAKAN.pdf",
+  "cobertura_geografica": "Municipio de Hecelchakán",
+  "id_unidad": "04005",
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "H. Ayuntamiento de Hecelchakán",
+  "instrumento_publicacion": null,
+  "aprobacion": "Sesión Ordinaria de Cabildo, 9 de junio de 2022 (Acta No. 18)",
+  "publicacion": {
+   "medio": "POE",
+   "fecha": "2022-07-04",
+   "numero": "Año VII No. 1715, Segunda Sección"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-HECELCHAKAN.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M008",
+  "clave": "DOC-M008",
+  "nombre": "PMDU Hopelchén",
+  "nombre_oficial": "Programa Municipal de Desarrollo Urbano de Hopelchén",
+  "tipo": "Programa Municipal de Desarrollo Urbano",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.2",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2024-06-17",
+  "ultima_actualizacion": null,
+  "estatus": "por_validar",
+  "estatus_documental": "En repositorio; registrar versión",
+  "descripcion": null,
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-HOPELCHEN.pdf"
+   },
+   {
+    "titulo": "Licitación SEDUMOP-DGAGOP-LPC-026-2024",
+    "url": "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+   }
+  ],
+  "url_oficial": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-HOPELCHEN.pdf",
+  "cobertura_geografica": "Municipio de Hopelchén",
+  "id_unidad": "04006",
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "H. Ayuntamiento de Hopelchén",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "POE",
+   "fecha": "2024-06-17",
+   "numero": "Año IX No. 2190, Tercera Sección"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-HOPELCHEN.pdf",
+   "https://periodicooficial.campeche.gob.mx/sipoec/public/periodicos/202406/PO2190TS17062024.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M009",
+  "clave": "DOC-M009",
+  "nombre": "PMDU Palizada",
+  "nombre_oficial": "Programa Municipal de Desarrollo Urbano de Palizada",
+  "tipo": "Programa Municipal de Desarrollo Urbano",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.2",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": null,
+  "ultima_actualizacion": null,
+  "estatus": "por_validar",
+  "estatus_documental": "En repositorio; registrar versión",
+  "descripcion": null,
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-PALIZADA.pdf"
+   },
+   {
+    "titulo": "Licitación SEDUMOP-DGAGOP-LPC-026-2024",
+    "url": "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+   }
+  ],
+  "url_oficial": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-PALIZADA.pdf",
+  "cobertura_geografica": "Municipio de Palizada",
+  "id_unidad": "04007",
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": null,
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": null,
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/programa-estatal-de-ordenamiento-territorial-y-desarrollo-del-estado-de-campeche/"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M010",
+  "clave": "DOC-M010",
+  "nombre": "PMDU Seybaplaya",
+  "nombre_oficial": "Programa Municipal de Desarrollo Urbano de Seybaplaya",
+  "tipo": "Programa Municipal de Desarrollo Urbano",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.2",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2024-04-01",
+  "ultima_actualizacion": null,
+  "estatus": "por_validar",
+  "estatus_documental": "En repositorio; registrar versión",
+  "descripcion": null,
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-SEYBAPLAYA.pdf"
+   },
+   {
+    "titulo": "Licitación SEDUMOP-DGAGOP-LPC-026-2024",
+    "url": "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+   }
+  ],
+  "url_oficial": "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-SEYBAPLAYA.pdf",
+  "cobertura_geografica": "Municipio de Seybaplaya",
+  "id_unidad": "04012",
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "H. Ayuntamiento del Municipio de Seybaplaya",
+  "instrumento_publicacion": null,
+  "aprobacion": "Vigésima Quinta Sesión Extraordinaria, 15 de marzo de 2024 (Acuerdo número 171)",
+  "publicacion": {
+   "medio": "POE",
+   "fecha": "2024-04-01",
+   "numero": "Año IX No. 2137, Cuarta Sección"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/wp-content/uploads/2024/07/POE-PMDU-SEYBAPLAYA.pdf"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M011",
+  "clave": "DOC-M011",
+  "nombre": "PIMUS Campeche",
+  "nombre_oficial": "Plan Integral de Movilidad Urbana Sustentable, Campeche (actualización 2025)",
+  "tipo": "Plan Integral de Movilidad Urbana Sustentable",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.3",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": null,
+  "ultima_actualizacion": null,
+  "estatus": "pendiente_integracion",
+  "estatus_documental": "Pendiente PDF final",
+  "descripcion": "Componente de la obra «Modernización del Sistema de Movilidad Integrada en el Estado de Campeche», licitación pública estatal SEDUMOP-DGAGOP-LPC-026-2024 (convocatoria 009-2024), publicada por SEDUMOP el 27 de enero de 2025.",
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Licitación SEDUMOP-DGAGOP-LPC-026-2024",
+    "url": "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+   }
+  ],
+  "url_oficial": null,
+  "cobertura_geografica": "Municipio de Campeche",
+  "id_unidad": "04002",
+  "id_instrumento_origen": "PimusCam01",
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": null,
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": null,
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M012",
+  "clave": "DOC-M012",
+  "nombre": "PIMUS Carmen",
+  "nombre_oficial": "Plan Integral de Movilidad Urbana Sustentable, Carmen",
+  "tipo": "Plan Integral de Movilidad Urbana Sustentable",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.3",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": null,
+  "ultima_actualizacion": null,
+  "estatus": "pendiente_integracion",
+  "estatus_documental": "Pendiente PDF final",
+  "descripcion": "Componente de la obra «Modernización del Sistema de Movilidad Integrada en el Estado de Campeche», licitación pública estatal SEDUMOP-DGAGOP-LPC-026-2024 (convocatoria 009-2024), publicada por SEDUMOP el 27 de enero de 2025.",
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Licitación SEDUMOP-DGAGOP-LPC-026-2024",
+    "url": "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+   }
+  ],
+  "url_oficial": null,
+  "cobertura_geografica": "Municipio de Carmen",
+  "id_unidad": "04003",
+  "id_instrumento_origen": "PimusCar01",
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": null,
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": null,
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M013",
+  "clave": "DOC-M013",
+  "nombre": "PIMUS Champotón",
+  "nombre_oficial": "Plan Integral de Movilidad Urbana Sustentable, Champotón",
+  "tipo": "Plan Integral de Movilidad Urbana Sustentable",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.3",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": null,
+  "ultima_actualizacion": null,
+  "estatus": "pendiente_integracion",
+  "estatus_documental": "Pendiente PDF final",
+  "descripcion": "Componente de la obra «Modernización del Sistema de Movilidad Integrada en el Estado de Campeche», licitación pública estatal SEDUMOP-DGAGOP-LPC-026-2024 (convocatoria 009-2024), publicada por SEDUMOP el 27 de enero de 2025.",
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Licitación SEDUMOP-DGAGOP-LPC-026-2024",
+    "url": "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+   }
+  ],
+  "url_oficial": null,
+  "cobertura_geografica": "Municipio de Champotón",
+  "id_unidad": "04004",
+  "id_instrumento_origen": "PimusCha01",
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": null,
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": null,
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M014",
+  "clave": "DOC-M014",
+  "nombre": "PIMUS Escárcega",
+  "nombre_oficial": "Plan Integral de Movilidad Urbana Sustentable, Escárcega",
+  "tipo": "Plan Integral de Movilidad Urbana Sustentable",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.3",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": null,
+  "ultima_actualizacion": null,
+  "estatus": "pendiente_integracion",
+  "estatus_documental": "Pendiente PDF final",
+  "descripcion": "Componente de la obra «Modernización del Sistema de Movilidad Integrada en el Estado de Campeche», licitación pública estatal SEDUMOP-DGAGOP-LPC-026-2024 (convocatoria 009-2024), publicada por SEDUMOP el 27 de enero de 2025.",
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Licitación SEDUMOP-DGAGOP-LPC-026-2024",
+    "url": "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+   }
+  ],
+  "url_oficial": null,
+  "cobertura_geografica": "Municipio de Escárcega",
+  "id_unidad": "04009",
+  "id_instrumento_origen": "PimusEsc01",
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": null,
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": null,
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-M015",
+  "clave": "DOC-M015",
+  "nombre": "PIMUS Calkiní",
+  "nombre_oficial": "Plan Integral de Movilidad Urbana Sustentable, Calkiní",
+  "tipo": "Plan Integral de Movilidad Urbana Sustentable",
+  "escala": "M",
+  "subtipo": null,
+  "nivel_piramide": 6,
+  "seccion_banco": "3.3",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": null,
+  "ultima_actualizacion": null,
+  "estatus": "pendiente_integracion",
+  "estatus_documental": "Pendiente PDF final",
+  "descripcion": "Componente de la obra «Modernización del Sistema de Movilidad Integrada en el Estado de Campeche», licitación pública estatal SEDUMOP-DGAGOP-LPC-026-2024 (convocatoria 009-2024), publicada por SEDUMOP el 27 de enero de 2025.",
+  "articulos": null,
+  "uso_sesim": null,
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Licitación SEDUMOP-DGAGOP-LPC-026-2024",
+    "url": "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+   }
+  ],
+  "url_oficial": null,
+  "cobertura_geografica": "Municipio de Calkiní",
+  "id_unidad": "04001",
+  "id_instrumento_origen": "PimusCal01",
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": null,
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": null,
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sedumop.campeche.gob.mx/licitacion-publica-estatal-no-sedumop-dgagop-lpc-026-2024/"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-N001",
+  "clave": "DOC-N001",
+  "nombre": "NOM-004-SEDATU-2023",
+  "nombre_oficial": "NOM-004-SEDATU-2023, Estructura y diseño para vías urbanas. Especificaciones y aplicación",
+  "tipo": "Norma Oficial Mexicana",
+  "escala": "F",
+  "subtipo": "Vías urbanas",
+  "nivel_piramide": 2,
+  "seccion_banco": "4.",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2024-04-12",
+  "ultima_actualizacion": null,
+  "estatus": "referencia_federal",
+  "estatus_documental": "Referencia federal",
+  "descripcion": "Criterios para configuración, diseño geométrico, distribución del espacio vial, accesibilidad y diseño de vías urbanas.",
+  "articulos": null,
+  "uso_sesim": "Indicadores de infraestructura peatonal, accesibilidad universal, diseño vial y condiciones de seguridad.",
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sidof.segob.gob.mx/notas/5723137"
+   },
+   {
+    "titulo": "Publicación en DOF",
+    "url": "https://dof.gob.mx/nota_detalle_popup.php?codigo=5723137"
+   }
+  ],
+  "url_oficial": "https://sidof.segob.gob.mx/notas/5723137",
+  "cobertura_geografica": "Nacional (aplicación en Campeche)",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Secretaría de Desarrollo Agrario, Territorial y Urbano",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "DOF",
+   "fecha": "2024-04-12"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sidof.segob.gob.mx/notas/5723137"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-N002",
+  "clave": "DOC-N002",
+  "nombre": "NOM-034-SCT2/SEDATU-2022",
+  "nombre_oficial": "NOM-034-SCT2/SEDATU-2022, Señalización y dispositivos viales para calles y carreteras",
+  "tipo": "Norma Oficial Mexicana",
+  "escala": "F",
+  "subtipo": "Señalización vial",
+  "nivel_piramide": 2,
+  "seccion_banco": "4.",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2023-09-19",
+  "ultima_actualizacion": null,
+  "estatus": "referencia_federal",
+  "estatus_documental": "Referencia federal",
+  "descripcion": "Señalización horizontal y vertical, marcas sobre pavimento, dispositivos diversos y sistemas de control vial.",
+  "articulos": null,
+  "uso_sesim": "Inventario de señalización, control vial, cumplimiento técnico y auditorías de seguridad vial.",
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sidof.segob.gob.mx/notas/5702233"
+   },
+   {
+    "titulo": "Publicación en DOF",
+    "url": "https://dof.gob.mx/nota_detalle_popup.php?codigo=5702233"
+   }
+  ],
+  "url_oficial": "https://sidof.segob.gob.mx/notas/5702233",
+  "cobertura_geografica": "Nacional (aplicación en Campeche)",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Secretaría de Infraestructura, Comunicaciones y Transportes",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "DOF",
+   "fecha": "2023-09-19"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sidof.segob.gob.mx/notas/5702233"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-N003",
+  "clave": "DOC-N003",
+  "nombre": "NOM-086-SCT2-2023",
+  "nombre_oficial": "NOM-086-SCT2-2023, Señalamiento y dispositivos para protección en zonas de obras viales",
+  "tipo": "Norma Oficial Mexicana",
+  "escala": "F",
+  "subtipo": "Zonas de obras",
+  "nivel_piramide": 2,
+  "seccion_banco": "4.",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2023-11-14",
+  "ultima_actualizacion": null,
+  "estatus": "referencia_federal",
+  "estatus_documental": "Referencia federal",
+  "descripcion": "Protección, señalamiento, delimitación y canalización del tránsito en construcción, rehabilitación, mantenimiento y conservación vial.",
+  "articulos": null,
+  "uso_sesim": "Seguimiento de obras, señalamiento temporal y protección de usuarios y personal de obra.",
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sidof.segob.gob.mx/notas/5708455"
+   },
+   {
+    "titulo": "Publicación en DOF",
+    "url": "https://dof.gob.mx/nota_detalle_popup.php?codigo=5708455"
+   }
+  ],
+  "url_oficial": "https://sidof.segob.gob.mx/notas/5708455",
+  "cobertura_geografica": "Nacional (aplicación en Campeche)",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Secretaría de Infraestructura, Comunicaciones y Transportes",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "DOF",
+   "fecha": "2023-11-14"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sidof.segob.gob.mx/notas/5708455"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-N004",
+  "clave": "DOC-N004",
+  "nombre": "NOM-194-SE-2021",
+  "nombre_oficial": "NOM-194-SE-2021, Dispositivos de seguridad para vehículos ligeros nuevos. Requisitos y especificaciones",
+  "tipo": "Norma Oficial Mexicana",
+  "escala": "F",
+  "subtipo": "Seguridad vehicular",
+  "nivel_piramide": 2,
+  "seccion_banco": "4.",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2022-10-03",
+  "ultima_actualizacion": null,
+  "estatus": "referencia_federal",
+  "estatus_documental": "Referencia federal",
+  "descripcion": "Requisitos de seguridad activa y pasiva para vehículos ligeros nuevos comercializados en México.",
+  "articulos": null,
+  "uso_sesim": "Contexto de seguridad vehicular y regulación del parque automotor; no es parámetro de diseño de calles.",
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sidof.segob.gob.mx/notas/5666804"
+   },
+   {
+    "titulo": "Publicación en DOF",
+    "url": "https://www.dof.gob.mx/nota_detalle.php?codigo=5666804&fecha=03/10/2022"
+   }
+  ],
+  "url_oficial": "https://sidof.segob.gob.mx/notas/5666804",
+  "cobertura_geografica": "Nacional (aplicación en Campeche)",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Secretaría de Economía",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "DOF",
+   "fecha": "2022-10-03"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sidof.segob.gob.mx/notas/5666804"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ },
+ {
+  "id": "DOC-N005",
+  "clave": "DOC-N005",
+  "nombre": "NOM-001-SEDATU-2021",
+  "nombre_oficial": "NOM-001-SEDATU-2021, Espacios públicos en los asentamientos humanos",
+  "tipo": "Norma Oficial Mexicana",
+  "escala": "F",
+  "subtipo": "Espacio público",
+  "nivel_piramide": 2,
+  "seccion_banco": "4.",
+  "dependencia": null,
+  "fuente": null,
+  "fecha_publicacion": "2022-02-22",
+  "ultima_actualizacion": null,
+  "estatus": "referencia_federal",
+  "estatus_documental": "Referencia federal",
+  "descripcion": "Criterios de clasificación y caracterización de espacios públicos en asentamientos humanos.",
+  "articulos": null,
+  "uso_sesim": "Complementar indicadores de espacio público, accesibilidad y conectividad peatonal.",
+  "evidencia": null,
+  "vinculacion": null,
+  "observaciones": null,
+  "enlaces": [
+   {
+    "titulo": "Documento oficial",
+    "url": "https://sidof.segob.gob.mx/notas/5643417"
+   },
+   {
+    "titulo": "Publicación en DOF",
+    "url": "https://www.dof.gob.mx/nota_detalle.php?codigo=5643417&fecha=22/02/2022"
+   }
+  ],
+  "url_oficial": "https://sidof.segob.gob.mx/notas/5643417",
+  "cobertura_geografica": "Nacional (aplicación en Campeche)",
+  "id_unidad": null,
+  "id_instrumento_origen": null,
+  "limitaciones": null,
+  "cobertura_temporal": null,
+  "variables": null,
+  "emisor": "Secretaría de Desarrollo Agrario, Territorial y Urbano",
+  "instrumento_publicacion": null,
+  "aprobacion": null,
+  "publicacion": {
+   "medio": "DOF",
+   "fecha": "2022-02-22"
+  },
+  "ultima_reforma": null,
+  "articulos_verificados": [],
+  "fuentes_verificacion": [
+   "https://sidof.segob.gob.mx/notas/5643417"
+  ],
+  "fecha_verificacion": "2026-11-02",
+  "publicable": true
+ }
+]

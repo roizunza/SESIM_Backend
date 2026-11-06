@@ -114,7 +114,7 @@
   top: 0;
   left: 0;
   bottom: 0;
-  width: 290px;
+  width: 380px;
   background: #FFFFFF;
   border-right: 1px solid var(--surface-border);
   z-index: 1000;
@@ -123,7 +123,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
-  text-align: left;
+  text-align: justify;
   box-shadow: 5px 0 15px rgba(0, 0, 0, 0.08);
   /* Con los controles por capa (opacidad + info) y el Mapa Base también
      expandible, el contenido supera fácilmente el alto del panel — sin este
@@ -559,9 +559,10 @@
   min-width: 0;
   font-size: 0.85rem;
   color: var(--text-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  line-height: 1.3;
+  text-align: left;
 }
 
 /* Control de opacidad: etiqueta muy tenue arriba, slider largo (ancho
@@ -584,19 +585,18 @@
 }
 
 .capa-opacidad-slider {
+  -webkit-appearance: none; appearance: none;
   width: 100%;
-  height: 12px;
-  accent-color: var(--primary-blue, var(--c-guinda));
+  height: 8px;
+  background: transparent;
   cursor: pointer;
 }
-
-.capa-opacidad-slider::-webkit-slider-runnable-track {
-  height: 3px;
-}
-
-.capa-opacidad-slider::-moz-range-track {
-  height: 3px;
-}
+.capa-opacidad-slider::-webkit-slider-runnable-track { height: 2px; border-radius: 2px; background: #e3d6da; }
+.capa-opacidad-slider::-moz-range-track { height: 2px; border-radius: 2px; background: #e3d6da; }
+.capa-opacidad-slider::-moz-range-progress { height: 2px; border-radius: 2px; background: var(--c-guinda); }
+.capa-opacidad-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 8px; height: 8px; margin-top: -3px; border-radius: 50%; background: var(--c-guinda); border: 0; }
+.capa-opacidad-slider::-moz-range-thumb { width: 8px; height: 8px; border-radius: 50%; background: var(--c-guinda); border: 0; }
+.capa-opacidad-slider:focus-visible { outline: 2px solid var(--c-guinda); outline-offset: 2px; border-radius: 4px; }
 
 .capa-info-btn {
   width: 20px;
@@ -699,6 +699,7 @@
   height: 14px;
   border-radius: 2px;
   flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
 }
 
 .capa-legend-muestra-label {
@@ -1039,7 +1040,159 @@
 .capa-modal-seccion { margin-top: 18px; display: flex; flex-direction: column; gap: 6px; }
 .capa-modal-seccion .capa-modal-campo-etiqueta { display: flex; align-items: center; gap: 4px; }
 .capa-modal-lista { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; max-height: 220px; overflow-y: auto; }
-.capa-modal-lista a { font-size: 12px; color: var(--text-primary); text-decoration: none; }
-.capa-modal-lista a strong { color: var(--c-guinda); margin-right: 4px; }
-.capa-modal-lista a:hover { text-decoration: underline; }
+.capa-modal-lista a, .capa-modal-lista .enlace-sin-acceso { font-size: 12px; color: var(--text-primary); }
+.capa-modal-lista a { display: flex; gap: 6px; align-items: flex-start; text-align: left; color: var(--c-guinda-dk); text-decoration: underline; text-decoration-color: rgba(159, 34, 65, 0.35); text-underline-offset: 2px; }
+.capa-modal-lista a strong, .capa-modal-lista .enlace-sin-acceso strong { color: var(--c-guinda); margin-right: 4px; }
+.capa-modal-lista a:hover { text-decoration-color: currentColor; }
+.capa-modal-lista a svg { flex: none; margin-top: 2px; }
+.capa-modal-nota { font-size: 11.5px; color: var(--text-secondary); margin-top: 4px; }
 .capa-modal-linaje { white-space: pre-wrap; font-size: 12px; max-height: 260px; overflow-y: auto; }
+
+/* ---- Pie del mapa: escala gráfica, escala numérica y nota de validez (dentro del contenedor del mapa) ---- */
+.mapa-pie {
+  position: absolute; left: 50%; bottom: 6px; transform: translateX(-50%); z-index: 800;
+  display: flex; align-items: center; gap: 10px; padding: 3px 8px; border-radius: 6px;
+  background: rgba(255, 255, 255, 0.82); color: #3f444a; font-family: var(--font-body); pointer-events: none;
+  white-space: nowrap;
+}
+.escala-mapa { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; line-height: 1; }
+.escala-mapa__barra { position: relative; display: inline-block; height: 6px; border: 1.5px solid #3f444a; border-top: 0; }
+.escala-mapa__barra i { position: absolute; bottom: 0; width: 50%; height: 3px; }
+.escala-mapa__barra i:first-child { left: 0; background: #3f444a; }
+.escala-mapa__texto { font-variant-numeric: tabular-nums; }
+.escala-mapa__sep { color: #8a8f96; }
+.mapa-pie__nota { font-size: 10px; color: #5f656c; }
+
+/* ---- Leyenda con simbología encendible por capa y por categoría ---- */
+.leyenda-flotante-header { display: flex; align-items: center; justify-content: space-between; width: 100%; background: none; border: 0; border-bottom: 1px solid var(--surface-border); cursor: pointer; text-align: left; }
+.leyenda-flotante--cerrada { max-height: none; }
+.leyenda-flotante--cerrada .leyenda-flotante-header { border-bottom: 0; }
+.leyenda-categoria { display: flex; flex-direction: column; gap: 8px; }
+.leyenda-categoria + .leyenda-categoria { border-top: 1px dashed var(--surface-border); padding-top: 10px; }
+.leyenda-categoria-cabecera { display: flex; justify-content: space-between; align-items: center; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--c-guinda-dk); }
+.leyenda-categoria-cabecera button { display: inline-flex; align-items: center; gap: 4px; border: 1px solid var(--surface-border); background: #fff; border-radius: 999px; padding: 2px 8px; font-size: 0.68rem; font-weight: 600; text-transform: none; letter-spacing: 0; color: var(--text-secondary); cursor: pointer; }
+.leyenda-categoria-cabecera button:hover { color: var(--c-guinda); border-color: var(--c-guinda); }
+.leyenda-flotante-fila { display: flex; align-items: flex-start; gap: 6px; }
+.leyenda-ojo { flex-shrink: 0; width: 22px; height: 22px; border-radius: 6px; border: 1px solid var(--surface-border); background: #fff; display: grid; place-items: center; cursor: pointer; color: var(--c-guinda); }
+.leyenda-flotante-capa--oculta .leyenda-ojo { color: var(--text-secondary); }
+.leyenda-flotante-capa--oculta .leyenda-flotante-nombre { color: var(--text-secondary); }
+
+/* ---- Botón de simbología/filtros por capa ---- */
+.capa-estilo-btn { position: relative; }
+.capa-estilo-btn.activo { background: var(--c-guinda) !important; color: #fff !important; border-color: var(--c-guinda) !important; }
+.capa-estilo-badge { position: absolute; top: -5px; right: -5px; min-width: 15px; height: 15px; padding: 0 3px; border-radius: 999px; background: var(--c-verde); color: #fff; font-size: 9.5px; font-weight: 700; display: grid; place-items: center; }
+.sidebar-aviso { padding: 12px 14px 18px; }
+
+@media (max-width: 820px) {
+  .mapa-pie__nota { display: none; }
+  .mapa-pie { bottom: 4px; }
+}
+
+/* ---- Ficha de capa: paquetes ISO 19115 / calidad ISO 19157 ---- */
+.capa-modal-iso { border: 1px solid var(--surface-border); border-radius: 10px; background: #fff; }
+.capa-modal-iso > summary { cursor: pointer; padding: 10px 12px; font-size: 0.8rem; font-weight: 700; color: var(--c-guinda-dk); list-style: none; display: flex; justify-content: space-between; }
+.capa-modal-iso > summary::after { content: '▾'; color: var(--text-secondary); }
+.capa-modal-iso[open] > summary { border-bottom: 1px solid var(--surface-border); }
+.capa-modal-iso[open] > summary::after { content: '▴'; }
+.capa-modal-iso-cuerpo { padding: 10px 12px; display: flex; flex-direction: column; gap: 10px; }
+.capa-modal-calidad th { font-weight: 500; text-align: left; vertical-align: top; }
+.capa-modal-calidad th small { display: block; font-size: 0.7rem; color: var(--text-secondary); margin-top: 2px; }
+.capa-modal-calidad-elemento { display: block; font-size: 0.66rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--c-guinda); }
+.capa-modal-calidad td { white-space: nowrap; vertical-align: top; font-variant-numeric: tabular-nums; }
+.capa-modal-calidad-true { color: #0b6b47; }
+.capa-modal-calidad-false { color: #9b4a00; }
+.capa-modal-calidad-null { color: var(--text-secondary); }
+.capa-modal-nota { font-size: 0.72rem; color: var(--text-secondary); }
+.capa-modal-descarga { background: #fff; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; padding: 7px 12px; border-radius: 8px; border: 1px solid var(--c-guinda); color: var(--c-guinda); font-size: 0.8rem; font-weight: 600; text-decoration: none; }
+.capa-modal-control { display: flex; flex-direction: column; gap: 2px; padding-top: 10px; border-top: 1px solid var(--surface-border); font-size: 0.68rem; color: var(--text-secondary); }
+.capa-modal-calidad { table-layout: fixed; width: 100%; }
+.capa-modal-calidad th, .capa-modal-calidad td { white-space: normal !important; overflow-wrap: anywhere; }
+.capa-modal-calidad td { width: 38%; }
+.capa-modal-campo-valor { overflow-wrap: anywhere; }
+
+/* ---- Filtro por municipio y nombres de localidades (control de capas) ---- */
+.capa-filtros-generales { display: flex; flex-direction: column; gap: 8px; }
+.capa-municipio { display: flex; align-items: center; gap: 8px; border: 1px solid var(--surface-border); border-radius: 10px; padding: 0 10px; background: #fff; color: var(--c-guinda); }
+.capa-municipio:focus-within { border-color: var(--c-guinda); box-shadow: 0 0 0 3px rgba(159, 34, 65, 0.12); }
+.capa-municipio select { flex: 1; height: 38px; border: 0; background: transparent; font: inherit; font-size: 0.85rem; color: var(--text-primary); outline: none; cursor: pointer; }
+.capa-municipio-nota { font-size: 0.72rem; color: var(--text-secondary); line-height: 1.4; text-align: left; }
+
+.etiqueta-localidad { display: flex; align-items: center; gap: 4px; white-space: nowrap; pointer-events: none; }
+.etiqueta-localidad i { width: 6px; height: 6px; border-radius: 50%; background: #3b2a30; border: 1px solid #fff; flex: none; }
+.etiqueta-localidad span {
+  font-family: var(--font-body); font-size: 11px; font-weight: 600; color: #2b1d22;
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 0 3px #fff;
+}
+.leyenda-categoria-cabecera .leyenda-ojo { padding: 0; border-radius: 6px; width: 22px; height: 22px; display: grid; place-items: center; }
+
+/* ---- Mapa a pantalla completa ---- */
+body.geovisor-completo { overflow: hidden; }
+body.geovisor-completo .header, body.geovisor-completo .navbar, body.geovisor-completo .footer, body.geovisor-completo .underfooter { display: none !important; }
+.map-container-wrapper--completo { position: fixed !important; inset: 0; z-index: 4000; height: 100dvh !important; width: 100vw; background: #fff; }
+.map-container-wrapper--completo .map-sidebar,
+.map-container-wrapper--completo .panel-fab,
+.map-container-wrapper--completo .map-custom-controls,
+.map-container-wrapper--completo .leyenda-flotante,
+.map-container-wrapper--completo .panel-capa { display: none !important; }
+.mapa-salir-completo {
+  position: absolute; top: 14px; right: 14px; z-index: 1100; display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 999px; border: 1px solid var(--surface-border); background: rgba(255, 255, 255, 0.95);
+  font: inherit; font-size: 13px; font-weight: 600; color: var(--c-guinda-dk); box-shadow: var(--shadow-md); cursor: pointer;
+}
+.mapa-salir-completo:hover { background: var(--c-guinda); color: #fff; border-color: var(--c-guinda); }
+
+/* Botón para contraer o mostrar el control de capas (fuera del panel, que tiene desplazamiento propio) */
+.map-sidebar > .sidebar-toggle-btn { display: none; }
+.sidebar-toggle-externo {
+  position: absolute; top: 20px; left: 380px; z-index: 1002; width: 32px; height: 44px; display: grid; place-items: center;
+  background: #fff; border: 1px solid var(--surface-border); border-left: 0; border-radius: 0 10px 10px 0; color: var(--c-guinda-dk);
+  box-shadow: 3px 0 10px rgba(0, 0, 0, 0.08); cursor: pointer; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.15s;
+}
+.sidebar-toggle-externo--cerrado { left: 0; }
+.sidebar-toggle-externo:hover { background: var(--c-guinda); color: #fff; }
+.sidebar-toggle-externo:focus-visible { outline: 3px solid var(--c-guinda); outline-offset: 2px; }
+.map-container-wrapper--completo .sidebar-toggle-externo { display: none; }
+.capa-escala-titulo { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-guinda-dk); }
+@media (max-width: 820px) {
+  .sidebar-toggle-externo { display: none; }
+  .map-sidebar > .sidebar-toggle-btn { display: flex; }
+}
+
+/* ---- Columna derecha: panel de la capa arriba y simbología abajo, a la izquierda de los botones ---- */
+.columna-derecha {
+  position: absolute; top: 16px; bottom: 32px; right: 64px; z-index: 1000; width: 400px;
+  display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+}
+.columna-derecha > * { pointer-events: auto; }
+.columna-derecha--cerrada { transform: translateX(calc(100% + 64px)); opacity: 0; pointer-events: none; }
+.columna-derecha--cerrada > * { pointer-events: none; }
+.columna-derecha__paneles { flex: 1 1 60%; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; scrollbar-width: thin; padding-right: 2px; }
+.columna-derecha .panel-capa { position: static; width: auto; max-height: none; flex: 0 0 auto; overflow: visible; }
+.columna-derecha .panel-capa .panel-capa__cuerpo { max-height: 420px; }
+.columna-derecha .panel-capa--contraido .panel-capa__cabecera { border-bottom: 0; }
+.columna-derecha .panel-capa__cabecera { cursor: default; }
+.columna-derecha .leyenda-flotante { position: static; width: auto; max-height: none; flex: 0 1 auto; min-height: 0; margin-top: auto; }
+.columna-derecha .columna-derecha__paneles + .leyenda-flotante { flex: 0 1 40%; }
+.columna-derecha .leyenda-flotante-scroll { overflow-y: auto; }
+.columna-derecha-toggle {
+  position: absolute; top: 20px; right: 464px; z-index: 1001; width: 28px; height: 44px; display: grid; place-items: center;
+  background: #fff; border: 1px solid var(--surface-border); border-right: 0; border-radius: 10px 0 0 10px; color: var(--c-guinda-dk);
+  box-shadow: -3px 0 10px rgba(0, 0, 0, 0.08); cursor: pointer; transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1), background 0.15s;
+}
+.columna-derecha-toggle--cerrada { right: 64px; }
+.columna-derecha-toggle:hover { background: var(--c-guinda); color: #fff; }
+.columna-derecha-toggle:focus-visible { outline: 3px solid var(--c-guinda); outline-offset: 2px; }
+.map-container-wrapper--completo .columna-derecha, .map-container-wrapper--completo .columna-derecha-toggle { display: none !important; }
+@media (max-width: 820px) {
+  .columna-derecha { display: contents; }
+  .columna-derecha__paneles { position: fixed; left: 8px; right: 8px; bottom: 8px; max-height: 50vh; z-index: 1001; }
+  .columna-derecha .leyenda-flotante { position: absolute; }
+  .columna-derecha-toggle { display: none; }
+}
+
+.mapa-aviso-error { position: absolute; left: 50%; bottom: 48px; transform: translateX(-50%); z-index: 1200; display: flex; align-items: center; gap: 10px; max-width: 520px; padding: 10px 14px; border-radius: 8px; border: 1px solid #b42318; background: #fff; color: #7a1a12; font-size: 0.82rem; box-shadow: var(--shadow-lg); }
+.mapa-aviso-error button { display: grid; place-items: center; width: 26px; height: 26px; border: 0; border-radius: 6px; background: #fbe9e7; color: #7a1a12; cursor: pointer; }
+.leyenda-info { margin-left: auto; }
+.panel-capa__botones { display: flex; gap: 6px; flex-shrink: 0; align-self: flex-start; }
+.leyenda-flotante-capa--oculta .leyenda-info { color: var(--c-guinda); }

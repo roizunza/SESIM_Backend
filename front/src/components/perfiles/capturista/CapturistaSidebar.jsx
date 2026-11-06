@@ -4,6 +4,7 @@ import { UserCircle, LogOut, ChevronLeft, ChevronRight, Plus, History, AlertCirc
 import BandejaMediciones from '../comun/BandejaMediciones';
 import { cerrarSesion } from '../../../lib/sesim/sesion';
 import './Capturista.css';
+import EnlaceSeguimiento from '../comun/EnlaceSeguimiento';
 
 /**
  * Barra lateral del Capturista: botón «Capturar medición» y bandeja de SUS
@@ -35,6 +36,9 @@ const CapturistaSidebar = ({ isSidebarOpen, setIsSidebarOpen, sesion, catalogo, 
       </div>
 
       <nav className="admin-nav">
+        <div className="admin-nav-group">
+          <EnlaceSeguimiento />
+        </div>
         <div className="admin-nav-group">
           <div className="admin-nav-header" style={{ marginBottom: 8 }}>
             <span className="nav-title">CAPTURA</span>

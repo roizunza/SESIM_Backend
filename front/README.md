@@ -1,14 +1,61 @@
-# SESIM · Frontend
+# SESIM Campeche · Frontend · Versión entregable 1.0 (4 de noviembre de 2026)
 
-Sistema Estatal de Seguimiento a Indicadores de Movilidad y Seguridad Vial (SEDUMOP Campeche). React 19 + Vite + Leaflet.
+Portal público e institucional del Sistema Estatal de Seguimiento de Indicadores de Movilidad y Seguridad Vial: inicio, geovisor, catálogo de instrumentos, tablero de indicadores y perfiles institucionales. Está hecho con React 19, Vite 8 y Leaflet.
 
-- **Arquitectura de datos en el front, contrato con el backend y cambios del 20 oct 2026:** [`docs/FRONT_ARQUITECTURA_DATOS_V2.md`](docs/FRONT_ARQUITECTURA_DATOS_V2.md)
-- Datos estáticos: `public/sesim/catalogo/` (tablas del modelo) y `public/sesim/capas/<id_capa>.geojson` (capas ligeras).
-- Regenerar datos: `scripts/datos/02_aligerar_capas.py` y luego `scripts/datos/01_exportar_catalogos.py`.
+## Qué contiene
 
-```bash
-npm install
-npm run dev
+Solo los archivos necesarios para instalar, ejecutar y publicar el portal.
+
+- `index.html` y `vite.config.js`: punto de entrada y configuración de Vite.
+- `package.json` y `package-lock.json`: dependencias con versiones fijas.
+- `.env.example`: plantilla de variables de entorno, sin llaves.
+- `src/`: código del portal.
+- `public/`: logotipos, imágenes, catálogos y capas GeoJSON publicadas.
+- `scripts/demo/`: backend en memoria para el modo demostración (lo usa `vite.config.js`).
+
+`node_modules/` y `dist/` no se incluyen: se generan con `npm ci` y `npm run build`.
+
+## Requisitos
+
+- Node.js 20.19 o más reciente (recomendado 22 LTS) y npm.
+- El backend SESIM (Supabase) en ejecución para usar datos reales. Sin backend, el portal funciona en modo demostración.
+
+## Instalación
+
+1. Descomprima el archivo en una carpeta nueva.
+2. Abra una terminal dentro de la carpeta `SESIM_front`.
+3. Instale las dependencias:
+
+   ```
+   npm ci
+   ```
+
+4. Copie `.env.example` como `.env.local` y llene `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` y `VITE_PROCESOS_URL` con los datos del backend.
+5. Inicie el servidor de desarrollo:
+
+   ```
+   npm run dev
+   ```
+
+   Abra la dirección que muestra la terminal, normalmente http://localhost:5173.
+
+## Modo demostración y publicación
+
+Para usarlo sin backend, con datos de demostración:
+
+```
+npm run demo
 ```
 
-Inicio de sesión de prueba en `/admin`: contraseña `administrador`, `titular` o `auditor`; cualquier otra entra como Capturista.
+Para generar la versión de publicación:
+
+```
+npm run build
+```
+
+El resultado queda en `dist/` y se publica en cualquier servidor web estático.
+
+## Notas
+
+- La información cartográfica es de referencia y no tiene validez jurídica. El aviso se muestra en el portal.
+- Las descargas de capas solo incluyen `titulo` y, por elemento, `nombre`, `clasif`, `cve_mun` e `id_unidad`.

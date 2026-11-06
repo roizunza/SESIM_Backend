@@ -13,6 +13,13 @@
   "unidad_territorial": 2785,
   "capa_indicador": 1030,
   "v_capa_por_municipio": 737,
-  "capa": 87
+  "capa": 87,
+  "instrumento_normativo": 36,
+  "fuente_documental": 10,
+  "relacion_normativa": 4
+ },
+ "banco_documental": {
+  "generado": "2026-11-02T15:15:56",
+  "origen": "0036e978-SESIM_Banco_documental_Campeche.docx"
  }
 }

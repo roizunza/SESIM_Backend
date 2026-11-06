@@ -1,9 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { X, Map as MapIcon, Search, Activity } from 'lucide-react';
+import { X, Map as MapIcon, Search, BarChart3 } from 'lucide-react';
 import { useCatalogo } from '../lib/sesim/useCatalogo';
 import { indexar, fnTrazabilidadNormativa, vEquivalenciaPimus, fnCapasDeIndicador } from '../lib/sesim/api';
-import { fnSemaforo, COLORES_SEMAFORO } from '../lib/sesim/semaforo';
+import { fnSemaforo, umbralVigente, COLORES_SEMAFORO } from '../lib/sesim/semaforo';
+import { useFiltros } from '../lib/sesim/filtrosGlobales';
+import { enlace } from '../lib/rutas';
+import TrazabilidadInstrumentos from '../components/indicadores/TrazabilidadInstrumentos';
+import { RELACIONES, SIN_ORIGEN, cumpleTrazabilidad } from '../lib/sesim/trazabilidad';
 import './MonitoreoIndicadores.css';
 import '../components/perfiles/comun/Comun.css';
 
@@ -20,7 +24,7 @@ import '../components/perfiles/comun/Comun.css';
  *   · F15 v_equivalencia_pimus       (cómo lo nombra cada PIMUS)
  *   · F06 fn_capas_de_indicador      (botón «Ver en el geovisor»)
  *   · F02 v_serie_indicador + F04 fn_semaforo (solo mediciones publicadas)
- * Deep-link: /monitoreo?indicador=Im18
+ * Deep-link: /seguimiento/indicadores?indicador=Im18 (también ?instrumento=PimusCam01)
  */
 const numeroDeEjeDe = (catalogo, i) => catalogo.ejes.get(i.id_eje)?.numero_eje;
 
@@ -30,12 +34,34 @@ function Semaforo({ estado }) {
 
 const TENDENCIA = { Ascendente: { flecha: '▲', clase: 'sube' }, Descendente: { flecha: '▼', clase: 'baja' } };
 const NIVELES_MIR = ['Fin', 'Propósito', 'Componentes', 'Actividades'];
-const FILTROS_VACIOS = { texto: '', eje: '', instrumento: '', mir: '', aprobados: false };
+const FILTROS_VACIOS = { texto: '', eje: '', instrumento: '', relacion: '', mir: '', aprobados: false };
 
 function FichaIndicador({ id, catalogo, onClose }) {
   const [traz, setTraz] = useState(null);
   const [equiv, setEquiv] = useState([]);
   const [capas, setCapas] = useState([]);
+  const dialogo = useRef(null);
+
+  useEffect(() => {
+    const previo = document.activeElement;
+    dialogo.current?.focus();
+    const scroll = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const atrapar = (e) => {
+      if (e.key !== 'Tab' || !dialogo.current) return;
+      const focos = [...dialogo.current.querySelectorAll('a[href], button:not([disabled]), [tabindex="0"]')];
+      if (!focos.length) return;
+      const [primero, ultimo] = [focos[0], focos[focos.length - 1]];
+      if (e.shiftKey && (document.activeElement === primero || document.activeElement === dialogo.current)) { e.preventDefault(); ultimo.focus(); }
+      else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primero.focus(); }
+    };
+    document.addEventListener('keydown', atrapar);
+    return () => {
+      document.removeEventListener('keydown', atrapar);
+      document.body.style.overflow = scroll;
+      previo?.focus?.();
+    };
+  }, []);
 
   useEffect(() => {
     let vivo = true;
@@ -53,7 +79,7 @@ function FichaIndicador({ id, catalogo, onClose }) {
   const lb = { linea_base: ind.linea_base, anio_linea_base: ind.anio_linea_base };
 
   return (
-    <div className="ficha-indicador" role="dialog" aria-label={ind.nombre}>
+    <div ref={dialogo} className="ficha-indicador" role="dialog" aria-modal="true" aria-label={ind.nombre} tabIndex={-1}>
       <div className="panel-detalle-header">
         <div>
           <span className="panel-detalle-sup">{ind.id} · {ind.clave} · {ind.nivel_mir}</span>
@@ -79,7 +105,7 @@ function FichaIndicador({ id, catalogo, onClose }) {
           </div>
         )}
 
-        <div className="dato">
+        <div className="dato dato--ancho">
           <span className="dato-etiqueta">Instrumentos y equivalencia PIMUS (F15)</span>
           <table className="tabla-sesim">
             <thead><tr><th>Instrumento</th><th>Vínculo</th><th>Cómo lo nombra</th></tr></thead>
@@ -98,9 +124,14 @@ function FichaIndicador({ id, catalogo, onClose }) {
         <div className="dato">
           <span className="dato-etiqueta">Capas que lo ilustran (F06) · {capas.length}</span>
           {capas.length > 0 && (
-            <Link className="btn-base btn-primary" style={{ width: 'auto', alignSelf: 'flex-start', margin: '4px 0', textDecoration: 'none' }} to={`/geovisor?indicador=${ind.id}`}>
-              <MapIcon size={15} /> Ver en el geovisor
-            </Link>
+            <span className="mon-ficha-acciones">
+              <Link className="btn-base btn-primary" to={enlace.capasDeIndicador(ind.id)}>
+                <MapIcon size={15} aria-hidden="true" /> Ver en el geovisor
+              </Link>
+              <Link className="btn-base btn-secondary" to={enlace.tableroDeIndicador(ind.id)}>
+                <BarChart3 size={15} aria-hidden="true" /> Ver en el tablero
+              </Link>
+            </span>
           )}
           <ul className="capa-modal-lista" style={{ listStyle: 'none', padding: 0, maxHeight: 180, overflowY: 'auto' }}>
             {capas.map((c) => (
@@ -109,7 +140,7 @@ function FichaIndicador({ id, catalogo, onClose }) {
           </ul>
         </div>
 
-        <div className="dato">
+        <div className="dato dato--ancho">
           <span className="dato-etiqueta">Serie publicada (F02) y semáforo (F04)</span>
           {serie.length === 0 && <span className="text-muted">Aún no hay mediciones publicadas.</span>}
           {serie.length > 0 && (
@@ -121,7 +152,7 @@ function FichaIndicador({ id, catalogo, onClose }) {
                     <td>{m.periodo?.etiqueta}</td>
                     <td>{catalogo.unidades.get(m.id_unidad)?.nom_mun ?? m.id_unidad}{m.id_unidad.length > 5 ? ` · ${catalogo.unidades.get(m.id_unidad)?.nom_loc}` : ''}</td>
                     <td>{m.valor ?? m.valor_texto}</td>
-                    <td><Semaforo estado={fnSemaforo({ valor: m.valor, linea_base: lb.linea_base, valor_meta: ind.valor_meta, tendencia: ind.tendencia })} /></td>
+                    <td><Semaforo estado={fnSemaforo({ valor: m.valor, linea_base: lb.linea_base, valor_meta: ind.valor_meta, tendencia: ind.tendencia, umbral: umbralVigente(catalogo.umbral_publico, ind.id) })} /></td>
                   </tr>
                 ))}
               </tbody>
@@ -135,8 +166,14 @@ function FichaIndicador({ id, catalogo, onClose }) {
 
 export default function MonitoreoIndicadores() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { datos, error } = useCatalogo(['indicador', 'eje_tematico', 'sector', 'fuente_informacion', 'instrumento_origen', 'indicador_instrumento', 'indicador_eje', 'capa_indicador', 'capa', 'periodo', 'medicion_publica', 'unidad_territorial']);
-  const [f, setF] = useState({ texto: '', eje: '', instrumento: '', mir: '', aprobados: false });
+  const { datos, error } = useCatalogo(['indicador', 'eje_tematico', 'sector', 'fuente_informacion', 'instrumento_origen', 'indicador_instrumento', 'indicador_eje', 'capa_indicador', 'capa', 'periodo', 'medicion_publica', 'unidad_territorial', 'umbral_publico']);
+  const { filtros: global, fijar } = useFiltros();
+  const [local, setLocal] = useState(() => ({ ...FILTROS_VACIOS, instrumento: searchParams.get('instrumento') ?? '', relacion: searchParams.get('relacion') ?? '' }));
+  const f = useMemo(() => ({ ...local, eje: global.eje }), [local, global.eje]);
+  const setF = ({ eje, ...resto }) => {
+    setLocal(resto);
+    if (eje !== global.eje) fijar('eje', eje);
+  };
 
   const catalogo = useMemo(() => {
     if (!datos) return null;
@@ -181,16 +218,16 @@ export default function MonitoreoIndicadores() {
   }, [datos]);
 
   const seleccion = searchParams.get('indicador');
-  const abrir = (id) => setSearchParams(id ? { indicador: id } : {});
+  const abrir = useCallback((id) => setSearchParams(id ? { indicador: id } : {}), [setSearchParams]);
 
   const filas = useMemo(() => {
     if (!catalogo) return [];
     const q = f.texto.trim().toLowerCase();
     return catalogo.indicador.filter((i) => {
-      if (f.eje && !(catalogo.ejesDe.get(i.id) ?? [numeroDeEjeDe(catalogo, i)]).includes(Number(f.eje))) return false;
+      if (f.eje && !(catalogo.ejesDe.get(i.id) ?? [numeroDeEjeDe(catalogo, i)]).includes(catalogo.ejes.get(Number(f.eje))?.numero_eje)) return false;
       if (f.mir && !String(i.nivel_mir).startsWith(f.mir)) return false;
       if (f.aprobados && !i.estatus_aprobado) return false;
-      if (f.instrumento && !(catalogo.vinculos.get(i.id) ?? []).some((v) => v.id_instrumento === f.instrumento)) return false;
+      if (!cumpleTrazabilidad(catalogo.vinculos.get(i.id), f.instrumento, f.relacion)) return false;
       if (q && !`${i.id} ${i.clave} ${i.nombre} ${i.variable}`.toLowerCase().includes(q)) return false;
       return true;
     });
@@ -200,11 +237,11 @@ export default function MonitoreoIndicadores() {
     const serie = catalogo?.serie.get(ind.id) ?? [];
     if (!serie.length) return 'sin dato';
     const m = serie[serie.length - 1];
-    return fnSemaforo({ valor: m.valor, linea_base: ind.linea_base, valor_meta: ind.valor_meta, tendencia: ind.tendencia });
+    return fnSemaforo({ valor: m.valor, linea_base: ind.linea_base, valor_meta: ind.valor_meta, tendencia: ind.tendencia, umbral: umbralVigente(catalogo.umbral_publico, ind.id) });
   };
 
-  const hora = useMemo(() => new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }), [datos]);
-  const hayFiltros = JSON.stringify(f) !== JSON.stringify(FILTROS_VACIOS);
+  const hora = useMemo(() => (datos ? new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) : null), [datos]);
+  const hayFiltros = Object.keys(FILTROS_VACIOS).some((k) => f[k] !== FILTROS_VACIOS[k]);
 
   // Escape cierra la ficha.
   useEffect(() => {
@@ -212,7 +249,7 @@ export default function MonitoreoIndicadores() {
     const alTeclear = (e) => { if (e.key === 'Escape') abrir(null); };
     window.addEventListener('keydown', alTeclear);
     return () => window.removeEventListener('keydown', alTeclear);
-  }, [seleccion]);
+  }, [seleccion, abrir]);
 
   const kpis = catalogo && [
     { etiqueta: 'Indicadores', valor: catalogo.indicador.length, total: catalogo.indicador.length },
@@ -224,13 +261,9 @@ export default function MonitoreoIndicadores() {
 
   return (
     <div className="page-content indicadores-page">
-      <header className="mon-hero">
-        <div>
-          <span className="mon-eyebrow"><i className="mon-pulso" aria-hidden="true" /> <Activity size={13} aria-hidden="true" /> Tablero en vivo</span>
-          <h1>Monitoreo de Indicadores</h1>
-          <p>Sistema Estatal de Seguimiento a Indicadores de Movilidad y Seguridad Vial</p>
-        </div>
-        {catalogo && <div className="mon-hero-hora" title="Hora de la última lectura a la base de datos">Última lectura<strong>{hora}</strong></div>}
+      <header className="mon-cabecera">
+        <h2>Fichas de indicadores</h2>
+        {catalogo && <span className="mon-cabecera-hora" title="Hora de la última lectura a la base de datos">Última lectura <strong>{hora}</strong></span>}
       </header>
 
       {error && <p className="indicadores-error" role="alert">No se pudo cargar el catálogo de indicadores: {error}</p>}
@@ -253,6 +286,14 @@ export default function MonitoreoIndicadores() {
             ))}
           </section>
 
+          <TrazabilidadInstrumentos
+            indicadores={catalogo.indicador}
+            vinculosDe={catalogo.vinculos}
+            instrumentos={catalogo.instrumento_origen}
+            seleccion={f}
+            onFiltrar={({ instrumento, relacion }) => setF({ ...f, instrumento, relacion })}
+          />
+
           <section className="mon-mir" aria-label="Filtrar por nivel MIR">
             {NIVELES_MIR.map((n) => (
               <button key={n} type="button" className={`mon-mir-chip ${f.mir === n ? 'activa' : ''}`} aria-pressed={f.mir === n} onClick={() => setF({ ...f, mir: f.mir === n ? '' : n })}>
@@ -268,13 +309,20 @@ export default function MonitoreoIndicadores() {
             <label>Eje temático
               <select value={f.eje} onChange={(e) => setF({ ...f, eje: e.target.value })}>
                 <option value="">Todos</option>
-                {catalogo.eje_tematico.map((e) => <option key={e.id} value={e.numero_eje}>{e.numero_eje}. {e.nombre}</option>)}
+                {catalogo.eje_tematico.map((e) => <option key={e.id} value={String(e.id)}>{e.numero_eje}. {e.nombre}</option>)}
               </select>
             </label>
             <label>Instrumento
               <select value={f.instrumento} onChange={(e) => setF({ ...f, instrumento: e.target.value })}>
                 <option value="">Todos</option>
                 {catalogo.instrumento_origen.map((i) => <option key={i.id} value={i.id}>{i.clave}</option>)}
+              </select>
+            </label>
+            <label>Relación con el instrumento
+              <select value={f.relacion} onChange={(e) => setF({ ...f, relacion: e.target.value })}>
+                <option value="">Todas</option>
+                {RELACIONES.map((rel) => <option key={rel.clave} value={rel.clave}>{rel.etiqueta}</option>)}
+                <option value={SIN_ORIGEN}>Sin instrumento de origen</option>
               </select>
             </label>
             <label className="mon-interruptor">
@@ -285,7 +333,7 @@ export default function MonitoreoIndicadores() {
           </div>
 
           <p className="indicadores-conteo mon-conteo" aria-live="polite">Mostrando <strong>{filas.length}</strong> de {catalogo.indicador.length} indicadores</p>
-          <div className={`indicadores-cuerpo ${seleccion ? 'con-ficha' : ''}`}>
+          <div className="indicadores-cuerpo">
             <div className="indicadores-scroll">
               <table className="indicadores-tabla">
                 <thead>
@@ -300,7 +348,10 @@ export default function MonitoreoIndicadores() {
                   {filas.map((i) => {
                     const t = TENDENCIA[i.tendencia];
                     const ejes = catalogo.ejesDe.get(i.id) ?? [numeroDeEjeDe(catalogo, i)];
-                    const instr = (catalogo.vinculos.get(i.id) ?? []).map((v) => catalogo.instrumentos.get(v.id_instrumento)?.clave.replace('PIMUS-', 'P-')).filter((x, k, a) => x && a.indexOf(x) === k);
+                    const instr = (catalogo.vinculos.get(i.id) ?? [])
+                      .map((v) => ({ clave: catalogo.instrumentos.get(v.id_instrumento)?.clave.replace('PIMUS-', 'P-'), origen: v.correspondencia === 'origen' }))
+                      .filter((x, k, a) => x.clave && a.findIndex((y) => y.clave === x.clave) === k)
+                      .sort((a, b) => Number(b.origen) - Number(a.origen));
                     return (
                       <tr key={i.id} className={`clic ${seleccion === i.id ? 'activa' : ''}`} tabIndex={0} aria-selected={seleccion === i.id} onClick={() => abrir(i.id)} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(i.id); } }}>
                         <td data-label="ID"><code className="mon-id">{i.id}</code></td>
@@ -309,7 +360,7 @@ export default function MonitoreoIndicadores() {
                         <td data-label="Sector">{catalogo.sectores.get(i.id_sector)?.nombre}</td>
                         <td data-label="Nivel MIR"><span className="mon-mir-etiqueta">{String(i.nivel_mir).split(' ')[0]}</span></td>
                         <td data-label="Tendencia">{t ? <span className={`mon-tend ${t.clase}`}>{t.flecha} {i.tendencia}</span> : <span className="mon-nulo">Sin definir</span>}</td>
-                        <td data-label="Instrumentos">{instr.length ? instr.map((x) => <span key={x} className="mon-chip">{x}</span>) : <span className="mon-nulo">—</span>}</td>
+                        <td data-label="Instrumentos">{instr.length ? instr.map((x) => <span key={x.clave} className={`mon-chip${x.origen ? ' mon-chip--origen' : ''}`} title={x.origen ? 'Instrumento de origen' : 'Correspondencia'}>{x.clave}</span>) : <span className="mon-nulo">—</span>}</td>
                         <td data-label="Capas"><span className="mon-num">{catalogo.nCapas.get(i.id) ?? 0}</span></td>
                         <td data-label="Semáforo"><Semaforo estado={ultimoSemaforo(i)} /></td>
                         <td data-label="Ficha"><span className={`mon-ficha ${i.estatus_aprobado ? 'ok' : 'pend'}`}>{i.estatus_aprobado ? 'Aprobada' : 'Pendiente'}</span></td>

@@ -16,7 +16,8 @@ export const EJES_ESTRATEGICOS = [
     descripcionCorta: 'Redes logísticas y territorio.',
     icono: 'TrendingUp',
     label: 'Estrategia 1 · Desarrollo Económico Territorial',
-    color: '#E07A1F',
+    color: '#EADEC2',
+    colorMapa: '#B08D4F', // versión más oscura para fondos claros (geovisor)
   },
   {
     id: 'eje2',
@@ -25,7 +26,8 @@ export const EJES_ESTRATEGICOS = [
     descripcionCorta: 'Calidad, eficiencia y tecnología.',
     icono: 'Bus',
     label: 'Estrategia 2 · Transporte Público de Personas',
-    color: '#0E6EC5',
+    color: '#0ECFC8',
+    colorMapa: '#0A8F8A', // versión más oscura para fondos claros (geovisor)
   },
   {
     id: 'eje3',
@@ -34,7 +36,8 @@ export const EJES_ESTRATEGICOS = [
     descripcionCorta: 'Infraestructura ciclista y peatonal.',
     icono: 'Bike',
     label: 'Estrategia 3 · Movilidad Activa',
-    color: '#0FA37F',
+    color: '#5B98FF',
+    colorMapa: '#2F6FE0', // versión más oscura para fondos claros (geovisor)
   },
   {
     id: 'eje4',
@@ -43,7 +46,8 @@ export const EJES_ESTRATEGICOS = [
     descripcionCorta: 'Enfoque de Sistema Seguro.',
     icono: 'ShieldAlert',
     label: 'Estrategia 4 · Seguridad Vial',
-    color: '#C00000',
+    color: '#B2D772',
+    colorMapa: '#7A9A2B', // versión más oscura para fondos claros (geovisor)
   },
   {
     id: 'eje5',
@@ -52,6 +56,7 @@ export const EJES_ESTRATEGICOS = [
     descripcionCorta: 'Equidad y accesibilidad universal.',
     icono: 'Users',
     label: 'Estrategia 5 · Género e Inclusión',
-    color: '#9333EA',
+    color: '#EE7795',
+    colorMapa: '#D94F7A', // versión más oscura para fondos claros (geovisor)
   },
 ];

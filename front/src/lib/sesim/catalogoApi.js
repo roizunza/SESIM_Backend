@@ -66,3 +66,39 @@ export const reabrirRechazo = (idDictamen) => rpc('fn_reabrir_rechazo', { p_id_d
 export const guardarDiaInhabil = (fecha, descripcion) => rpc('fn_guardar_dia_inhabil', { p_fecha: fecha, p_descripcion: descripcion });
 export const quitarDiaInhabil = (fecha) => rpc('fn_quitar_dia_inhabil', { p_fecha: fecha });
 export const listarDiasInhabiles = () => backend.leer('dia_inhabil', { query: 'select=*&order=fecha' });
+
+// ---- Evidencias (Ciclo 6, ER-5) ----
+export const EVIDENCIA_MAX_BYTES = 10 * 1024 * 1024;
+export const EVIDENCIA_TIPOS = { 'application/pdf': 'pdf', 'image/jpeg': 'jpg', 'image/png': 'png' };
+
+/** SHA-256 en hexadecimal minúscula, calculado en el navegador. */
+export async function huellaSha256(archivo) {
+  const buf = await archivo.arrayBuffer();
+  const h = await globalThis.crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(h), (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/** Valida tipo y tamaño antes de subir (el servidor lo vuelve a exigir). */
+export function validarArchivoEvidencia(archivo) {
+  if (!EVIDENCIA_TIPOS[archivo?.type]) return 'Solo se admiten PDF, JPG o PNG.';
+  if (archivo.size < 1 || archivo.size > EVIDENCIA_MAX_BYTES) return 'El archivo debe pesar hasta 10 MB.';
+  return null;
+}
+
+/**
+ * Sube el archivo al bucket privado y registra (o reemplaza) la evidencia vigente de la medición.
+ * Ruta: evidencias/<id_medicion>/<sha256>.<ext>. Devuelve la fila registrada.
+ */
+export async function subirEvidencia(idMedicion, archivo, tipoDocumento) {
+  const error = validarArchivoEvidencia(archivo);
+  if (error) throw new Error(error);
+  const hash = await huellaSha256(archivo);
+  await backend.subirObjeto('evidencias', `${idMedicion}/${hash}.${EVIDENCIA_TIPOS[archivo.type]}`, archivo, archivo.type);
+  return rpc('fn_registrar_evidencia', { p_id_medicion: idMedicion, p_tipo_documento: tipoDocumento, p_hash: hash, p_mime: archivo.type, p_bytes: archivo.size });
+}
+export const evidenciasDeMedicion = (idMedicion) => backend.leer('evidencia_medicion', { query: `id_medicion=eq.${encodeURIComponent(idMedicion)}&order=fecha_subida.desc` });
+export const abrirEvidencia = (ev) => backend.urlFirmada('evidencias', ev.url_archivo.replace(/^evidencias\//, ''));
+/** F11: calcula la huella del archivo que carga la persona y la compara con la registrada. */
+export async function verificarEvidencia(idEvidencia, archivo) {
+  return rpc('fn_verificar_evidencia', { p_id: idEvidencia, p_hash_calculado: await huellaSha256(archivo) });
+}

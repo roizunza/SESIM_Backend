@@ -5,8 +5,10 @@ import { LogOut, User, History, ShieldCheck, PencilLine, Eye } from 'lucide-reac
 
 const ICONO_PERFIL = { capturista: PencilLine, administrador: ShieldCheck, administrador_titular: ShieldCheck, auditor: Eye };
 import { useSesion, cerrarSesion, PERFILES } from '../../lib/sesim/sesion';
+import Navbar from './Navbar';
 
-export default function Header() {
+/** Cabecera. En el portal público (por omisión) es una barra flotante de vidrio: logos · menú principal · acceso. */
+export default function Header({ isAdmin = false }) {
   const navigate = useNavigate();
 
   /* Sesión (perfil canónico de la tabla `perfil`) */
@@ -34,7 +36,7 @@ export default function Header() {
   const hasLogAccess = !!userRole;
 
   return (
-    <header className="header" role="banner">
+    <header className={`header${isAdmin ? '' : ' header--flotante'}`} role="banner">
       <div className="header__inner">
         <Link to="/" className="header__logos" aria-label="Ir al inicio">
           <div className="header__logo-box">
@@ -46,18 +48,21 @@ export default function Header() {
           </div>
         </Link>
 
+        {/* Menú principal al centro (solo en el portal público; las rutas internas usan su propio panel) */}
+        {!isAdmin && <Navbar />}
+
         {/* Controles de usuario */}
         <div className="hd-user">
           {/* La bitácora se expone solo a perfiles con sesión (el capturista ve la suya) */}
           {hasLogAccess && (
             <>
-              <div className="hd-chip" title={sesion?.correo}>
+              <Link to="/admin-visor" className="hd-chip" title={`Ir a mi panel · ${sesion?.correo}`}>
                 <span className="hd-chip__ico" aria-hidden="true">{React.createElement(ICONO_PERFIL[userRole] ?? ShieldCheck, { size: 15 })}</span>
                 <span className="hd-chip__txt">
                   <span className="hd-chip__rol">{PERFILES[userRole]?.nombre}</span>
                   <span className="hd-chip__mail">{sesion?.correo}</span>
                 </span>
-              </div>
+              </Link>
               <button className="hd-btn" onClick={handleAbrirBitacora} title="Ver historial de actividad" aria-label="Ver historial de actividad">
                 <History size={18} />
               </button>
@@ -65,7 +70,7 @@ export default function Header() {
           )}
 
           <button
-            className={`hd-btn${userRole ? ' hd-btn--salir' : ''}`}
+            className={`hd-btn hd-btn--acceso${userRole ? ' hd-btn--salir' : ''}`}
             aria-label={userRole ? 'Cerrar sesión' : 'Iniciar sesión'}
             onClick={handleUserAction}
             title={userRole ? 'Cerrar sesión' : 'Iniciar sesión'}

@@ -33,11 +33,22 @@ if [ "$AMB" = "produccion" ] && [ "$(leer_env DB_BIND_ADDR)" = "0.0.0.0" ]; then
   exit 1
 fi
 
-SERVICIOS=(db auth rest api-gw studio meta servicio-procesos)
+SERVICIOS=(db auth rest api-gw studio meta servicio-procesos storage imgproxy)
 [ "$AMB" != "produccion" ] && SERVICIOS+=(mailpit)
 
 echo "==> ambiente: $AMB"
 compose up -d --build "${SERVICIOS[@]}"
+
+# Ciclo 6: el bucket de evidencias vive en Supabase Storage; su esquema lo crea el servicio `storage` al arrancar.
+# Se espera a que exista para que la migracion 226 cree el bucket y sus politicas.
+echo "==> esperando el esquema de Storage (Ciclo 6)..."
+for _ in $(seq 1 60); do
+  if compose exec -T db psql -U postgres -d "$(leer_env POSTGRES_DB)" -Atc "select to_regclass('storage.buckets') is not null and to_regclass('storage.objects') is not null" 2>/dev/null | grep -q '^t$'; then
+    storage_listo=1; break
+  fi
+  sleep 3
+done
+[ "${storage_listo:-0}" = "1" ] || echo "AVISO: Storage no creo su esquema a tiempo; la migracion 226 omitira el bucket. Revisa: docker logs supabase-storage" >&2
 
 ./scripts/migrar.sh
 

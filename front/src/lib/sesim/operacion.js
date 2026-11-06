@@ -424,6 +424,35 @@ export function vSerieIndicador(idIndicador, op = estado) {
     .sort((a, b) => (a.periodo?.fecha_inicio ?? '').localeCompare(b.periodo?.fecha_inicio ?? ''));
 }
 
+/**
+ * Mientras la operación vive en este navegador (OPERACION_CONECTADA = false), las lecturas públicas
+ * incorporan lo publicado aquí: mediciones `vigente_publico`, sus periodos y la línea base fijada por
+ * la primera publicación. Así el tablero, las fichas y los reportes reflejan el flujo de captura,
+ * validación y publicación. Con la operación conectada, todo llega del servidor y no se combina nada.
+ */
+export function combinarOperacionLocal(datos, op = estado) {
+  if (OPERACION_CONECTADA || !datos) return datos;
+  const r = { ...datos };
+  const unir = (servidor, locales) => {
+    const ids = new Set(servidor.map((f) => f.id));
+    return [...servidor, ...locales.filter((f) => !ids.has(f.id))];
+  };
+  if (Array.isArray(datos.medicion_publica)) {
+    const publicadas = op.medicion_indicador
+      .filter((m) => m.estado === 'vigente_publico')
+      .map(({ id, id_indicador, id_unidad, id_periodo, valor, valor_texto, desagregaciones, estado: e, fecha_validacion }) => ({ id, id_indicador, id_unidad, id_periodo, valor, valor_texto, desagregaciones, estado: e, fecha_validacion }));
+    r.medicion_publica = unir(datos.medicion_publica, publicadas);
+  }
+  if (Array.isArray(datos.periodo)) r.periodo = unir(datos.periodo, op.periodo);
+  if (Array.isArray(datos.indicador) && Object.keys(op.linea_base).length) {
+    r.indicador = datos.indicador.map((i) => {
+      const lb = (i.linea_base === null || i.linea_base === undefined) && op.linea_base[i.id];
+      return lb ? { ...i, linea_base: lb.linea_base, anio_linea_base: lb.anio_linea_base } : i;
+    });
+  }
+  return r;
+}
+
 /** Línea base efectiva de un indicador (la del catálogo o la fijada en operación). */
 export function lineaBaseDe(indicador, op = estado) {
   if (indicador?.linea_base !== null && indicador?.linea_base !== undefined) {
