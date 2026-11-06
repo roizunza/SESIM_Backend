@@ -16,7 +16,9 @@ export const EJES_ESTRATEGICOS = [
     descripcionCorta: 'Redes logísticas y territorio.',
     icono: 'TrendingUp',
     label: 'Estrategia 1 · Desarrollo Económico Territorial',
-    color: '#EADEC2',
+    color: '#E6DCC6', // espejo de --pal-est-1 (styles/paleta.css)
+    colorVar: 'var(--pal-est-1)',
+    colorRgbVar: 'var(--pal-est-1-rgb)',
     colorMapa: '#B08D4F', // versión más oscura para fondos claros (geovisor)
   },
   {
@@ -26,7 +28,9 @@ export const EJES_ESTRATEGICOS = [
     descripcionCorta: 'Calidad, eficiencia y tecnología.',
     icono: 'Bus',
     label: 'Estrategia 2 · Transporte Público de Personas',
-    color: '#0ECFC8',
+    color: '#B0385A', // espejo de --pal-est-2 (styles/paleta.css)
+    colorVar: 'var(--pal-est-2)',
+    colorRgbVar: 'var(--pal-est-2-rgb)',
     colorMapa: '#0A8F8A', // versión más oscura para fondos claros (geovisor)
   },
   {
@@ -36,7 +40,9 @@ export const EJES_ESTRATEGICOS = [
     descripcionCorta: 'Infraestructura ciclista y peatonal.',
     icono: 'Bike',
     label: 'Estrategia 3 · Movilidad Activa',
-    color: '#5B98FF',
+    color: '#98989A', // espejo de --pal-est-3 (styles/paleta.css)
+    colorVar: 'var(--pal-est-3)',
+    colorRgbVar: 'var(--pal-est-3-rgb)',
     colorMapa: '#2F6FE0', // versión más oscura para fondos claros (geovisor)
   },
   {
@@ -46,7 +52,9 @@ export const EJES_ESTRATEGICOS = [
     descripcionCorta: 'Enfoque de Sistema Seguro.',
     icono: 'ShieldAlert',
     label: 'Estrategia 4 · Seguridad Vial',
-    color: '#B2D772',
+    color: '#3AA68B', // espejo de --pal-est-4 (styles/paleta.css)
+    colorVar: 'var(--pal-est-4)',
+    colorRgbVar: 'var(--pal-est-4-rgb)',
     colorMapa: '#7A9A2B', // versión más oscura para fondos claros (geovisor)
   },
   {
@@ -56,7 +64,9 @@ export const EJES_ESTRATEGICOS = [
     descripcionCorta: 'Equidad y accesibilidad universal.',
     icono: 'Users',
     label: 'Estrategia 5 · Género e Inclusión',
-    color: '#EE7795',
+    color: '#D6D6D8', // espejo de --pal-est-5 (styles/paleta.css)
+    colorVar: 'var(--pal-est-5)',
+    colorRgbVar: 'var(--pal-est-5-rgb)',
     colorMapa: '#D94F7A', // versión más oscura para fondos claros (geovisor)
   },
 ];

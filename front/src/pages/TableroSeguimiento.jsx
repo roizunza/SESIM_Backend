@@ -76,7 +76,6 @@ function calcular(datos, municipioId, estrategia) {
   };
 }
 
-const rgbDe = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ');
 const csv = (filas) => filas.map((f) => f.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\r\n');
 
 export default function TableroSeguimiento() {
@@ -181,7 +180,7 @@ export default function TableroSeguimiento() {
     <div className="tps">
       <header className="tps__cab">
         <div className="tps__titulo">
-          <span className="t-etiqueta tps__etq">Tablero de seguimiento</span>
+          <span className="t-etiqueta tps__etq">Tablero de seguimiento{eje ? ` · ${sinNumero(eje.tituloCorto)}` : ''}</span>
           <h1>Cobertura y estructura del sistema</h1>
         </div>
         <div className="tps__filtros" role="group" aria-label="Filtros del tablero">
@@ -195,12 +194,12 @@ export default function TableroSeguimiento() {
           <div className="tps__chips">
             <button type="button" className={`tps__chip tps__chip--todas${eje ? '' : ' on'}`} aria-pressed={!eje} onClick={() => fijarEstrategia('')}>Todas</button>
             {EJES_ESTRATEGICOS.map((e) => (
-              <button key={e.id} type="button" className={`tps__chip${estrategiaId === e.id ? ' on' : ''}`} style={{ '--c': e.color }} aria-pressed={estrategiaId === e.id} title={e.label} aria-label={e.label} onClick={() => fijarEstrategia(estrategiaId === e.id ? '' : e.id)}>
-                <i aria-hidden="true">{e.numero}</i>{estrategiaId === e.id && <span>{sinNumero(e.tituloCorto).split(' ').slice(0, 2).join(' ')}</span>}
+              <button key={e.id} type="button" className={`tps__chip${estrategiaId === e.id ? ' on' : ''}`} style={{ '--c': e.colorVar }} aria-pressed={estrategiaId === e.id} title={e.label} aria-label={e.label} onClick={() => fijarEstrategia(estrategiaId === e.id ? '' : e.id)}>
+                <i aria-hidden="true">{e.numero}</i>
               </button>
             ))}
           </div>
-          {hayFiltro && <button type="button" className="tps__reset" onClick={restablecer}>Restablecer</button>}
+          <button type="button" className="tps__reset" onClick={restablecer} style={{ visibility: hayFiltro ? 'visible' : 'hidden' }} tabIndex={hayFiltro ? 0 : -1} aria-hidden={!hayFiltro}>Restablecer</button>
         </div>
       </header>
 
@@ -235,11 +234,11 @@ export default function TableroSeguimiento() {
                   <button key={m.id} type="button" aria-pressed={metrica === m.id} className={metrica === m.id ? 'on' : ''} onClick={() => setMetrica(m.id)}>{m.etiqueta}</button>
                 ))}
               </div>
-              <div className="tps__mosaico" ref={mosaico} onKeyDown={moverFoco} role="group" aria-label="Municipios" style={eje ? { '--tps-rgb': rgbDe(eje.color) } : undefined}>
+              <div className="tps__mosaico" ref={mosaico} onKeyDown={moverFoco} role="group" aria-label="Municipios" style={eje ? { '--tps-rgb': eje.colorRgbVar } : undefined}>
                 {rejilla.flatMap((fila, r) => fila.map((f, c) => {
                   if (!f) return <span key={`${c}${r}`} aria-hidden="true" />;
                   const v = valorMosaico(f);
-                  const a = 0.1 + 0.62 * ((v - rango[0]) / Math.max(rango[1] - rango[0], 1));
+                  const a = 0.1 + 0.48 * ((v - rango[0]) / Math.max(rango[1] - rango[0], 1));
                   const activo = filtros.municipio === f.id;
                   return (
                     <button key={f.id} type="button" data-pos={`${c},${r}`} aria-pressed={activo} aria-label={`${f.nombre}: ${fmtNumero(v)} ${metrica === 'poblacion' && !estrategia ? 'habitantes' : metrica === 'instrumentos' && !estrategia ? 'instrumentos' : 'capas'}`}
@@ -264,7 +263,7 @@ export default function TableroSeguimiento() {
                   const r = t?.resumen.porEje[e.numero];
                   const tenue = estrategia && estrategia !== e.numero;
                   return (
-                    <li key={e.id} className={`${estrategia === e.numero ? 'on' : ''}${tenue ? ' tenue' : ''}`} style={{ '--c': e.color }}>
+                    <li key={e.id} className={`${estrategia === e.numero ? 'on' : ''}${tenue ? ' tenue' : ''}`} style={{ '--c': e.colorVar }}>
                       <button type="button" aria-pressed={estrategia === e.numero} onClick={() => fijarEstrategia(estrategia === e.numero ? '' : e.id)}>
                         <i aria-hidden="true">{e.numero}</i>
                         <span className="tps__est-nombre">{sinNumero(e.tituloCorto)}</span>

@@ -15,10 +15,10 @@ const TABLAS = ['instrumento_normativo', 'indicador', 'capa'];
 /** Trazabilidad: del instrumento al territorio, seis pasos (cada uno lleva a su módulo). */
 const RUTA = [
   { titulo: 'Instrumento', texto: 'Ley, estrategia o programa que origina la obligación', a: RUTAS.catalogo },
-  { titulo: 'Estrategia y meta', texto: 'Objetivo y línea de acción documentados', a: RUTAS.indicadores, institucional: true },
-  { titulo: 'Indicador', texto: 'Fórmula, línea base, meta y semáforo', a: RUTAS.tablero, institucional: true },
-  { titulo: 'Proyecto', texto: 'Responsable, avance y cumplimiento', a: RUTAS.proyectos, institucional: true },
-  { titulo: 'Fuente y evidencia', texto: 'Registro oficial, fecha y validación', a: `${RUTAS.proyectos}?pestana=datos`, institucional: true },
+  { titulo: 'Estrategia y meta', texto: 'Objetivo y línea de acción documentados', a: RUTAS.tableroPublico },
+  { titulo: 'Indicador', texto: 'Fórmula, línea base, meta y semáforo', a: RUTAS.tableroPublico },
+  { titulo: 'Proyecto', texto: 'Responsable, avance y cumplimiento', a: RUTAS.tableroPublico },
+  { titulo: 'Fuente y evidencia', texto: 'Registro oficial, fecha y validación', a: RUTAS.geovisor },
   { titulo: 'Territorio', texto: 'Resultado observable en el mapa', a: RUTAS.geovisor },
 ];
 
@@ -168,10 +168,12 @@ export default function SeccionMarcoJuridico({ id }) {
   return (
     <section id={id} className="mj" aria-labelledby={`${id}-titulo`}>
       <div className="mj__cuerpo">
-        <header className="mj__cab" data-revelar>
-          <span className="mj__etiqueta">Marco jurídico</span>
-          <h2 id={`${id}-titulo`} className="mj__titulo">Pirámide de instrumentos de planeación</h2>
+        <header className="mj__cab sec-cab" data-revelar>
+          <h2 id={`${id}-titulo`} className="sec-titulo">Marco jurídico</h2>
+          <p className="sec-subtitulo">Pirámide de instrumentos de planeación</p>
         </header>
+
+        {contenido?.lema && <p className="mj__lema sec-sinopsis" data-revelar style={{ '--retardo': '60ms' }}>{contenido.lema.texto}</p>}
 
         {actual && (
           <div className="mj__tabs" role="tablist" aria-label="Información del peldaño" data-revelar>
@@ -195,18 +197,18 @@ export default function SeccionMarcoJuridico({ id }) {
           </div>
         )}
 
+        {contenido && (
+          <div className="mj__escala" role="group" aria-label="Filtrar la pirámide por escala">
+            <span className="mj__escala-rotulo">Escala</span>
+            {Object.entries(escalas).map(([k, v]) => (
+              <button key={k} type="button" className={`mj__escala-op${filtro === k ? ' mj__escala-op--activa' : ''}`} aria-pressed={filtro === k} onClick={() => elegirEscala(k)}>
+                <span className={`piramide-badge piramide-badge--${k}`} aria-hidden="true">{k}</span> {v}
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="mj__izq" data-revelar style={{ '--retardo': '100ms' }}>
-          {contenido?.lema && <p className="mj__lema">{contenido.lema.texto}</p>}
-          {contenido && (
-            <div className="mj__escala" role="group" aria-label="Filtrar la pirámide por escala">
-              <span className="mj__escala-rotulo">Escala</span>
-              {Object.entries(escalas).map(([k, v]) => (
-                <button key={k} type="button" className={`mj__escala-op${filtro === k ? ' mj__escala-op--activa' : ''}`} aria-pressed={filtro === k} onClick={() => elegirEscala(k)}>
-                  <span className={`piramide-badge piramide-badge--${k}`} aria-hidden="true">{k}</span> {v}
-                </button>
-              ))}
-            </div>
-          )}
 
           {fallo && <EstadoCarga estado="error" titulo="No se pudo cargar el marco normativo" mensaje={fallo} accion={{ etiqueta: 'Reintentar', onClick: () => window.location.reload() }} />}
           {!fallo && (!indice || !actual) && <Esqueleto alto={480} etiqueta="Cargando la pirámide de instrumentos" />}
@@ -307,8 +309,8 @@ export default function SeccionMarcoJuridico({ id }) {
                     </button>
                   )}
                 </div>
-                <button type="button" className="mj__cambiar" onClick={() => setPestana(pestana === 'descripcion' ? 'alineacion' : 'descripcion')}>
-                  {pestana === 'descripcion' ? 'Ver alineación' : 'Ver descripción'} →
+                <button type="button" className="mj__cambiar" onClick={() => setPestana(pestana === 'descripcion' ? 'alineacion' : 'documentos')}>
+                  {pestana === 'descripcion' ? 'Ver alineación' : 'Ver documentos'} →
                 </button>
               </div>
             )}
@@ -355,9 +357,11 @@ export default function SeccionMarcoJuridico({ id }) {
 
       {/* Trazabilidad */}
       <div className="mj-traza" data-revelar>
-        <span className="mj-traza__etiqueta">Marco jurídico · Cómo se sigue cada indicador</span>
-        <h2 className="mj-traza__titulo">Trazabilidad<span aria-hidden="true">.</span></h2>
-        <p className="mj-traza__sinopsis">Del instrumento al territorio: cada indicador del SESIM puede seguirse paso a paso, desde la norma que lo origina hasta el resultado que se observa en el mapa.</p>
+        <div className="sec-cab">
+          <h2 className="sec-titulo">Trazabilidad</h2>
+          <p className="sec-subtitulo">Cómo se sigue cada indicador</p>
+        </div>
+        <p className="mj-traza__sinopsis sec-sinopsis">Del instrumento al territorio: cada indicador del SESIM puede seguirse paso a paso, desde la norma que lo origina hasta el resultado que se observa en el mapa.</p>
         <ol className="mj-ruta">
           {RUTA.map(({ titulo, texto, a, institucional }, k) => {
             const cuerpo = (
@@ -385,7 +389,6 @@ export default function SeccionMarcoJuridico({ id }) {
             );
           })}
         </ol>
-        <p className="mj-traza__pie">Pase el cursor, use el teclado o toque un paso para ver su descripción. Cada paso lleva a su módulo.</p>
       </div>
     </section>
   );

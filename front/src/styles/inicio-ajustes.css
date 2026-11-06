@@ -1,0 +1,182 @@
+/* =====================================================================
+   Ajustes del landing (noviembre 2026), sobre vidrio.css y los CSS de cada sección:
+   1) Cifras del hero y Objetivos en vidrio con degradado (verde/beige/gris; rosa).
+   2) «Visión» grande y el lema pequeño (antes al revés).
+   3) Pirámide con más peso y pestañas de la ficha en forma de carpeta.
+   4) Marco jurídico, Trazabilidad y Estrategias a todo el ancho de la pantalla.
+   Todo responsivo: lo que cambia el diseño de escritorio va en min-width: 1101px.
+   ===================================================================== */
+
+/* ---------- Escala tipográfica en pantallas grandes (el contenido ahora es más ancho) ---------- */
+@media (min-width: 1700px) {
+  :root {
+    --t-h2: 2.125rem; --t-h3: 1.5rem; --t-sin: 1.2rem; --t-h4: 1.0625rem;
+    --t-cu: 1.0625rem; --t-de: 0.9375rem; --t-et: 0.8125rem; --t-nota: 0.8125rem;
+  }
+}
+
+/* ---------- 1) Hero: cifras en vidrio con degradado ---------- */
+.portada__pastilla--cifras {
+  grid-column: 1 / -1; justify-self: end; margin: 0 0 2px; transform: none;
+  padding: 0.55em 1.2em; border-radius: 999px; background: var(--pal-verde); color: var(--pal-sobre-accion);
+  font-size: var(--t-et); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; line-height: 1.2;
+  box-shadow: 0 8px 18px -12px rgba(var(--pal-sombra-rgb), calc(0.8 * var(--pal-sombra-k))), inset 0 1px 0 rgba(var(--pal-velo-rgb), 0.14);
+}
+/* ---------- 1b) Objetivos: vidrio grafito con brillo guinda, gris y verde ---------- */
+.objetivo {
+  --g1: var(--pal-guinda); --g2: var(--pal-guinda-hover);
+  position: relative; isolation: isolate; overflow: hidden; color: var(--pal-texto);
+  background: linear-gradient(180deg, var(--pal-superficie) 0%, var(--pal-superficie-2) 100%);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2);
+  border: 1px solid rgba(var(--pal-velo-rgb), 0.12);
+  box-shadow: 0 22px 38px -26px rgba(var(--pal-sombra-rgb), calc(0.8 * var(--pal-sombra-k))), inset 0 1px 0 rgba(var(--pal-velo-rgb), 0.14);
+}
+.objetivo:nth-child(2) { --g1: var(--pal-gris); --g2: var(--pal-realce); }
+.objetivo:nth-child(3) { --g1: var(--pal-verde); --g2: var(--pal-verde-claro); }
+.objetivo::before {
+  content: ''; position: absolute; z-index: -1; left: -12%; right: -12%; bottom: -60%; height: 95%;
+  background: radial-gradient(60% 100% at 35% 100%, var(--g1), transparent 72%), radial-gradient(46% 80% at 90% 100%, var(--g2), transparent 70%);
+  filter: blur(16px); opacity: 0.6; transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.objetivo::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(var(--pal-velo-rgb), 0.26), rgba(var(--pal-velo-rgb), 0) 40%, var(--g1) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); mask-composite: exclude;
+}
+.objetivo.revelado:hover, .objetivo.revelado:focus-visible { color: var(--pal-titulo); border-color: rgba(var(--pal-velo-rgb), 0.22); background-size: auto; }
+.objetivo.revelado:hover::before, .objetivo.revelado:focus-visible::before { opacity: 1; transform: translateY(-8px); }
+.objetivo__numero, .objetivo.revelado:hover .objetivo__numero, .objetivo.revelado:focus-visible .objetivo__numero { color: var(--pal-realce); }
+
+/* ---------- 2) Un solo encabezado para todas las secciones: título · subtítulo · sinopsis ---------- */
+.sec-cab { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.inicio-page h2.sec-titulo { margin: 0; font-family: var(--font-heading); font-weight: 700; font-size: var(--t-h2); line-height: 1.15; letter-spacing: 0; color: var(--pal-titulo); text-transform: none; }
+.inicio-page .sec-subtitulo { margin: 0; font-family: var(--font-heading); font-weight: 600; font-size: var(--t-h3); line-height: 1.3; color: var(--rosa-claro); }
+.inicio-page .sec-sinopsis { margin: 0; font-family: var(--font-body, inherit); font-weight: 400; font-size: var(--t-sin); line-height: 1.55; color: var(--pal-texto); max-width: 72ch; }
+.inicio-page .vision__sinopsis.sec-sinopsis { display: block; font-size: var(--t-sin); }
+
+/* ---------- Color: gris grafito principal (valores en styles/paleta.css) ----------
+   · Base (60 %): grafito.   · Principal y semejantes (30 %): grises.
+   · Acentos (10 %): guinda para la acción y la señal; verde para confirmar y enlazar.
+   · Beige: neutro cálido de apoyo, nunca acento. */
+.inicio-page {
+  --rosa-claro: var(--pal-realce); --rosa: var(--pal-realce); --rosa-fuerte: var(--pal-guinda); --guinda-acento: var(--pal-guinda);
+  --verde-cta: var(--pal-verde-claro); --verde-fondo: var(--pal-verde-fondo);
+  --oro: var(--pal-realce);
+}
+.portada__pastilla--cifras { background: var(--pal-superficie); color: var(--pal-titulo); }
+.kpi__icono { color: var(--pal-guinda); }
+.objetivo__numero { color: var(--pal-realce); }
+
+/* Visión y Marco jurídico: selección en gris claro con detalle verde */
+.eje--activo, .jer__col--activa, .jer__col--activa:hover, .jer__chip--activo { background: var(--pal-realce); border-color: var(--pal-realce); color: var(--pal-sobre-accion); }
+.eje--activo .eje__icono, .jer__col--activa .jer__col-num { color: var(--pal-beige); }
+.mj { --m-oro: var(--pal-realce); --m-beige: var(--pal-realce); --m-rosa: var(--pal-guinda); --m-rosa2: var(--pal-guinda); --m-rosa3: var(--pal-guinda-hover); }
+.piramide__fila--activa .piramide__peldano { box-shadow: 0 0 0 3px var(--pal-verde), 0 12px 28px rgba(var(--pal-sombra-rgb), calc(0.5 * var(--pal-sombra-k))) !important; }
+
+/* Estrategias */
+.estr { --e-oro: var(--pal-realce); --e-rosa: var(--pal-guinda); --e-rosa2: var(--pal-guinda); }
+.estr-pastilla__mapa, .estr-col__ir { color: var(--pal-titulo) !important; }
+.mj__cambiar, .estr__boton { color: var(--pal-sobre-accion) !important; }
+.estr-pastilla__mapa, .estr-col__ir { color: var(--pal-verde-claro) !important; }
+.mj__cambiar { background: var(--pal-guinda); }
+.estr__boton { background: var(--pal-guinda); box-shadow: 0 6px 18px rgba(var(--pal-guinda-rgb), 0.4); }
+.estr__boton:hover { background: var(--pal-guinda-hover); }
+
+/* Menú principal: sin raya bajo los enlaces */
+.header--flotante .navbar__link::after, .header--flotante .navbar__link:hover::after { display: none !important; }
+
+/* ---------- 3) Pestañas de la ficha tipo carpeta ---------- */
+.mj__tabs { gap: 6px; border-bottom: 0; position: relative; z-index: 3; align-self: end; }
+.mj__tab {
+  position: relative; margin-bottom: -1px; padding: 11px clamp(16px, 1.8vw, 30px) 10px;
+  border: 1px solid var(--m-borde); border-bottom: 0; border-radius: 14px 14px 0 0;
+  background: rgba(var(--pal-velo-rgb), 0.05); color: var(--pal-texto-2);
+  transition: background 0.2s, color 0.2s;
+}
+.mj__tab:hover { background: rgba(var(--pal-velo-rgb), 0.1); color: var(--pal-titulo); }
+.mj__tab--activa { background: var(--m-tarjeta); color: var(--pal-titulo); border-bottom-color: var(--m-tarjeta); border-color: rgba(var(--pal-velo-rgb), 0.2); z-index: 4; }
+.mj__tab--activa::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 3px; background: var(--m-tarjeta);
+}
+.mj__tab--activa::before {
+  content: ''; position: absolute; left: 14px; right: 14px; top: 0; height: 3px; border-radius: 0 0 3px 3px; background: var(--m-rosa);
+}
+.mj__cuerpo:has(.mj__tab:first-child.mj__tab--activa) .mj__tarjeta::before { border-top-left-radius: 0; }
+.mj__cuerpo:has(.mj__tab:first-child.mj__tab--activa) .mj__tarjeta--suelta { border-top-left-radius: 0; }
+
+
+/* ---------- 4) Escritorio: secciones a todo el ancho + pirámide con más peso ---------- */
+@media (min-width: 1101px) {
+  .mj, .estr {
+    width: 100vw; max-width: none; margin-left: calc(-50vw + 50%); margin-right: 0;
+    padding-inline: clamp(16px, 2.5vw, 56px); box-sizing: border-box;
+  }
+  .mj { gap: clamp(36px, 6vh, 72px); }
+
+  .mj__cuerpo { grid-template-columns: minmax(480px, 0.95fr) minmax(0, 1.05fr); column-gap: clamp(24px, 3.4vw, 64px); row-gap: 0; }
+  .mj__cab { grid-column: 1 / -1; grid-row: 1; flex-direction: column; margin-bottom: clamp(14px, 2.4vh, 26px); }
+  .mj__escala { grid-column: 1; grid-row: 2; align-self: end; margin-bottom: 10px; }
+  .mj__lema { grid-column: 2; grid-row: 2; align-self: end; margin: 0 0 10px; max-width: 70ch; }
+  .mj__izq { grid-column: 1; grid-row: 3 / span 2; gap: 16px; }
+  .mj__tabs { grid-column: 2; grid-row: 3; }
+  .mj__tarjeta { grid-column: 2; grid-row: 4; min-height: clamp(480px, 58vh, 720px); }
+
+  /* Pirámide: peldaños más altos, letra mayor y relieve */
+  .mj .piramide { gap: 6px; }
+  .piramide__peldano { min-height: clamp(68px, 9.2vh, 96px); padding: 8px 52px; border-radius: 6px; box-shadow: 0 3px 10px rgba(var(--pal-sombra-rgb), calc(0.4 * var(--pal-sombra-k))), inset 0 1px 0 rgba(var(--pal-velo-rgb), 0.16); }
+  .piramide__titulo { font-size: var(--t-h3); }
+  .piramide__subtitulo { font-size: var(--t-de); }
+  .piramide__num { left: 16px; font-size: var(--t-h3); }
+  .piramide__escala { right: 14px; width: 26px; height: 26px; }
+  .piramide__fila--activa .piramide__peldano { transform: scale(1.04); box-shadow: 0 0 0 3px var(--pal-realce), 0 12px 28px rgba(var(--pal-sombra-rgb), calc(0.5 * var(--pal-sombra-k))); }
+  .mj__escala-op, .mj__escala-rotulo { font-size: var(--t-cu); }
+
+  /* Trazabilidad: la ruta aprovecha el ancho */
+  .mj-traza { margin-top: -10px; gap: 14px; }
+  .mj-traza__sinopsis { max-width: 72ch; }
+  .estr-pastilla__titulo { font-size: var(--t-h3); }
+  .estr-pastilla__texto { font-size: var(--t-cu); }
+  .estr-pastilla__num { width: 44px; height: 44px; font-size: var(--t-h3); }
+  .estr-pastilla__cifra strong { font-size: calc(var(--t-dato) * 1.2); }
+  .estr-pastilla__cifra, .estr-pastilla__mapa { font-size: var(--t-cu); }
+  .estr__h3 { font-size: calc(var(--t-h3) * 1.15); }
+  .estr__d { font-size: var(--t-sin); }
+  .mj-ruta { --alto: clamp(132px, 17vh, 190px); margin-top: 22px; }
+  .mj-paso { padding-right: clamp(10px, 1.6vw, 28px); }
+  .mj-paso__titulo { font-size: var(--t-h3); }
+  .mj-paso__texto { width: clamp(190px, 15vw, 300px); font-size: var(--t-de); }
+  .mj-paso__num { font-size: var(--t-de); }
+
+  /* Estrategias: tarjetas y pastillas con más aire */
+  .estr { gap: 14px; }
+  .estr__hilo { gap: clamp(44px, 7vh, 80px); }
+  .estr__pastillas, .estr__lectura { gap: clamp(14px, 1.6vw, 28px); }
+  .estr-pastilla { min-height: clamp(400px, 52vh, 540px); }
+  .estr__clasif { gap: clamp(40px, 5vw, 96px); }
+  .estr-col__tarjeta { padding: clamp(16px, 1.4vw, 24px); }
+  .estr__sinopsis { max-width: 78ch; }
+}
+
+/* Tableta: la ficha y su pestaña se apilan; la carpeta sigue viéndose como carpeta */
+@media (max-width: 1100px) {
+  .mj__cab { flex-direction: column; gap: 10px; }
+  .mj__tabs { overflow-x: auto; scrollbar-width: none; padding-right: 4px; }
+  .mj__tabs::-webkit-scrollbar { display: none; }
+  .mj__tab { white-space: nowrap; }
+}
+
+/* Trazabilidad: mismo título de sección que los demás */
+
+@media (max-width: 1100px) {
+  .mj__lema { grid-column: 1; grid-row: 2; margin: 0; }
+  .mj__escala { grid-column: 1; grid-row: 3; }
+  .mj__izq { grid-row: 4; }
+  .mj__tabs { grid-row: 5; }
+  .mj__tarjeta { grid-row: 6; }
+}
+
+/* Carril libre a la derecha para las flechas de pantallas (escritorio) */
+@media (min-width: 1101px) {
+  .portada__marco, .mj, .estr, .vision { padding-right: 76px !important; }
+}

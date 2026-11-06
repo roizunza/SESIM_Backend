@@ -10,6 +10,7 @@ import SeccionMarcoJuridico from '../components/inicio/SeccionMarcoJuridico';
 import SeccionEstrategias from '../components/inicio/SeccionEstrategias';
 import IndiceSecciones from '../components/inicio/IndiceSecciones';
 import Capitulo from '../components/inicio/Capitulo';
+import FlechasPantallas from '../components/inicio/FlechasPantallas';
 import { SECCIONES_INICIO } from '../lib/rutas';
 import './Inicio.css';
 
@@ -117,6 +118,7 @@ const Inicio = () => {
       <div className="progreso-lectura" ref={barra} aria-hidden="true" />
 
       <IndiceSecciones secciones={SECCIONES} etiqueta="Secciones de Inicio" />
+      <FlechasPantallas />
 
       <section className="portada" id="introduccion" ref={hero} aria-labelledby="portada-titulo">
         <div className="portada__claro">
@@ -124,7 +126,7 @@ const Inicio = () => {
             <div className="portada__texto">
               <h1 id="portada-titulo" className="hero-titulo-animado" aria-label="Sistema Estatal de Seguimiento a Indicadores de Movilidad y Seguridad Vial">
                 <span className="portada__linea" aria-hidden="true">
-                  Sistema Estatal <span className="portada__pastilla">SESIM del Estado de Campeche</span>
+                  Sistema Estatal
                 </span>
                 <span className="portada__linea" aria-hidden="true">de Seguimiento a Indicadores</span>
                 <span className="portada__linea" aria-hidden="true">de Movilidad y Seguridad Vial</span>
@@ -145,6 +147,7 @@ const Inicio = () => {
             </div>
 
             <div className="portada__kpis" aria-label="Cifras del sistema">
+              <span className="portada__pastilla portada__pastilla--cifras">SESIM del Estado de Campeche</span>
               {[
                 [Gauge, 'Indicadores', cifras?.indicadores, false],
                 [Layers, 'Capas publicadas', cifras?.capas, true],

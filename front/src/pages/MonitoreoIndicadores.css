@@ -27,7 +27,7 @@
   background:
     linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 28px 28px,
     linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px) 0 0 / 28px 28px,
-    radial-gradient(120% 140% at 100% 0%, rgba(159, 34, 65, 0.9) 0%, transparent 60%),
+    radial-gradient(120% 140% at 100% 0%, rgba(var(--pal-guinda-rgb), 0.9) 0%, transparent 60%),
     linear-gradient(135deg, var(--mon-guinda-oscuro) 0%, #691C32 100%);
   box-shadow: var(--shadow-md);
   overflow: hidden;
@@ -102,7 +102,7 @@
 .indicadores-page .mon-interruptor input:focus-visible + .mon-interruptor-pista { outline: 2px solid var(--c-guinda); outline-offset: 2px; }
 
 .mon-limpiar { font: inherit; font-size: 0.8rem; font-weight: 600; color: var(--c-guinda); background: none; border: 1px solid transparent; border-radius: 8px; padding: 7px 10px; cursor: pointer; margin-bottom: 1px; }
-.mon-limpiar:hover { background: rgba(159, 34, 65, 0.08); }
+.mon-limpiar:hover { background: rgba(var(--pal-guinda-rgb), 0.08); }
 
 .mon-conteo { margin: 14px 2px 8px; font-size: 0.82rem; color: var(--text-secondary); }
 .mon-conteo strong { color: var(--mon-ink); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
@@ -123,16 +123,16 @@
 .indicadores-tabla td { padding: 10px 14px; border-bottom: 1px solid #F0ECE8; color: var(--text-primary); vertical-align: middle; max-width: 340px; }
 .indicadores-tabla tbody tr:last-child td { border-bottom: 0; }
 .indicadores-tabla tbody tr.clic { cursor: pointer; transition: background 0.12s ease; }
-.indicadores-tabla tbody tr.clic:hover { background: rgba(159, 34, 65, 0.05); }
+.indicadores-tabla tbody tr.clic:hover { background: rgba(var(--pal-guinda-rgb), 0.05); }
 .indicadores-tabla tbody tr.clic td:first-child { box-shadow: inset 3px 0 0 transparent; transition: box-shadow 0.12s ease; }
 .indicadores-tabla tbody tr.clic:hover td:first-child { box-shadow: inset 3px 0 0 var(--c-beige-dk); }
-.indicadores-tabla tbody tr.activa { background: rgba(159, 34, 65, 0.09); }
+.indicadores-tabla tbody tr.activa { background: rgba(var(--pal-guinda-rgb), 0.09); }
 .indicadores-tabla tbody tr.activa td:first-child { box-shadow: inset 3px 0 0 var(--c-guinda); }
 .indicadores-tabla tbody tr:focus-visible { outline: 2px solid var(--c-guinda); outline-offset: -2px; }
 
 .mon-id {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.76rem; font-weight: 700;
-  color: var(--c-guinda-dk); background: rgba(159, 34, 65, 0.09); border: 1px solid rgba(159, 34, 65, 0.18);
+  color: var(--c-guinda-dk); background: rgba(var(--pal-guinda-rgb), 0.09); border: 1px solid rgba(var(--pal-guinda-rgb), 0.18);
   padding: 2px 7px; border-radius: 6px; white-space: nowrap;
 }
 .indicadores-tabla td[data-label='Eje'] { white-space: nowrap; }
@@ -183,7 +183,7 @@
 .ficha-indicador .panel-detalle-header h3 { color: var(--c-guinda-dk); font-size: 1.1rem; text-align: left; }
 .ficha-indicador .panel-detalle-sup { color: var(--c-guinda); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 0.03em; }
 .ficha-indicador .panel-detalle-cerrar { color: var(--text-primary); border-radius: 8px; padding: 4px; }
-.ficha-indicador .panel-detalle-cerrar:hover { background: rgba(159, 34, 65, 0.08); color: var(--c-guinda); }
+.ficha-indicador .panel-detalle-cerrar:hover { background: rgba(var(--pal-guinda-rgb), 0.08); color: var(--c-guinda); }
 .ficha-indicador .panel-detalle-cuerpo { padding: 14px; gap: 10px; background: var(--mon-fondo-sutil); overscroll-behavior: contain; }
 .ficha-indicador .dato { background: #fff; border: 1px solid var(--mon-linea); border-radius: 10px; padding: 10px 12px; }
 .ficha-indicador .dato-etiqueta { color: var(--c-guinda); }

@@ -11,9 +11,9 @@
 /* Impacto territorial */
 .vision__impacto-cabecera { display: flex; justify-content: space-between; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
 .vision__selector { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: var(--text-secondary); }
-.vision__selector select { height: 42px; min-width: 220px; border-radius: 8px; border: 1px solid #cfd2d6; padding: 0 10px; font-size: 14px; background: #fff; }
+.vision__selector select { height: 42px; min-width: 220px; border-radius: 8px; border: 1px solid var(--pal-linea); padding: 0 10px; font-size: 14px; background: var(--pal-superficie); }
 .impacto { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-.impacto__dato { border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 4px; background: #fcfbf9; }
+.impacto__dato { border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 4px; background: var(--pal-superficie); }
 .impacto__dato svg { color: var(--c-verde); }
 .impacto__dato strong { font-family: var(--font-heading); font-size: 1.85rem; color: var(--c-text); line-height: 1.1; }
 .impacto__dato span { font-size: 13px; color: var(--text-secondary); }
@@ -22,12 +22,12 @@
 .impacto__chips { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
 .impacto__chips a {
   display: inline-block; font-size: 13px; padding: 5px 10px; border-radius: 999px; text-decoration: none;
-  border: 1px solid var(--border-color); color: var(--c-guinda); background: #fff;
+  border: 1px solid var(--border-color); color: var(--c-guinda); background: var(--pal-superficie);
 }
 .impacto__chips a:hover { border-color: var(--c-guinda); }
 .impacto__cta {
   display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 10px;
-  background: var(--c-guinda); color: #fff; font-weight: 600; font-size: 14px; text-decoration: none;
+  background: var(--c-guinda); color: var(--pal-sobre-accion); font-weight: 600; font-size: 14px; text-decoration: none;
 }
 .impacto__cta:hover { background: var(--c-guinda-dk); }
 

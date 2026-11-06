@@ -2,15 +2,7 @@ import { useRef } from 'react';
 
 const ANCHO_MIN = 0.6;
 /** Gama de la pirámide: del beige claro del primer peldaño al café oscuro del último (misma gama que la pirámide del SEOTDU). */
-const TONOS = [
-  { fondo: '#E8E2D5', acento: '#8A2A44', texto: '#2B2317' },
-  { fondo: '#DFD8CB', acento: '#8A2A44', texto: '#2B2317' },
-  { fondo: '#C7BBA5', acento: '#8A2A44', texto: '#251E13' },
-  { fondo: '#B1A187', acento: '#8A2A44', texto: '#1C1710' },
-  { fondo: '#847353', acento: '#F1E6CF', texto: '#FFFFFF' },
-  { fondo: '#544632', acento: '#F1E6CF', texto: '#FFFFFF' },
-  { fondo: '#352B1D', acento: '#F1E6CF', texto: '#FFFFFF' },
-];
+const TONOS = [1, 2, 3, 4, 5, 6, 7].map((i) => ({ fondo: `var(--pal-pir-${i})`, acento: `var(--pal-pir-a-${i})`, texto: `var(--pal-pir-t-${i})` }));
 
 /**
  * Pirámide de instrumentos de planeación como embudo escalonado (diseño del SEOTDU): peldaños numerados que

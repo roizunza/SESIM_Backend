@@ -2,11 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
+import './styles/paleta.css';
 import './styles/tokens.css';
 import './index.css';
 import './styles/tech.css';
 import './styles/vidrio.css';
 import './styles/tipografia-inicio.css';
+import './styles/inicio-ajustes.css';
+import './styles/paleta-puente.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

@@ -351,7 +351,7 @@ a.hd-chip:focus-visible { outline: 3px solid var(--rol); outline-offset: 2px; }
 .admin-container::before {
   content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 0;
   background:
-    radial-gradient(520px 260px at 50% 38%, rgba(159, 34, 65, .12), transparent 70%),
+    radial-gradient(520px 260px at 50% 38%, rgba(var(--pal-guinda-rgb), .12), transparent 70%),
     linear-gradient(rgba(16,49,43,.045) 1px, transparent 1px) 0 0 / 100% 36px,
     linear-gradient(90deg, rgba(16,49,43,.045) 1px, transparent 1px) 0 0 / 36px 100%;
   -webkit-mask-image: radial-gradient(closest-side at 50% 45%, #000 30%, transparent 100%);
@@ -369,10 +369,10 @@ a.hd-chip:focus-visible { outline: 3px solid var(--rol); outline-offset: 2px; }
 .admin-login-submit {
   height: 46px; border-radius: 12px !important; letter-spacing: .02em;
   background: linear-gradient(180deg, #ad2549, #8d1c3b) !important;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 10px 22px -8px rgba(159, 34, 65, .65);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 10px 22px -8px rgba(var(--pal-guinda-rgb), .65);
   transition: transform .18s var(--ease), box-shadow .18s;
 }
-.admin-login-submit:hover { transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 14px 26px -8px rgba(159,34,65,.75); }
+.admin-login-submit:hover { transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 14px 26px -8px rgba(var(--pal-guinda-rgb), .75); }
 .admin-login-error { background: #fff3f2; color: #b42318; border: 1px solid #f4c3be; padding: 9px 12px; border-radius: 10px; font-size: 13px; }
 .admin-login-ayuda { font-size: 11.5px; color: var(--text-secondary); text-align: center; line-height: 1.5; }
 .modal-overlay { -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); background: rgba(7, 16, 13, .62) !important; }
@@ -382,9 +382,9 @@ a.hd-chip:focus-visible { outline: 3px solid var(--rol); outline-offset: 2px; }
 /* ----------------------------------------------------------------------
    Pie
    ---------------------------------------------------------------------- */
-.footer { background: #eceeed; }
+.footer { background: var(--pal-fondo-2); }
 .footer__col-title { font-family: var(--font-mono) !important; font-size: 11px !important; letter-spacing: .14em !important; }
-.underfooter { background: linear-gradient(90deg, #1a2723, #26332f); }
+.underfooter { background: var(--pal-titulo); }
 
 /* ----------------------------------------------------------------------
    Botón flotante del panel lateral (solo móvil) y fondo

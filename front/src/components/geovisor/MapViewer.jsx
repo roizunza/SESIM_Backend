@@ -89,7 +89,7 @@ const MapViewer = ({ incluirBorrador = false }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [mapInstance, setMapInstance] = useState(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
-  const [guiaAbierta, setGuiaAbierta] = useState(() => !recorridoVisto(CLAVE_RECORRIDO));
+  const [guiaAbierta, setGuiaAbierta] = useState(() => !recorridoVisto(CLAVE_RECORRIDO) || new URLSearchParams(window.location.search).get('recorrido') === '1');
   const [activeBaseLayer, setActiveBaseLayer] = useState('claro');
   const [isSidebarOpen, setIsSidebarOpen, esMovil] = usePanelLateral();
 

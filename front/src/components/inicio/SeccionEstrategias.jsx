@@ -70,11 +70,11 @@ export default function SeccionEstrategias({ id }) {
 
   return (
     <section id={id} className="estr" aria-labelledby={`${id}-titulo`}>
-      <div className="estr__fila" data-revelar>
-        <span className="estr__etiqueta">Estrategias EEMSV</span>
-        <h2 id={`${id}-titulo`} className="estr__titulo">Estrategias y sus indicadores</h2>
-      </div>
-      <p className="estr__sinopsis" data-revelar style={{ '--retardo': '100ms' }}>
+      <header className="sec-cab" data-revelar>
+        <h2 id={`${id}-titulo`} className="sec-titulo">Estrategias e indicadores</h2>
+        <p className="sec-subtitulo">Las cinco estrategias de la EEMSV</p>
+      </header>
+      <p className="estr__sinopsis sec-sinopsis" data-revelar style={{ '--retardo': '100ms' }}>
         Cada indicador del SESIM apunta a una estrategia, mide un tipo de resultado y se evalúa desde una vertiente. Elige una estrategia y explora sus indicadores.
       </p>
 
@@ -84,7 +84,7 @@ export default function SeccionEstrategias({ id }) {
           <span className="estr__nodo" aria-hidden="true">1</span>
           <div className="estr__pastillas" role="group" aria-label="Estrategias de la EEMSV">
             {EJES_ESTRATEGICOS.map((e) => (
-              <article key={e.id} className={`estr-pastilla${activa === e.numero ? ' estr-pastilla--activa' : ''}`} style={{ '--c': e.color }}>
+              <article key={e.id} className={`estr-pastilla${activa === e.numero ? ' estr-pastilla--activa' : ''}`} style={{ '--c': e.colorVar }}>
                 <button type="button" className="estr-pastilla__sel" aria-pressed={activa === e.numero} onClick={() => setActiva(activa === e.numero ? null : e.numero)}>
                   <span className="estr-pastilla__num" aria-hidden="true">{e.numero}</span>
                   <span className="estr-pastilla__titulo">{sinNumero(e.tituloCorto)}</span>
@@ -134,7 +134,7 @@ export default function SeccionEstrategias({ id }) {
           <p className="estr__d">Así se distribuyen los indicadores de cada estrategia según el nivel de la MIR: Fin, Propósito, Componentes y Actividades.</p>
           <div className={`estr__lectura${activa ? ' estr__lectura--sel' : ''}`}>
             {EJES_ESTRATEGICOS.map((e) => (
-              <div key={e.id} className={`estr-col${activa === e.numero ? ' estr-col--activa' : ''}`} style={{ '--c': e.color }}>
+              <div key={e.id} className={`estr-col${activa === e.numero ? ' estr-col--activa' : ''}`} style={{ '--c': e.colorVar }}>
                 <span className="estr-col__flecha" aria-hidden="true"><i /></span>
                 <div className="estr-col__tarjeta">
                   <h4><span aria-hidden="true" />{sinNumero(e.tituloCorto)}</h4>

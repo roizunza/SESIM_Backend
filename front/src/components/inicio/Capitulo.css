@@ -7,7 +7,7 @@
   content: ''; position: absolute; inset: 0 calc(-50vw + 50%); z-index: -1;
   background: var(--capitulo-fondo, transparent); opacity: 0; transition: opacity 0.8s ease;
 }
-.capitulo--tinta { --capitulo-fondo: linear-gradient(180deg, rgba(159, 34, 65, 0.05), rgba(171, 148, 112, 0.08)); }
+.capitulo--tinta { --capitulo-fondo: linear-gradient(180deg, rgba(var(--pal-guinda-rgb), 0.05), rgba(171, 148, 112, 0.08)); }
 .capitulo--activo::before { opacity: 1; }
 
 .capitulo__portada { width: 100%; display: flex; align-items: center; gap: 16px; text-align: left; }

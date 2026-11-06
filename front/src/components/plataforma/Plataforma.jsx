@@ -32,6 +32,7 @@ const Plataforma = () => {
   useAltoCabecera('.header', '.sin-menu-aparte');
   useInicioDePagina();
   useTonoOscuro();
+  const { pathname } = useLocation();
   return (
     <div className="app-container">
       <Header />
@@ -40,9 +41,11 @@ const Plataforma = () => {
           <Outlet />
         </FiltrosProvider>
       </main>
-      <div className="aviso-pie">
-        <AvisoLegal tipo="general" discreto />
-      </div>
+      {pathname !== '/' && (
+        <div className="aviso-pie">
+          <AvisoLegal tipo="general" discreto />
+        </div>
+      )}
       <Footer />
       <Underfooter />
     </div>

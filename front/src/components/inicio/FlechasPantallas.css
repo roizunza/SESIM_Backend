@@ -1,0 +1,22 @@
+.flechas-pantallas {
+  position: fixed; z-index: 950; right: clamp(8px, 1.2vw, 20px); top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 8px 6px; border-radius: 999px;
+  background: rgba(var(--pal-fondo-rgb), 0.7); border: 1px solid rgba(var(--pal-velo-rgb), 0.16);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 14px 30px -14px rgba(var(--pal-sombra-rgb), calc(0.7 * var(--pal-sombra-k)));
+}
+.flechas-pantallas button {
+  display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(var(--pal-velo-rgb), 0.18);
+  background: rgba(var(--pal-velo-rgb), 0.08); color: var(--pal-texto); cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.flechas-pantallas button:hover:not(:disabled) { background: var(--pal-guinda); border-color: var(--pal-realce); color: var(--pal-sobre-accion); }
+.flechas-pantallas button:focus-visible { outline: 2px solid var(--pal-realce); outline-offset: 2px; }
+.flechas-pantallas button:disabled { opacity: 0.35; cursor: default; }
+.flechas-pantallas__cuenta { font-size: 11px; font-weight: 700; letter-spacing: 0.04em; color: var(--pal-texto); font-variant-numeric: tabular-nums; }
+.flechas-pantallas__cuenta i { font-style: normal; opacity: 0.8; margin: 0 1px; }
+@media (max-width: 700px) {
+  .flechas-pantallas { top: auto; bottom: 14px; transform: none; padding: 6px 4px; right: 8px; }
+  .flechas-pantallas button { width: 36px; height: 36px; }
+}
+@media print { .flechas-pantallas { display: none; } }
+/* Las flechas guían de pantalla en pantalla: el ajuste automático ya no compite con ellas. */
+html.inicio-historia { scroll-snap-type: none; }

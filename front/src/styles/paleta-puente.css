@@ -1,0 +1,15 @@
+/* Puente: variables heredadas (--c-*, --text-*, --bg-*, --rol*) leen la paleta.
+   Se importa al final para que el Acceso, el panel y el resto de páginas sigan la misma paleta. */
+:root {
+  --c-guinda: var(--pal-guinda); --c-guinda-dk: var(--pal-guinda-inst);
+  --c-verde: var(--pal-verde); --c-verde-dk: var(--pal-titulo);
+  --c-beige-lt: var(--pal-beige); --c-beige-dk: var(--pal-beige);
+  --c-gray-md: var(--pal-linea); --c-gray-dk: var(--pal-texto-2);
+  --c-white: var(--pal-superficie); --c-bg: var(--pal-fondo); --c-bg-card: var(--pal-superficie);
+  --c-text: var(--pal-texto); --c-text-lt: var(--pal-texto-2);
+  --bg-color: var(--pal-fondo); --surface-color: var(--pal-superficie); --surface-border: var(--pal-linea);
+  --text-primary: var(--pal-texto); --text-secondary: var(--pal-texto-2); --border-color: var(--pal-linea);
+  --line: rgba(var(--pal-realce-rgb), 0.14); --line-strong: rgba(var(--pal-realce-rgb), 0.26);
+  --glass: rgba(var(--pal-superficie-rgb), 0.86); --glass-strong: rgba(var(--pal-superficie-rgb), 0.96);
+  --rol: var(--pal-guinda); --rol-rgb: var(--pal-guinda-rgb); --rol-ink: var(--pal-guinda-inst);
+}

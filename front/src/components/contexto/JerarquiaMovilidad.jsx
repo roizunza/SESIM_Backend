@@ -54,9 +54,8 @@ export default function JerarquiaMovilidad({ niveles, introduccion, fundamento, 
   });
   const tono = (k) => {
     const t = tramos.length > 1 ? k / (tramos.length - 1) : 1;
-    const a = [96, 20, 44];
-    const b = [176, 54, 90];
-    return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(',')})`;
+    // beige claro → verde profundo (styles/paleta.css)
+    return `color-mix(in srgb, var(--pal-verde) ${Math.round(15 + 85 * t)}%, var(--pal-beige))`;
   };
 
   // Las imágenes de todos los niveles se descargan desde el inicio: al cambiar no hay parpadeo.
@@ -84,7 +83,7 @@ export default function JerarquiaMovilidad({ niveles, introduccion, fundamento, 
             <button
               key={n.id}
               type="button"
-              className={`jer__col${n.id === activo ? ' jer__col--activa' : ''}`}
+              className={`jer__col${n.id === activo ? ' jer__col--activa' : ''}${tramos.length > 1 && k / (tramos.length - 1) > 0.55 ? ' jer__col--oscura' : ''}`}
               style={{ '--peso': peso, '--recorte': recorte, '--tono': tono(k), '--k': k }}
               aria-pressed={n.id === activo}
               aria-label={`Prioridad ${n.orden}: ${n.nombre}`}

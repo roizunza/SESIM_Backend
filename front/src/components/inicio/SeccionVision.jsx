@@ -46,13 +46,13 @@ export default function SeccionVision({ id }) {
 
   return (
     <section id={id} className="seccion-inicio vision" aria-labelledby={`${id}-titulo`}>
-      <div className="vision__fila vision__fila--titulo" data-revelar>
-        <span className="vision__etiqueta">Visión</span>
-        <h2 id={`${id}-titulo`} className="vision__titulo">Moverse seguro es un derecho; medirlo es cómo lo garantizamos</h2>
-      </div>
+      <header className="sec-cab" data-revelar>
+        <h2 id={`${id}-titulo`} className="sec-titulo">Visión</h2>
+        <p className="sec-subtitulo">Moverse seguro es un derecho; medirlo es cómo lo garantizamos</p>
+      </header>
 
       <div className="vision__fila vision__fila--ejes" data-revelar style={{ '--retardo': '120ms' }}>
-        <p className="vision__sinopsis">El SESIM da seguimiento a la aplicación territorial de la política estatal de movilidad y seguridad vial: vincula compromisos normativos, objetivos de planeación y resultados observables en cada municipio.</p>
+        <p className="vision__sinopsis sec-sinopsis">El SESIM da seguimiento a la aplicación territorial de la política estatal de movilidad y seguridad vial: vincula compromisos normativos, objetivos de planeación y resultados observables en cada municipio.</p>
         <Principios />
       </div>
 

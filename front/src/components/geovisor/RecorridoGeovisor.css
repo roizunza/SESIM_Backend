@@ -1,49 +1,49 @@
 /* Recorrido del geovisor (paleta B + tokens tipográficos). Va sobre el mapa claro: el foco lo oscurece todo menos la zona explicada. */
-.recorrido { position: fixed; inset: 0; z-index: 3000; font-family: var(--fuente-texto); color: #eef3f5; text-align: left; hyphens: manual; }
-.recorrido__velo { position: absolute; inset: 0; background: rgba(20, 7, 13, 0.8); animation: rec-in .25s ease both; cursor: pointer; }
-.recorrido__velo--suave { background: rgba(20, 7, 13, 0.6); }
+.recorrido { position: fixed; inset: 0; z-index: 3000; font-family: var(--fuente-texto); color: var(--pal-texto); text-align: left; hyphens: manual; }
+.recorrido__velo { position: absolute; inset: 0; background: rgba(var(--pal-scrim-rgb), 0.72); animation: rec-in .25s ease both; cursor: pointer; }
+.recorrido__velo--suave { background: rgba(var(--pal-scrim-rgb), 0.5); }
 .recorrido__foco {
-  position: fixed; border-radius: 14px; outline: 2px solid #BFE6F2; outline-offset: 3px; cursor: pointer;
-  box-shadow: 0 0 0 9999px rgba(20, 7, 13, 0.78);
+  position: fixed; border-radius: 14px; outline: 2px solid var(--pal-verde); outline-offset: 3px; cursor: pointer;
+  box-shadow: 0 0 0 9999px rgba(var(--pal-scrim-rgb), 0.7);
   transition: top .35s cubic-bezier(.2, .8, .2, 1), left .35s cubic-bezier(.2, .8, .2, 1), width .35s cubic-bezier(.2, .8, .2, 1), height .35s cubic-bezier(.2, .8, .2, 1);
 }
 .recorrido__tarjeta {
-  position: fixed; width: 360px; max-width: calc(100vw - 24px); background: #2c0f1f; border: 1px solid rgba(191, 230, 242, 0.25); border-radius: 18px;
-  padding: 20px 22px 16px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55); outline: none; overflow: hidden;
+  position: fixed; width: 360px; max-width: calc(100vw - 24px); background: var(--pal-superficie); border: 1px solid rgba(var(--pal-realce-rgb), 0.25); border-radius: 18px;
+  padding: 20px 22px 16px; box-shadow: 0 24px 60px rgba(var(--pal-sombra-rgb), calc(0.55 * var(--pal-sombra-k))); outline: none; overflow: hidden;
   transition: top .35s cubic-bezier(.2, .8, .2, 1), left .35s cubic-bezier(.2, .8, .2, 1); animation: rec-in .3s ease both;
 }
 .recorrido__tarjeta--bienvenida { left: 50%; top: 50%; transform: translate(-50%, -50%); width: 520px; padding: 28px 30px 22px; transition: none; }
 .recorrido__tarjeta--hoja { left: 0 !important; right: 0; bottom: 0; top: auto !important; width: 100% !important; max-width: none; border-radius: 20px 20px 0 0; border-bottom: 0; padding-bottom: calc(18px + env(safe-area-inset-bottom)); max-height: 62dvh; overflow: auto; }
-.recorrido__progreso { position: absolute; left: 0; right: 0; top: 0; height: 4px; background: rgba(238, 243, 245, 0.18); }
-.recorrido__progreso i { display: block; height: 100%; background: #BFE6F2; transition: width .35s ease; }
-.recorrido__etq { font-size: var(--t-et); font-weight: 700; letter-spacing: var(--ls-etiqueta); text-transform: uppercase; color: #BFE6F2; }
-.recorrido h2 { font: 700 var(--t-h3)/1.25 var(--fuente-titulo); color: #fff; margin: 6px 0 8px; }
+.recorrido__progreso { position: absolute; left: 0; right: 0; top: 0; height: 4px; background: rgba(var(--pal-texto-rgb), 0.18); }
+.recorrido__progreso i { display: block; height: 100%; background: var(--pal-verde); transition: width .35s ease; }
+.recorrido__etq { font-size: var(--t-et); font-weight: 700; letter-spacing: var(--ls-etiqueta); text-transform: uppercase; color: var(--pal-realce); }
+.recorrido h2 { font: 700 var(--t-h3)/1.25 var(--fuente-titulo); color: var(--pal-titulo); margin: 6px 0 8px; }
 .recorrido__tarjeta--bienvenida h2 { font-size: var(--t-h2); }
-.recorrido p { font: 400 var(--t-cu)/1.55 var(--fuente-texto); color: rgba(238, 243, 245, 0.78); margin: 0; }
+.recorrido p { font: 400 var(--t-cu)/1.55 var(--fuente-texto); color: rgba(var(--pal-texto-rgb), 0.78); margin: 0; }
 .recorrido__items { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 8px; }
-.recorrido__items li { display: flex; gap: 10px; align-items: flex-start; font-size: var(--t-de); color: #eef3f5; }
-.recorrido__items b { flex: none; min-width: 26px; height: 26px; border-radius: 8px; background: rgba(191, 230, 242, 0.14); border: 1px solid rgba(191, 230, 242, 0.25); display: grid; place-items: center; font-size: var(--t-de); color: #BFE6F2; }
+.recorrido__items li { display: flex; gap: 10px; align-items: flex-start; font-size: var(--t-de); color: var(--pal-texto); }
+.recorrido__items b { flex: none; min-width: 26px; height: 26px; border-radius: 8px; background: rgba(var(--pal-realce-rgb), 0.14); border: 1px solid rgba(var(--pal-realce-rgb), 0.25); display: grid; place-items: center; font-size: var(--t-de); color: var(--pal-realce); }
 .recorrido__items span { padding-top: 3px; line-height: 1.45; }
 .recorrido__cifras { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 14px 0 4px; padding: 0; }
-.recorrido__cifras li { background: rgba(191, 230, 242, 0.08); border: 1px solid rgba(191, 230, 242, 0.25); border-radius: 12px; padding: 12px 10px; font-size: var(--t-de); }
-.recorrido__cifras b { display: block; font: 700 var(--t-h3)/1.1 var(--fuente-titulo); color: #BFE6F2; margin-bottom: 4px; }
+.recorrido__cifras li { background: rgba(var(--pal-realce-rgb), 0.08); border: 1px solid rgba(var(--pal-realce-rgb), 0.25); border-radius: 12px; padding: 12px 10px; font-size: var(--t-de); }
+.recorrido__cifras b { display: block; font: 700 var(--t-h3)/1.1 var(--fuente-titulo); color: var(--pal-realce); margin-bottom: 4px; }
 .recorrido__pie { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
 .recorrido__puntos { display: flex; gap: 6px; }
-.recorrido__puntos i { width: 8px; height: 8px; border-radius: 50%; background: rgba(238, 243, 245, 0.28); transition: width .25s, background .25s; }
-.recorrido__puntos i.on { width: 22px; border-radius: 99px; background: #BFE6F2; }
-.recorrido__puntos i.ok { background: #BFE6F2; }
+.recorrido__puntos i { width: 8px; height: 8px; border-radius: 50%; background: rgba(var(--pal-texto-rgb), 0.28); transition: width .25s, background .25s; }
+.recorrido__puntos i.on { width: 22px; border-radius: 99px; background: var(--pal-verde); }
+.recorrido__puntos i.ok { background: var(--pal-verde); }
 .recorrido__nav { display: flex; gap: 8px; }
 .recorrido button { font-family: var(--fuente-texto); cursor: pointer; }
-.recorrido__boton { background: #A3294B; color: #fff; border: 0; font-weight: 700; font-size: var(--t-de); border-radius: 10px; padding: 10px 16px; transition: background .2s; }
-.recorrido__boton:hover { background: #BE3560; }
-.recorrido__sec { background: transparent; color: #eef3f5; border: 1px solid rgba(191, 230, 242, 0.3); font-weight: 600; font-size: var(--t-de); border-radius: 10px; padding: 9px 14px; }
-.recorrido__sec:hover { border-color: #BFE6F2; }
-.recorrido__omitir { background: none; border: 0; padding: 4px 0; color: #BFE6F2; text-decoration: underline; font-weight: 600; font-size: var(--t-de); }
-.recorrido__teclas { margin-top: 12px !important; font-size: var(--t-nota) !important; color: rgba(238, 243, 245, 0.7) !important; }
-.recorrido__teclas kbd { font-family: inherit; border: 1px solid rgba(191, 230, 242, 0.3); border-radius: 5px; padding: 1px 6px; margin: 0 2px; }
+.recorrido__boton { background: var(--pal-guinda); color: var(--pal-sobre-accion); border: 0; font-weight: 700; font-size: var(--t-de); border-radius: 10px; padding: 10px 16px; transition: background .2s; }
+.recorrido__boton:hover { background: var(--pal-guinda-hover); }
+.recorrido__sec { background: transparent; color: var(--pal-texto); border: 1px solid rgba(var(--pal-realce-rgb), 0.3); font-weight: 600; font-size: var(--t-de); border-radius: 10px; padding: 9px 14px; }
+.recorrido__sec:hover { border-color: var(--pal-realce); }
+.recorrido__omitir { background: none; border: 0; padding: 4px 0; color: var(--pal-realce); text-decoration: underline; font-weight: 600; font-size: var(--t-de); }
+.recorrido__teclas { margin-top: 12px !important; font-size: var(--t-nota) !important; color: rgba(var(--pal-texto-rgb), 0.7) !important; }
+.recorrido__teclas kbd { font-family: inherit; border: 1px solid rgba(var(--pal-realce-rgb), 0.3); border-radius: 5px; padding: 1px 6px; margin: 0 2px; }
 .recorrido__nota { margin-top: 14px !important; font-size: var(--t-nota) !important; }
-.recorrido__nota b { color: #BFE6F2; }
-.recorrido :focus-visible { outline: 2px solid #BFE6F2; outline-offset: 2px; }
+.recorrido__nota b { color: var(--pal-realce); }
+.recorrido :focus-visible { outline: 2px solid var(--pal-realce); outline-offset: 2px; }
 @media (max-width: 560px) {
   .recorrido__tarjeta--bienvenida { width: calc(100vw - 24px); padding: 22px 20px 18px; }
   .recorrido__cifras { grid-template-columns: repeat(3, 1fr); }
