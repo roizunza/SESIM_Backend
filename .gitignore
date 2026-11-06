@@ -12,3 +12,4 @@ infra/supabase/.env
 infra/supabase/volumes/db/data/
 infra/supabase/volumes/storage/
 infra/supabase/volumes/logs/
+respaldo_front_*.zip

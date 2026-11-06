@@ -23,7 +23,7 @@ chequeo() { # descripcion, comando...
 
 echo "==> verificando ambiente: $AMB"
 chequeo "GoTrue responde (/auth/v1/health)"        curl -fsS -H "apikey: $ANON" "$GW/auth/v1/health"
-chequeo "PostgREST responde (/rest/v1/)"           curl -fsS -H "apikey: $ANON" "$GW/rest/v1/"
+chequeo "PostgREST responde (api.capa publica)"       bash -c "[ \"\$(curl -s -o /dev/null -w '%{http_code}' -H 'apikey: $ANON' -H 'Accept-Profile: api' '$GW/rest/v1/capa?limit=1')\" = 200 ]"
 chequeo "servicio de procesos responde (/health)"  curl -fsS "$PROC/health"
 chequeo "servicio de procesos dice ambiente=$AMB"  bash -c "curl -fsS '$PROC/health' | grep -q '\"ambiente\":\"$AMB\"'"
 chequeo "sin migraciones pendientes"               bash -c "./scripts/migrar.sh --estado | grep -q 'Pendientes: 0'"

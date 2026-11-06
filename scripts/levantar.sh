@@ -37,6 +37,12 @@ SERVICIOS=(db auth rest api-gw studio meta servicio-procesos storage imgproxy)
 [ "$AMB" != "produccion" ] && SERVICIOS+=(mailpit)
 
 echo "==> ambiente: $AMB"
+compose up -d --build db
+echo "==> esperando a que Postgres termine de inicializarse (primer arranque: unos minutos)..."
+for _ in $(seq 1 300); do
+  [ "$(docker inspect -f '{{.State.Health.Status}}' supabase-db 2>/dev/null)" = "healthy" ] && break
+  sleep 3
+done
 compose up -d --build "${SERVICIOS[@]}"
 
 # Ciclo 6: el bucket de evidencias vive en Supabase Storage; su esquema lo crea el servicio `storage` al arrancar.

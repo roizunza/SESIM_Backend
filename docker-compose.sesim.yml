@@ -46,44 +46,11 @@
 # servidor. No se pueden levantar dos ambientes a la vez en el mismo equipo.
 
 include:
-  - path: infra/supabase/docker-compose.yml
+  - path:
+      - infra/supabase/docker-compose.yml
+      - docker-compose.sesim.override.yml
 
 services:
-  db:
-    build: ./db
-    restart: unless-stopped
-    ports:
-      # Postgres escucha solo en la direccion DB_BIND_ADDR (por defecto
-      # 127.0.0.1: unicamente desde el propio equipo, para psql/DBeaver por
-      # tunel SSH). Nunca poner 0.0.0.0 en pruebas ni produccion.
-      - "${DB_BIND_ADDR:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432"
-
-  auth:
-    environment:
-      # OJO: las variables de contenedor que de verdad lee GoTrue llevan el
-      # prefijo GOTRUE_ (el .env.example de infra/supabase usa nombres sin
-      # prefijo como ${SMTP_HOST} solo como ATAJO para rellenar estas
-      # mismas variables -- pero como aqui las sobreescribimos directo en
-      # el compose, hay que usar el nombre real que ve GoTrue).
-      # En desarrollo y pruebas apuntan a Mailpit (valores por defecto); en
-      # produccion se definen SMTP_HOST/PORT/USER/PASS en .env (SMTP
-      # institucional) -- ver env/produccion.env.example.
-      GOTRUE_SMTP_HOST: ${SMTP_HOST:-mailpit}
-      GOTRUE_SMTP_PORT: ${SMTP_PORT:-1025}
-      GOTRUE_SMTP_USER: ${SMTP_USER:-}
-      GOTRUE_SMTP_PASS: ${SMTP_PASS:-}
-      GOTRUE_SMTP_SENDER_NAME: ${SMTP_SENDER_NAME:-SESIM}
-      GOTRUE_SMTP_ADMIN_EMAIL: ${SMTP_ADMIN_EMAIL:-admin@sesim.local}
-      # Custom Access Token Hook: agrega el rol de core.perfil como claim de
-      # CONVENIENCIA en el JWT (para que el front lo lea directo, sin la
-      # consulta extra a api.perfil). No cambia la autorizacion real -- ver
-      # el comentario completo en
-      # db/migrations/108_hook_custom_access_token.sql. No se configura
-      # GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_SECRETS: es para hooks HTTP propios,
-      # no para "pg-functions://" como este.
-      GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_ENABLED: "true"
-      GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_URI: "pg-functions://postgres/core/custom_access_token_hook"
-
   servicio-procesos:
     build: ./servicio-procesos
     restart: unless-stopped

@@ -1,0 +1,21 @@
+# Sobrescrituras de SESIM sobre servicios de infra/supabase (db, auth).
+# Se incluye junto al compose base dentro de docker-compose.sesim.yml.
+# Las rutas relativas se resuelven contra infra/supabase (primer archivo del include).
+services:
+  db:
+    build: ../../db
+    image: sesim-db:local
+    restart: unless-stopped
+    ports:
+      - "${DB_BIND_ADDR:-127.0.0.1}:${POSTGRES_PORT:-5432}:5432"
+
+  auth:
+    environment:
+      GOTRUE_SMTP_HOST: ${SMTP_HOST:-mailpit}
+      GOTRUE_SMTP_PORT: ${SMTP_PORT:-1025}
+      GOTRUE_SMTP_USER: ${SMTP_USER:-}
+      GOTRUE_SMTP_PASS: ${SMTP_PASS:-}
+      GOTRUE_SMTP_SENDER_NAME: ${SMTP_SENDER_NAME:-SESIM}
+      GOTRUE_SMTP_ADMIN_EMAIL: ${SMTP_ADMIN_EMAIL:-admin@sesim.local}
+      GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_ENABLED: "true"
+      GOTRUE_HOOK_CUSTOM_ACCESS_TOKEN_URI: "pg-functions://postgres/core/custom_access_token_hook"

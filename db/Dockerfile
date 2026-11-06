@@ -18,8 +18,10 @@ FROM supabase/postgres:17.6.1.136
 # /docker-entrypoint-initdb.d/init-scripts/ con numeros 97-99 (ver
 # infra/supabase/docker-compose.yml, servicio "db", bloque "volumes").
 # Los nuestros usan 100+ para correr despues, en el mismo directorio.
-COPY migrations/ /docker-entrypoint-initdb.d/init-scripts/
+# Solo 099-125 corren en el arranque inicial: desde la 126 dependen de objetos que GoTrue
+# crea al arrancar (p. ej. auth.users.banned_until). El resto lo aplica scripts/migrar.sh.
+COPY migrations/099_*.sql migrations/1[01][0-9]_*.sql migrations/12[0-5]_*.sql /docker-entrypoint-initdb.d/init-scripts/
 
 # Ciclo 2: al terminar el arranque inicial, anota las migraciones aplicadas en
 # core.schema_migraciones (nombre 999_ para que corra despues de las .sql).
-COPY registrar_migraciones.sh /docker-entrypoint-initdb.d/init-scripts/999_registrar_migraciones.sh
+COPY registrar_migraciones.sh /docker-entrypoint-initdb.d/zz_registrar_migraciones.sh
