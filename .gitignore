@@ -13,3 +13,7 @@ infra/supabase/volumes/db/data/
 infra/supabase/volumes/storage/
 infra/supabase/volumes/logs/
 respaldo_front_*.zip
+
+# copias del .env con secretos
+.env.*
+!.env.example
