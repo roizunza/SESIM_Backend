@@ -3,6 +3,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import { useTablasApilables } from '../../lib/sesim/useTablasApilables';
 import { useSesion, useVerificandoSesion } from '../../lib/sesim/sesion';
+import '../../styles/perfiles-tema.css';
 
 /**
  * Layout de las rutas internas. GUARDIA: sin sesión real (token vigente y

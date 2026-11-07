@@ -34,7 +34,14 @@ export function marcarRecorrido(clave) {
   try { window.localStorage.setItem(clave, '1'); } catch { /* sin almacenamiento: se mostrará de nuevo, sin consecuencias */ }
 }
 
-export default function RecorridoGeovisor({ abierto, onCerrar, pasos, cifras = [], titulo = 'Recorrido del geovisor', nota = '' }) {
+export default function RecorridoGeovisor({
+  abierto, onCerrar, pasos, cifras = [], titulo = 'Recorrido del geovisor', nota = '',
+  // Textos de la bienvenida: por omisión los del geovisor; otros módulos (p. ej. el capturista) los reemplazan.
+  etiqueta = 'Geovisor SESIM',
+  encabezado = 'Explora el territorio capa por capa',
+  intro = 'Enciende capas de diagnóstico y estrategias, filtra por municipio y consulta la ficha de cada una. Te mostramos cómo en {total} pasos de menos de un minuto.',
+  recordatorio = <>Siempre podrás volver con el botón <b>?</b> del mapa.</>,
+}) {
   const esMovil = useEsMovil();
   const [indice, setIndice] = useState(-1); // -1 = bienvenida
   const [rect, setRect] = useState(null);
@@ -111,9 +118,9 @@ export default function RecorridoGeovisor({ abierto, onCerrar, pasos, cifras = [
 
       {!paso ? (
         <div className="recorrido__tarjeta recorrido__tarjeta--bienvenida" ref={tarjeta} tabIndex={-1}>
-          <span className="recorrido__etq">Geovisor SESIM</span>
-          <h2>Explora el territorio capa por capa</h2>
-          <p>Enciende capas de diagnóstico y estrategias, filtra por municipio y consulta la ficha de cada una. Te mostramos cómo en {total} pasos de menos de un minuto.</p>
+          <span className="recorrido__etq">{etiqueta}</span>
+          <h2>{encabezado}</h2>
+          <p>{intro.replace('{total}', String(total))}</p>
           {cifras.length > 0 && (
             <ul className="recorrido__cifras">{cifras.map((c) => <li key={c.etiqueta}><b>{c.valor}</b><span>{c.etiqueta}</span></li>)}</ul>
           )}
@@ -121,7 +128,7 @@ export default function RecorridoGeovisor({ abierto, onCerrar, pasos, cifras = [
             <button type="button" className="recorrido__omitir" onClick={cierre}>Omitir y explorar</button>
             <button type="button" className="recorrido__boton" onClick={() => setIndice(0)}>Empezar recorrido →</button>
           </div>
-          <p className="recorrido__nota">Siempre podrás volver con el botón <b>?</b> del mapa.{nota ? ` ${nota}` : ''}</p>
+          <p className="recorrido__nota">{recordatorio}{nota ? ` ${nota}` : ''}</p>
         </div>
       ) : (
         <div className={`recorrido__tarjeta${esMovil ? ' recorrido__tarjeta--hoja' : ''}`} style={estiloTarjeta} ref={tarjeta} tabIndex={-1}>

@@ -247,3 +247,22 @@
 
 .aviso-pie { max-width: 1280px; width: 100%; margin: 24px auto 0; padding: 12px 24px; border-top: 1px solid var(--border-color); }
 @media (max-width: 600px) { .aviso-pie { padding: 12px 16px; } }
+
+/* ─── Cabecera de las rutas internas (capturista, administrador, auditor) ───────────────────
+   Ocupa todo el ancho (sin tope de 1280 px) para que los logos arranquen alineados con la
+   barra lateral, y los logos conservan su proporción dentro de una altura fija. */
+.header--interno { position: relative; border-bottom: 1px solid var(--border-color, #e7e2dc); }
+.header--interno .header__inner { max-width: none; margin: 0; padding: 8px 20px; }
+.header--interno .header__logos { gap: 14px; flex-shrink: 0; }
+.header--interno .header__logo-box { height: 48px; display: flex; align-items: center; }
+.header--interno .header__logo-img,
+.header--interno .header__logo-img--campeche,
+.header--interno .header__logo-img--gobierno { height: 44px; width: auto; max-width: none; }
+@media (max-width: 640px) {
+  .header--interno .header__inner { padding: 6px 12px; }
+  .header--interno .header__logo-box { height: 40px; }
+  .header--interno .header__logo-img,
+  .header--interno .header__logo-img--campeche,
+  .header--interno .header__logo-img--gobierno { height: 36px; }
+  .header--interno .hd-chip__txt { display: none; }
+}

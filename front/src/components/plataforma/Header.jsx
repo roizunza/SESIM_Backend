@@ -36,7 +36,7 @@ export default function Header({ isAdmin = false }) {
   const hasLogAccess = !!userRole;
 
   return (
-    <header className={`header${isAdmin ? '' : ' header--flotante'}`} role="banner">
+    <header className={`header${isAdmin ? ' header--interno' : ' header--flotante'}`} role="banner">
       <div className="header__inner">
         <Link to="/" className="header__logos" aria-label="Ir al inicio">
           <div className="header__logo-box">

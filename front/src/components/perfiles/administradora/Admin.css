@@ -3,7 +3,11 @@
 .dashboard-fullscreen-container {
   position: relative;
   width: 100%;
-  height: calc(100vh - 60px);
+  /* Ocupa exactamente lo que deja la cabecera (el <main> del layout interno es flex); sin números fijos. */
+  flex: 1;
+  align-self: stretch;
+  min-height: 0;
+  height: auto;
   overflow: hidden;
   background: var(--c-bg);
 }

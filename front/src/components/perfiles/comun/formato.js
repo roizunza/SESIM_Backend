@@ -33,6 +33,7 @@ export const ACCION_LEGIBLE = {
   UPDATE: 'Modificación',
   DELETE: 'Eliminación',
   'cambio de estado': 'Cambio de estado',
+  CAMBIO_ESTADO: 'Cambio de estado',
 };
 
 export function bytesLegibles(n) {

@@ -1,0 +1,29 @@
+/* =====================================================================
+   TEMA POR PERFIL · única fuente de los colores de cada perfil interno.
+   Valores de las maquetas aprobadas (60-30-10):
+     · Capturista    → Opción B «Guinda principal»
+     · Administrador → Opción A «Verde principal»  (incluye al Administrador Titular)
+     · Auditor       → Opción C «Gris principal»
+   Se activan con data-rol (lo pone AdminLayout). Los componentes solo usan --per-*;
+   ningún otro archivo escribe estos colores a mano.
+   Roles de color: fondo y superficie = base (60 %), principal = identidad (30 %),
+   acento = acciones y señales (10 %), realce = rótulos y detalles, neutro = apoyo cálido.
+   Los estados NO usan estos colores: llevan icono, contorno y texto propios.
+   ===================================================================== */
+:root,
+[data-rol="capturista"] {
+  --per-fondo: #14070D; --per-superficie: #4A1229; --per-principal: #9F2241;
+  --per-acento: #2F8F78; --per-realce: #F08AA5; --per-neutro: #E6D9BD; --per-apoyo: #98989A;
+  --per-texto: #F6F1EA; --per-sobre-acento: #FFFFFF;
+}
+[data-rol="administrador"],
+[data-rol="administrador_titular"] {
+  --per-fondo: #0A1A16; --per-superficie: #14392F; --per-principal: #2F8F78;
+  --per-acento: #9F2241; --per-realce: #E58AA3; --per-neutro: #E9DFC8; --per-apoyo: #98989A;
+  --per-texto: #F4F6F2; --per-sobre-acento: #FFFFFF;
+}
+[data-rol="auditor"] {
+  --per-fondo: #14171A; --per-superficie: #262B30; --per-principal: #98989A;
+  --per-acento: #B0385A; --per-realce: #3AA68B; --per-neutro: #E6DCC6; --per-apoyo: #D6D6D8;
+  --per-texto: #F1F0EC; --per-sobre-acento: #FFFFFF;
+}

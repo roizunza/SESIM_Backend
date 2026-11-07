@@ -1,11 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { X, Search, UploadCloud, Trash2, Plus, Send, Save, FileCheck2 } from 'lucide-react';
+import { X, Search, UploadCloud, Trash2, Plus, Send, Save, FileCheck2, Loader2 } from 'lucide-react';
 import {
-  useOperacion, guardarMedicion, adjuntarEvidencia, quitarEvidencia, fnTransicionEstado, obtenerOCrearPeriodo,
-  TIPOS_DOCUMENTO, ultimoDictamen,
-} from '../../../lib/sesim/operacion';
+  useMediciones, guardarMedicionApi, enviarMedicionApi, ultimoDictamenDe, nombreEvidencia,
+} from '../../../lib/sesim/medicionesApi';
+import { subirEvidencia, validarArchivoEvidencia, EVIDENCIA_MAX_BYTES } from '../../../lib/sesim/catalogoApi';
 import { vEquivalenciaPimus } from '../../../lib/sesim/api';
-import { bytesLegibles } from '../comun/formato';
 import '../comun/Comun.css';
 
 /**
@@ -19,13 +18,16 @@ import '../comun/Comun.css';
  * `idMedicion` = null crea una medición nueva; con id edita una en borrador
  * o rechazada.
  */
+// Evidencia documental: solo PDF, JPG o PNG (el bucket lo exige también en el servidor).
+// Los datos geoespaciales NO se adjuntan aquí: se cargan como capa (Ciclo 9).
+const TIPOS_DOCUMENTO = ['Oficio', 'Reporte', 'Fotografía', 'Publicación oficial', 'Captura de pantalla', 'Otro'];
 const ANIOS = Array.from({ length: 8 }, (_, i) => new Date().getFullYear() - i);
 const SUBPERIODOS = { anual: [], semestral: [1, 2], trimestral: [1, 2, 3, 4], mensual: Array.from({ length: 12 }, (_, i) => i + 1) };
 
 export default function MedicionModal({ abierto, idMedicion, sesion, catalogo, onClose, onGuardada }) {
-  const op = useOperacion();
-  const existente = idMedicion ? op.medicion_indicador.find((m) => m.id === idMedicion) : null;
-  const periodoExistente = existente ? op.periodo.find((p) => p.id === existente.id_periodo) : null;
+  const api = useMediciones();
+  const existente = idMedicion ? api.mediciones.find((m) => m.id === idMedicion) : null;
+  const periodoExistente = existente ? api.periodos.find((p) => p.id === existente.id_periodo) : null;
 
   const [busqueda, setBusqueda] = useState('');
   const [idIndicador, setIdIndicador] = useState('');
@@ -43,6 +45,9 @@ export default function MedicionModal({ abierto, idMedicion, sesion, catalogo, o
   const [idActual, setIdActual] = useState(null);
   const [equivalencias, setEquivalencias] = useState([]);
   const [subiendo, setSubiendo] = useState(false);
+  const [guardando, setGuardando] = useState(false);
+  const [enviando, setEnviando] = useState(false);
+  const ocupado = subiendo || guardando || enviando;
 
   // Cargar valores al abrir
   useEffect(() => {
@@ -50,6 +55,9 @@ export default function MedicionModal({ abierto, idMedicion, sesion, catalogo, o
     setError('');
     setAviso('');
     setBusqueda('');
+    setGuardando(false);
+    setEnviando(false);
+    setSubiendo(false);
     if (existente) {
       const u = catalogo.unidades.get(existente.id_unidad);
       setIdActual(existente.id);
@@ -96,52 +104,74 @@ export default function MedicionModal({ abierto, idMedicion, sesion, catalogo, o
 
   if (!abierto) return null;
 
-  const actual = idActual ? op.medicion_indicador.find((m) => m.id === idActual) : null;
+  const actual = idActual ? api.mediciones.find((m) => m.id === idActual) : null;
   const editable = !actual || ['borrador', 'rechazado'].includes(actual.estado);
-  const evidencias = actual ? op.evidencia_medicion.filter((e) => e.id_medicion === actual.id) : [];
+  const evidencias = actual ? api.evidencias.filter((e) => e.id_medicion === actual.id && e.vigente) : [];
   const indicador = idIndicador ? catalogo.indicadores.get(idIndicador) : null;
-  const dictamen = actual?.estado === 'rechazado' ? ultimoDictamen(actual.id, op) : null;
+  const dictamen = actual?.estado === 'rechazado' ? ultimoDictamenDe(actual.id, api.dictamenes) : null;
   const ambitoFijo = !!sesion?.id_unidad;
   const pimusMunicipio = equivalencias.filter((e) => e.instrumento?.id_unidad_ambito === idMunicipio);
 
-  const guardar = () => {
+  const faltantes = [];
+  if (!idIndicador) faltantes.push('el indicador');
+  if (!(idLocalidad || idMunicipio)) faltantes.push('el municipio');
+  if (valor === '' && !valorTexto.trim()) faltantes.push('un valor (numérico o cualitativo)');
+
+  /** Guarda como borrador. Devuelve la fila o null si falló (el motivo queda en `error`). */
+  const guardar = async ({ silencioso = false } = {}) => {
     setError('');
     setAviso('');
+    if (faltantes.length) {
+      setError(`Falta ${faltantes.join(', ')}.`);
+      return null;
+    }
+    setGuardando(true);
     try {
-      const periodo = obtenerOCrearPeriodo({ tipo_periodo: tipoPeriodo, anio, sub: tipoPeriodo === 'anual' ? null : sub });
       const desagregaciones = Object.fromEntries(desag.filter((d) => d.k.trim()).map((d) => [d.k.trim(), d.v]));
-      const m = guardarMedicion(sesion, {
+      const m = await guardarMedicionApi({
         id: idActual,
         id_indicador: idIndicador,
         id_unidad: idLocalidad || idMunicipio,
-        id_periodo: periodo.id,
+        tipo_periodo: tipoPeriodo,
+        anio,
+        sub,
         valor,
         valor_texto: valorTexto,
         desagregaciones,
       });
       setIdActual(m.id);
-      setAviso('Medición guardada como borrador. Adjunte al menos una evidencia para poder enviarla.');
+      if (!silencioso) setAviso('Medición guardada como borrador. Adjunte una evidencia para poder enviarla.');
       onGuardada?.(m.id);
       return m;
     } catch (err) {
       setError(err.message);
       return null;
+    } finally {
+      setGuardando(false);
     }
   };
 
   const subir = async (archivo) => {
     if (!archivo) return;
     setError('');
+    setAviso('');
+    // Se valida ANTES de guardar o subir nada: no se crea un borrador por un archivo inválido.
+    const invalido = validarArchivoEvidencia(archivo);
+    if (invalido) {
+      setError(`«${archivo.name}»: ${invalido} Solo PDF, JPG o PNG de hasta ${EVIDENCIA_MAX_BYTES / 1024 / 1024} MB.`);
+      return;
+    }
     let id = idActual;
     if (!id) {
-      const m = guardar();
+      const m = await guardar({ silencioso: true });
       if (!m) return;
       id = m.id;
     }
     setSubiendo(true);
     try {
-      await adjuntarEvidencia(sesion, id, archivo, tipoDoc);
-      setAviso(`Evidencia «${archivo.name}» adjuntada; su huella SHA-256 quedó registrada.`);
+      await subirEvidencia(id, archivo, tipoDoc);
+      await api.recargar();
+      setAviso(`Evidencia «${archivo.name}» adjuntada; su huella SHA-256 quedó registrada.${evidencias.length ? ' La anterior quedó como reemplazada.' : ''}`);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -149,37 +179,43 @@ export default function MedicionModal({ abierto, idMedicion, sesion, catalogo, o
     }
   };
 
-  const enviar = () => {
-    const m = guardar();
+  const enviar = async () => {
+    const m = await guardar({ silencioso: true });
     if (!m) return;
+    setEnviando(true);
     try {
-      fnTransicionEstado(sesion, m.id, 'revision');
+      await enviarMedicionApi(m.id);
       onGuardada?.(m.id);
       onClose();
     } catch (err) {
       setError(err.message);
+    } finally {
+      setEnviando(false);
     }
   };
 
   return (
     <>
       <div className="modal-drawer-overlay" onClick={onClose}></div>
-      <div className="modal-drawer" style={{ width: 520 }}>
-        <div className="modal-drawer-header">
+      <div className="modal-drawer cap-cajon" style={{ '--ancho-cajon': '520px' }}>
+        <div className="modal-drawer-header" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--per-principal) 45%, var(--per-superficie)) 0%, var(--per-superficie) 55%, var(--per-fondo) 100%)', color: 'var(--per-texto)' }}>
           <div>
-            <h3 style={{ margin: 0, color: 'var(--c-guinda)', fontFamily: 'var(--font-heading)' }}>
-              {actual ? 'Medición' : 'Nueva medición'}
+            <span className="cap-cajon__rot">{actual ? 'Revisión del dato' : 'Nuevo registro'}</span>
+            <h3 className="cap-cajon__tit" style={{ color: 'var(--per-texto)' }}>
+              {actual ? 'Dato de indicador' : 'Capturar dato de indicador'}
             </h3>
-            <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-              Indicador · periodo · unidad territorial · valor · evidencia
+            <span className="cap-cajon__sub" style={{ color: 'color-mix(in srgb, var(--per-texto) 78%, transparent)' }}>
+              {editable
+                ? 'Completa los pasos 1 a 5 con el documento que respalda el dato. Puedes guardar como borrador y seguir después; al enviarlo a revisión ya no se podrá editar.'
+                : 'Consulta del dato enviado. Aquí ya no se puede editar.'}
             </span>
           </div>
-          <button className="btn-close-drawer" onClick={onClose}><X size={20} /></button>
+          <button className="btn-close-drawer" style={{ color: 'var(--per-texto)' }} onClick={onClose}><X size={20} /></button>
         </div>
 
         <div className="modal-drawer-content" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          {dictamen?.datos_nuevos?.comentario && (
-            <div className="aviso aviso-error"><strong>Devuelta por el administrador:</strong> {dictamen.datos_nuevos.comentario}</div>
+          {dictamen?.comentario && (
+            <div className="aviso aviso-error"><strong>Devuelta por el administrador:</strong> {dictamen.comentario}</div>
           )}
           {!editable && <div className="aviso aviso-info">Esta medición está en «{actual.estado}» y ya no se puede editar.</div>}
 
@@ -197,18 +233,19 @@ export default function MedicionModal({ abierto, idMedicion, sesion, catalogo, o
                   <Search size={14} />
                   <input autoFocus placeholder="Buscar por ID (Im18), clave o nombre" value={busqueda} onChange={(e) => setBusqueda(e.target.value)} />
                 </div>
-                <div style={{ maxHeight: 180, overflowY: 'auto', border: '1px solid var(--border-color)', borderRadius: 6, marginTop: 6 }}>
+                <div className="cap-cajon__lista">
                   <table className="tabla-sesim">
                     <tbody>
                       {indicadoresFiltrados.map((i) => (
                         <tr key={i.id} className="clic" onClick={() => setIdIndicador(i.id)}>
-                          <td style={{ width: 70, fontWeight: 700, color: 'var(--c-guinda)' }}>{i.id}</td>
+                          <td className="cap-cajon__id">{i.id}</td>
                           <td>{i.nombre}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
+                <p className="cap-cajon__cuenta">{indicadoresFiltrados.length} {indicadoresFiltrados.length === 1 ? 'indicador' : 'indicadores'} · desplázate para ver más</p>
               </>
             )}
             {pimusMunicipio.length > 0 && (
@@ -294,11 +331,10 @@ export default function MedicionModal({ abierto, idMedicion, sesion, catalogo, o
             {evidencias.map((ev) => (
               <div key={ev.id} className="evidencia-item" style={{ marginBottom: 6 }}>
                 <div className="evidencia-item-cab">
-                  <strong><FileCheck2 size={14} style={{ verticalAlign: -2 }} /> {ev.nombre_archivo}</strong>
-                  {editable && <button type="button" className="btn-base btn-tertiary" style={{ width: 32, height: 28 }} onClick={() => { try { quitarEvidencia(sesion, ev.id); } catch (err) { setError(err.message); } }}><Trash2 size={13} /></button>}
+                  <strong><FileCheck2 size={14} style={{ verticalAlign: -2 }} /> {nombreEvidencia(ev)}</strong>
                 </div>
-                <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>{ev.tipo_documento} · {bytesLegibles(ev.bytes)}</span>
-                <span className="dato-mono" style={{ fontSize: 10.5 }}>SHA-256 {ev.hash_archivo}</span>
+                <span style={{ fontSize: 'var(--t-nota)', color: 'var(--text-secondary)' }}>{ev.tipo_documento} · evidencia vigente</span>
+                <span className="dato-mono" style={{ fontSize: 'var(--t-nota)' }}>SHA-256 {ev.hash_archivo}</span>
               </div>
             ))}
             {editable && (
@@ -306,12 +342,13 @@ export default function MedicionModal({ abierto, idMedicion, sesion, catalogo, o
                 <select className="form-input" style={{ maxWidth: 170 }} value={tipoDoc} onChange={(e) => setTipoDoc(e.target.value)}>
                   {TIPOS_DOCUMENTO.map((t) => <option key={t}>{t}</option>)}
                 </select>
-                <label className="btn-base btn-secondary" style={{ cursor: 'pointer', width: 'auto', opacity: subiendo ? 0.6 : 1 }}>
-                  <UploadCloud size={15} /> {subiendo ? 'Calculando huella…' : 'Adjuntar archivo'}
-                  <input type="file" hidden accept=".pdf,.png,.jpg,.jpeg,.xlsx,.csv,.docx" onChange={(e) => { subir(e.target.files?.[0]); e.target.value = ''; }} />
+                <label className="btn-base btn-secondary" style={{ cursor: ocupado ? 'not-allowed' : 'pointer', width: 'auto', opacity: ocupado ? 0.6 : 1 }}>
+                  {subiendo ? <Loader2 size={15} className="girando" /> : <UploadCloud size={15} />} {subiendo ? 'Subiendo evidencia…' : evidencias.length ? 'Reemplazar archivo' : 'Adjuntar archivo'}
+                  <input type="file" hidden disabled={ocupado} accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" onChange={(e) => { subir(e.target.files?.[0]); e.target.value = ''; }} />
                 </label>
               </div>
             )}
+            {editable && <small style={{ display: 'block', marginTop: 6, color: 'var(--text-secondary)' }}>Solo PDF, JPG o PNG de hasta 10 MB. Los datos geoespaciales se cargan como capa, no como evidencia.</small>}
           </div>
 
           {error && <div className="aviso aviso-error">{error}</div>}
@@ -320,9 +357,18 @@ export default function MedicionModal({ abierto, idMedicion, sesion, catalogo, o
 
         {editable && (
           <div className="modal-drawer-footer">
-            <button className="btn-base btn-secondary" style={{ width: 'auto' }} onClick={guardar}><Save size={15} /> Guardar borrador</button>
-            <button className="btn-base btn-primary" style={{ width: 'auto' }} disabled={evidencias.length === 0} title={evidencias.length === 0 ? 'Adjunte al menos una evidencia' : ''} onClick={enviar}>
-              <Send size={15} /> Enviar a revisión
+            <button className="btn-base btn-secondary" style={{ width: 'auto' }} disabled={ocupado} aria-busy={guardando} onClick={() => guardar()}>
+              {guardando ? <Loader2 size={15} className="girando" /> : <Save size={15} />} {guardando ? 'Guardando…' : 'Guardar borrador'}
+            </button>
+            <button
+              className="btn-base btn-primary"
+              style={{ width: 'auto' }}
+              disabled={ocupado || evidencias.length === 0}
+              aria-busy={enviando}
+              title={evidencias.length === 0 ? 'Adjunte al menos una evidencia' : ''}
+              onClick={enviar}
+            >
+              {enviando ? <Loader2 size={15} className="girando" /> : <Send size={15} />} {enviando ? 'Enviando…' : actual?.estado === 'rechazado' ? 'Reenviar a revisión' : 'Enviar a revisión'}
             </button>
           </div>
         )}
