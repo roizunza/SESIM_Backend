@@ -1,3 +1,5 @@
+import { geojsonDeCapa } from './api';
+
 /** Descargas del portal: CSV (UTF-8 con BOM para Excel) y GeoJSON. Módulo puro salvo `descargar`. */
 
 const celda = (v) => {
@@ -55,8 +57,6 @@ export function geojsonPublico(titulo, features) {
 
 /** Descarga la capa completa ya depurada (lee el archivo publicado y lo filtra antes de guardarlo). */
 export async function descargarCapa(capa, nombre = `${capa.id}.geojson`) {
-  const respuesta = await fetch(capa.geojson);
-  if (!respuesta.ok) throw new Error(`No se pudo leer la capa ${capa.id} (HTTP ${respuesta.status}).`);
-  const datos = await respuesta.json();
+  const datos = await geojsonDeCapa(capa).catch((e) => { throw new Error(`No se pudo leer la capa ${capa.id}: ${e.message}`); });
   descargar(nombre, JSON.stringify(geojsonPublico(capa.titulo, datos.features ?? [])), 'application/geo+json');
 }

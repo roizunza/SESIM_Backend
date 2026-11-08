@@ -161,23 +161,46 @@ export async function rpcOpcional(clave, args) {
 const cacheGeojson = new Map();
 
 /**
- * GeoJSON de una capa (MICRO · capa_vector serializado). La ruta viene de
- * `capa.geojson` (`/sesim/capas/<id_capa>.geojson`). Con backend será una
- * vista MVT (`/tiles/capa_vector/{z}/{x}/{y}?id_capa=Inf09`) o
- * `GET {API}/capa_vector?id_capa=eq.Inf09` en GeoJSON.
+ * Origen de las capas vectoriales (Ciclo 9). Por omisión salen de la base (`api.geojson_capa`, PostGIS);
+ * `VITE_SESIM_CAPAS_ORIGEN=estatico` fuerza los archivos de `public/sesim/capas/` (respaldo).
+ * Las capas de más de 25,000 elementos (la base responde 54000) y cualquier falla de la lectura caen a
+ * los archivos estáticos con un aviso en consola: el mapa se ve igual que antes.
+ */
+const LIMITE_GEOJSON_BASE = 25000; // mismo tope que api.geojson_capa
+const ORIGEN_CAPAS = (env.VITE_SESIM_CAPAS_ORIGEN || 'base').toLowerCase();
+
+// Al entrar o salir de la sesión cambia qué capas deja ver la RLS: se descarta lo leído de la base.
+cliente.suscribir(() => { for (const k of [...cacheGeojson.keys()]) if (k.startsWith('base:')) cacheGeojson.delete(k); });
+
+function leerEstatico(url) {
+  return fetch(url).then((r) => {
+    if (!r.ok) throw new Error(`${url}: HTTP ${r.status}`);
+    return r.json();
+  });
+}
+
+/**
+ * GeoJSON de una capa (MICRO · capa_vector serializado), con las propiedades id, nombre, clasif, cve_mun
+ * e id_unidad. Con `capa.id` y backend sale de `api.geojson_capa`; el archivo `capa.geojson`
+ * (`/sesim/capas/<id_capa>.geojson`) queda como respaldo y para las capas sin id (unidades territoriales).
  */
 export function geojsonDeCapa(capa) {
+  const id = typeof capa === 'string' ? capa : capa.id;
   const url = typeof capa === 'string' ? `/sesim/capas/${capa}.geojson` : capa.geojson;
-  if (!cacheGeojson.has(url)) {
-    cacheGeojson.set(
-      url,
-      fetch(url).then((r) => {
-        if (!r.ok) throw new Error(`${url}: HTTP ${r.status}`);
-        return r.json();
-      }),
-    );
+  // Más de 25,000 elementos: la base no las sirve como GeoJSON (irán por teselas); se evita la petición que fallaría.
+  const pesada = typeof capa === 'object' && Number(capa.n_elementos) > LIMITE_GEOJSON_BASE;
+  const deBase = ORIGEN_CAPAS !== 'estatico' && !!id && !pesada && typeof cliente.leerRpc === 'function' && cliente.configurado?.() !== false;
+  const llave = deBase ? `base:${id}` : url;
+  if (!cacheGeojson.has(llave)) {
+    const promesa = deBase
+      ? cliente.leerRpc('geojson_capa', { p_capa: id }).then((d) => (d?.type === 'FeatureCollection' ? d : leerEstatico(url ?? `/sesim/capas/${id}.geojson`))).catch((err) => {
+          if (err?.codigo !== '54000') console.warn(`Capa ${id}: no se pudo leer de la base (${err?.message}); se usa el archivo estático.`);
+          return leerEstatico(url ?? `/sesim/capas/${id}.geojson`);
+        })
+      : leerEstatico(url);
+    cacheGeojson.set(llave, promesa.catch((err) => { cacheGeojson.delete(llave); throw err; }));
   }
-  return cacheGeojson.get(url);
+  return cacheGeojson.get(llave);
 }
 
 /** Polígonos oficiales (unidad_territorial_geom) por nivel. */

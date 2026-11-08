@@ -303,6 +303,28 @@ export function crearCliente({
   const rpc = (nombre, args = {}) =>
     llamar(`/rest/v1/rpc/${nombre}`, { metodo: 'POST', cuerpo: args, esquema: 'api', mensajeServidor: true });
 
+  /**
+   * Lectura vía función del esquema `api` (POST /rest/v1/rpc/<nombre>) CON o SIN sesión, igual que `leer`:
+   * con sesión usa el token del perfil (la RLS decide qué capas ve); sin sesión lee como `anon` (solo lo público).
+   * Ciclo 9: api.geojson_capa(p_capa).
+   */
+  const leerRpc = async (nombre, args = {}) => {
+    exigirConfig();
+    const ruta = `/rest/v1/rpc/${nombre}`;
+    try {
+      if (!sesion) throw new ErrorSesim('sin sesión', { codigo: 'sin_sesion' });
+      return await llamar(ruta, { metodo: 'POST', cuerpo: args, esquema: 'api', mensajeServidor: true });
+    } catch (e) {
+      if (e.codigo !== 'sin_sesion' && e.codigo !== 'sesion_expirada') throw e;
+      const r = await pedir(ruta, { metodo: 'POST', cuerpo: args, token: anonKey, esquema: 'api' });
+      if (!r.ok) {
+        const msg = describirFallaServidor(r.status, r.datos) || r.datos?.message || `Error ${r.status}`;
+        throw new ErrorSesim(`No se pudo leer ${nombre}: ${msg}`, { status: r.status, codigo: r.datos?.code ?? null });
+      }
+      return r.datos;
+    }
+  };
+
   /** Llamada a servicio-procesos SIN sesión (canje de invitación: la persona aún no tiene cuenta). */
   const procesosPublico = async (ruta, { metodo = 'GET', cuerpo } = {}) => {
     const r = await pedir(ruta, { metodo, cuerpo, raiz: baseProcesos });
@@ -372,6 +394,7 @@ export function crearCliente({
     restaurar,
     rest,
     leer,
+    leerRpc,
     rpc,
     procesos,
     procesosPublico,
