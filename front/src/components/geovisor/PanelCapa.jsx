@@ -144,7 +144,7 @@ function FiltroCampo({ filtro, campo, onCambio, onQuitar }) {
   );
 }
 
-function Filtros({ config, onCambio, campos, total, visibles }) {
+export function Filtros({ config, onCambio, campos, total, visibles }) {
   const id = useId();
   const [nuevo, setNuevo] = useState('');
   const disponibles = campos.filter((c) => !c.oculto && !config.filtros.some((f) => f.campo === c.campo));

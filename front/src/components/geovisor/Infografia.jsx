@@ -1,24 +1,25 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { MapContainer, useMap } from 'react-leaflet';
 import html2canvas from 'html2canvas';
-import { Download, Printer, X, ArrowLeft, Image as ImageIcon, Layers } from 'lucide-react';
+import { Download, Printer, X } from 'lucide-react';
 import EsriBasemap from './EsriBasemap';
 import CapaSesim from './CapaSesim';
 import MascaraEntidades from './MascaraEntidades';
 import CapaPoblacion from './CapaPoblacion';
 import EscalaMapa from './EscalaMapa';
-import LeyendaMapa from './LeyendaMapa';
+import { FilaLeyenda } from './LeyendaMapa';
 import EstadoCarga from '../plataforma/EstadoCarga';
 import { CAPAS_FIJAS, CAPAS_MASCARA, CAPAS_POBLACION, CAPAS_CON_ETIQUETA, CATEGORIAS } from '../../lib/sesim/capas';
 import { CONFIG_INICIAL } from '../../lib/sesim/estiloCapa';
 import { EJES_ESTRATEGICOS } from '../../lib/ejesEstrategicos';
 import { fnIndicadoresDeCapa, tablas } from '../../lib/sesim/api';
 import { AVISOS } from '../../lib/avisosLegales';
+import { ATRIBUTOS_PUBLICOS } from '../../lib/sesim/descargas';
 import './Infografia.css';
 
 const EXTENSION_CAMPECHE = [[17.8, -92.5], [20.9, -89.1]];
 const CAPAS_BASE = ['Lim02', 'Lim03', 'Lim04'];
-const VISTA_ACTUAL = '__vista_actual__';
+const NOMBRES_CAT = { mapa_base: 'Mapa base', diagnostico: 'Diagnóstico', estrategia: 'Estrategias' };
 
 /** Título de la infografía según la categoría de la capa: diagnóstico y su tema, estrategia y su eje. */
 function tituloInfografia(capa) {
@@ -35,23 +36,26 @@ function tituloInfografia(capa) {
 function Encuadre({ limites }) {
   const mapa = useMap();
   useEffect(() => {
-    mapa.fitBounds(limites, { padding: [12, 12] });
+    const ajustar = () => { mapa.invalidateSize(); mapa.fitBounds(limites, { padding: [12, 12], animate: false }); };
+    ajustar();
+    const t = setTimeout(ajustar, 250);
+    return () => clearTimeout(t);
   }, [mapa, limites]);
   return null;
 }
 
-function MapaFijo({ capas, limites, configDe, onMapa }) {
+function MapaFijo({ capas, limites, configDe, onMapa, satelite = false }) {
   return (
     <MapContainer bounds={limites} zoomSnap={0.25} zoomControl={false} attributionControl={false} dragging={false} scrollWheelZoom={false} doubleClickZoom={false} touchZoom={false} boxZoom={false} keyboard={false} preferCanvas className="infografia__mapa-leaflet" ref={onMapa}>
-      <EsriBasemap type="claro" opacity={1} />
+      <EsriBasemap type={satelite ? 'satelite' : 'claro'} opacity={1} />
       <Encuadre limites={limites} />
       {capas.map((capa) =>
         CAPAS_MASCARA.has(capa.id) ? (
-          <MascaraEntidades key={capa.id} capa={capa} simbologia={configDe(capa.id).simbologia} />
+          <MascaraEntidades key={capa.id} capa={capa} simbologia={configDe(capa.id).simbologia} oscuro={satelite} />
         ) : CAPAS_POBLACION.has(capa.id) ? (
-          <CapaPoblacion key={capa.id} capa={capa} simbologia={configDe(capa.id).simbologia} />
+          <CapaPoblacion key={capa.id} capa={capa} simbologia={configDe(capa.id).simbologia} interactivo={false} />
         ) : (
-          <CapaSesim key={capa.id} capa={capa} config={configDe(capa.id)} conEtiqueta={CAPAS_CON_ETIQUETA.has(capa.id)} />
+          <CapaSesim key={capa.id} capa={capa} config={configDe(capa.id)} conEtiqueta={CAPAS_CON_ETIQUETA.has(capa.id)} interactivo={false} />
         ),
       )}
     </MapContainer>
@@ -87,96 +91,94 @@ function Indicadores({ capas }) {
   if (estado.cargando) return <EstadoCarga estado="cargando" mensaje="Cargando indicadores…" compacto />;
   if (estado.error) return <EstadoCarga estado="error" titulo="No se pudieron cargar los indicadores" mensaje={estado.error} compacto />;
   if (!estado.indicadores.length) return <EstadoCarga estado="vacio" mensaje={capas.length > 1 ? 'Las capas encendidas no tienen indicadores asociados en el catálogo (capa_indicador).' : capas.length ? 'Esta capa no tiene indicadores asociados en el catálogo (capa_indicador).' : 'El mapa base no tiene indicadores asociados.'} compacto />;
+  const mitad = Math.ceil(estado.indicadores.length / 2);
+  const cajas = [estado.indicadores.slice(0, mitad), estado.indicadores.slice(mitad)].filter((c) => c.length);
   return (
-    <ol className="infografia__indicadores">
-      {estado.indicadores.map((i) => {
-        const r = estado.resumen.get(i.id);
-        return (
-          <li key={i.id}>
-            <span className="infografia__ind-cabeza"><b>{i.id}</b>{i.nivel_mir && <small>{i.nivel_mir}</small>}</span>
-            <span className="infografia__ind-nombre">{i.nombre}</span>
-            {i.meta && <span className="infografia__ind-meta">Meta: {i.meta}</span>}
-            <span className="infografia__ind-dato">
-              {r ? `${r.n} mediciones publicadas${r.ultimo ? ` · último periodo ${r.ultimo.etiqueta}` : ''}` : 'Sin mediciones publicadas'}
-            </span>
-          </li>
-        );
-      })}
-    </ol>
+    <div className="ig-cajas">
+      {cajas.map((caja, k) => (
+        <table key={k} className="ig-tabla">
+          <thead><tr><th scope="col">Clave</th><th scope="col">Indicador</th><th scope="col">MIR</th></tr></thead>
+          <tbody>
+            {caja.map((i) => (
+              <tr key={i.id}><th scope="row">{i.id}</th><td>{i.nombre}</td><td>{i.nivel_mir ?? '—'}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      ))}
+    </div>
   );
 }
 
-function Ficha({ capa }) {
-  const m = capa.metadatos_extra ?? {};
-  const escala = m.denominador_escala ? `1:${Number(m.denominador_escala).toLocaleString('es-MX')}` : m.escala_nominal;
-  const filas = [
-    ['Identificador', capa.id],
-    ['Propósito', capa.proposito],
-    ['Responsable', m.contacto_custodio],
-    ['Fuente', m.fuente_origen],
-    ['Fecha de corte', m.fecha_corte],
-    ['Periodicidad', m.periodicidad],
-    ['Escala', escala],
-    ['Sistema de referencia', m.sistema_coordenadas],
-    ['Elementos', capa.n_elementos?.toLocaleString('es-MX')],
-    ['Restricción de uso', m.restriccion_uso],
-    ['Instrumento de origen', capa.instrumento?.nombre ?? (capa.categoria === 'mapa_base' ? 'Mapa base' : null)],
-  ].filter(([, v]) => v !== null && v !== undefined && v !== '');
+const recorta = (t, n = 340) => (t && String(t).length > n ? `${String(t).slice(0, n).trimEnd()}…` : t);
+
+/** Agrupa las capas con los mismos metadatos para no repetir el mismo texto en cada ficha. */
+function agruparFichas(capas) {
+  const grupos = new Map();
+  for (const capa of capas) {
+    const m = capa.metadatos_extra ?? {};
+    const datos = {
+      Propósito: recorta(capa.proposito),
+      Responsable: m.contacto_custodio ?? capa.responsable,
+      Fuente: m.fuente_origen,
+      'Fecha de corte': m.fecha_corte,
+      Instrumento: capa.instrumento?.nombre ?? (capa.categoria === 'mapa_base' ? 'Mapa base' : null),
+      Trazabilidad: recorta(m.linaje),
+    };
+    const clave = JSON.stringify(datos);
+    if (!grupos.has(clave)) grupos.set(clave, { capas: [], datos });
+    grupos.get(clave).capas.push(capa);
+  }
+  return [...grupos.values()];
+}
+
+function Ficha({ grupo }) {
+  const filas = Object.entries(grupo.datos).filter(([, v]) => v !== null && v !== undefined && v !== '');
   return (
-    <section className="infografia__ficha">
-      <h4>{capa.titulo}</h4>
+    <section className="infografia__ficha ig-ficha">
+      <h4>{grupo.capas.map((c) => <span key={c.id}>{c.titulo} <code>{c.id}</code></span>)}</h4>
       <dl>
         {filas.map(([k, v]) => (
           <div key={k}><dt>{k}</dt><dd>{String(v)}</dd></div>
         ))}
       </dl>
-      {m.linaje && (
-        <>
-          <h5>Linaje (ISO 19115-1)</h5>
-          <p className="infografia__linaje">{m.linaje}</p>
-        </>
-      )}
     </section>
   );
 }
 
+const INCLUYE = [
+  { id: 'mapa', t: 'Mapa con leyenda y escala' },
+  { id: 'fichas', t: 'Ficha técnica de cada capa' },
+  { id: 'fuentes', t: 'Fuentes e instituciones' },
+  { id: 'seguimiento', t: 'Indicadores' },
+  { id: 'aviso', t: 'Aviso' },
+];
+
 /**
- * Infografía del geovisor: lámina con el mapa base predeterminado y la capa elegida (o la vista actual),
- * título por categoría (Diagnóstico y tema; Estrategia, número y nombre), panel de seguimiento e
- * indicadores asociados (F07 + mediciones publicadas), ficha técnica ISO 19115 con linaje y aviso
- * cartográfico. Se descarga como PNG o se imprime / guarda como PDF.
+ * Infografía del geovisor (cámara). Previsualiza la lámina con el mapa de lo encendido, la simbología,
+ * el aviso, los indicadores, la ficha técnica y metadatos de cada capa y las fuentes e instituciones.
+ * Se descarga como PNG o PDF (impresión).
  */
-export default function Infografia({ arbol, activas, limitesActuales, configDe, capturarPantalla, onCerrar }) {
-  const [eleccion, setEleccion] = useState(null);
-  const [captura, setCaptura] = useState(null);
+export default function Infografia({ activas, limitesActuales, configDe, escalaTexto, satelite = false, onCerrar }) {
   const [generando, setGenerando] = useState(false);
+  const [encuadre, setEncuadre] = useState('actual');
+  const [incluye, setIncluye] = useState({ mapa: true, fichas: true, fuentes: true, seguimiento: true, aviso: true });
+  const [indiceTitulo, setIndiceTitulo] = useState(0);
   const lamina = useRef(null);
   const [mapaLamina, setMapaLamina] = useState(null);
 
-  const opciones = useMemo(
-    () =>
-      CATEGORIAS.map((cat) => ({ ...cat, capas: [...arbol.capasPorId.values()].filter((c) => c.categoria === cat.id && !CAPAS_BASE.includes(c.id)).sort((a, b) => a.titulo.localeCompare(b.titulo, 'es')) })).filter((c) => c.capas.length),
-    [arbol],
-  );
-
-  const contenido = useMemo(() => {
-    if (!eleccion) return null;
-    const base = CAPAS_BASE.map((id) => arbol.capasPorId.get(id)).filter(Boolean);
-    if (eleccion === VISTA_ACTUAL) {
-      const tematicas = activas.filter((c) => !CAPAS_BASE.includes(c.id) && !CAPAS_FIJAS.has(c.id));
-      return {
-        etiqueta: 'Captura de pantalla del geovisor',
-        tema: tematicas.length === 1 ? tematicas[0].titulo : tematicas.length ? `${tematicas.length} capas encendidas` : 'Mapa base',
-        subtitulo: tematicas.length > 1 ? tematicas.map((c) => `${c.titulo} (${c.id})`).join(' · ') : tematicas[0] ? `${tituloInfografia(tematicas[0]).etiqueta} · ${tituloInfografia(tematicas[0]).tema} (${tematicas[0].id})` : '',
-        capasMapa: [...activas].sort((a, b) => (CAPAS_MASCARA.has(b.id) ? -1 : 0) - (CAPAS_MASCARA.has(a.id) ? -1 : 0)),
-        tematicas,
-        limites: limitesActuales ?? EXTENSION_CAMPECHE,
-      };
-    }
-    const capa = arbol.capasPorId.get(eleccion);
-    const t = tituloInfografia(capa);
-    return { ...t, subtitulo: `${capa.titulo} (${capa.id})`, capasMapa: [...base, capa], tematicas: [capa], limites: EXTENSION_CAMPECHE };
-  }, [eleccion, arbol, activas, limitesActuales]);
+  const tematicas = useMemo(() => activas.filter((c) => !CAPAS_BASE.includes(c.id) && !CAPAS_FIJAS.has(c.id)), [activas]);
+  const titulos = useMemo(() => {
+    const t = [...new Map(tematicas.filter((c) => c.categoria !== 'mapa_base').map((c) => { const x = tituloInfografia(c); return [`${x.etiqueta} · ${x.tema}`, `Por tema: ${x.etiqueta} · ${x.tema}`]; })).values()];
+    return [...t, tematicas.length ? `Capas encendidas (${tematicas.length})` : 'Mapa base'];
+  }, [tematicas]);
+  const titulo = titulos[Math.min(indiceTitulo, titulos.length - 1)].replace(/^Por tema: /, '');
+  const limites = encuadre === 'actual' && limitesActuales ? limitesActuales : EXTENSION_CAMPECHE;
+  const capasMapa = useMemo(() => [...activas].sort((a, b) => (CAPAS_MASCARA.has(b.id) ? -1 : 0) - (CAPAS_MASCARA.has(a.id) ? -1 : 0)), [activas]);
+  const porCategoria = useMemo(() => CATEGORIAS.map((c) => ({ ...c, capas: activas.filter((x) => x.categoria === c.id) })).filter((c) => c.capas.length), [activas]);
+  const instrumentos = useMemo(() => [...new Map(activas.filter((c) => c.instrumento).map((c) => [c.instrumento.id, c.instrumento])).values()], [activas]);
+  const instituciones = useMemo(() => [...new Set(activas.map((c) => c.instrumento?.competencia ?? c.metadatos_extra?.contacto_custodio).filter(Boolean))], [activas]);
+  const fichas = useMemo(() => agruparFichas(tematicas), [tematicas]);
+  const configLamina = (id) => configDe?.(id) ?? CONFIG_INICIAL;
 
   useEffect(() => {
     const escape = (e) => e.key === 'Escape' && onCerrar();
@@ -184,21 +186,21 @@ export default function Infografia({ arbol, activas, limitesActuales, configDe, 
     return () => window.removeEventListener('keydown', escape);
   }, [onCerrar]);
 
-  const descargar = async () => {
+  const descargarPng = async () => {
     if (!lamina.current) return;
     setGenerando(true);
     try {
       const lienzo = await html2canvas(lamina.current, { useCORS: true, logging: false, scale: 2, backgroundColor: '#ffffff' });
       const a = document.createElement('a');
       a.href = lienzo.toDataURL('image/png');
-      a.download = `SESIM_infografia_${esCaptura ? 'captura_pantalla' : eleccion}_${new Date().toLocaleDateString('sv-SE')}.png`;
+      a.download = `SESIM_infografia_${new Date().toLocaleDateString('sv-SE')}.png`;
       a.click();
     } finally {
       setGenerando(false);
     }
   };
 
-  const imprimir = () => {
+  const descargarPdf = () => {
     document.body.classList.add('imprimiendo-infografia');
     const quitar = () => {
       document.body.classList.remove('imprimiendo-infografia');
@@ -208,121 +210,116 @@ export default function Infografia({ arbol, activas, limitesActuales, configDe, 
     window.print();
   };
 
-  const elegirVistaActual = async () => {
-    setEleccion(VISTA_ACTUAL);
-    setCaptura({ estado: 'cargando' });
-    try {
-      setCaptura({ estado: 'lista', url: await capturarPantalla() });
-    } catch (e) {
-      setCaptura({ estado: 'error', mensaje: e.message });
-    }
-  };
-
-  const esCaptura = eleccion === VISTA_ACTUAL;
-
-  const configLamina = (id) => (eleccion === VISTA_ACTUAL ? configDe?.(id) : null) ?? CONFIG_INICIAL;
-
   const hoy = new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+  const alternar = (id) => setIncluye((prev) => ({ ...prev, [id]: !prev[id] }));
 
   return (
     <div className="infografia-capa" role="dialog" aria-modal="true" aria-label="Infografía del geovisor">
       <div className="infografia-barra">
-        {contenido ? (
-          <button type="button" onClick={() => setEleccion(null)}><ArrowLeft size={16} aria-hidden="true" /> Elegir otra capa</button>
-        ) : (
-          <strong>Captura e infografía</strong>
-        )}
+        <strong>Infografía del geovisor</strong>
         <span className="infografia-barra__espacio" />
-        {contenido && (
-          <>
-            <button type="button" onClick={descargar} disabled={generando || (esCaptura && captura?.estado !== 'lista')}><Download size={16} aria-hidden="true" /> {generando ? 'Generando…' : 'Descargar PNG'}</button>
-            <button type="button" onClick={imprimir}><Printer size={16} aria-hidden="true" /> Imprimir o guardar PDF</button>
-          </>
-        )}
         <button type="button" onClick={onCerrar} aria-label="Cerrar"><X size={18} aria-hidden="true" /></button>
       </div>
 
-      {!contenido ? (
-        <div className="infografia-eleccion">
-          <button type="button" className="infografia-eleccion__actual" onClick={elegirVistaActual}>
-            <ImageIcon size={22} aria-hidden="true" />
-            <span><b>Captura de pantalla</b><small>Imagen de toda la pantalla del geovisor con los paneles desplegados, junto con los indicadores, la ficha técnica, los metadatos y el linaje de las {activas.filter((c) => !CAPAS_BASE.includes(c.id)).length} capas encendidas.</small></span>
-          </button>
-          <h3><Layers size={18} aria-hidden="true" /> Infografía de una capa del sistema</h3>
-          <p>Lámina con el mapa base predeterminado y la capa elegida; su título indica el tema del diagnóstico o el número y nombre de la estrategia.</p>
-          <div className="infografia-eleccion__grupos">
-            {opciones.map((cat) => (
-              <section key={cat.id}>
-                <h4>{cat.etiqueta}</h4>
-                <ul>
-                  {cat.capas.map((c) => (
-                    <li key={c.id}><button type="button" onClick={() => setEleccion(c.id)}>{c.titulo} <code>{c.id}</code></button></li>
-                  ))}
-                </ul>
-              </section>
+      <div className="ig-cuerpo">
+        <aside className="ig-opciones">
+          <p className="ig-leyenda">Previsualización del geovisor con los paneles desplegados, junto con los indicadores, la ficha técnica, los metadatos y la trazabilidad de las capas encendidas.</p>
+          <label className="ig-campo" htmlFor="ig-titulo"><span>Título</span>
+            <select id="ig-titulo" value={Math.min(indiceTitulo, titulos.length - 1)} onChange={(e) => setIndiceTitulo(Number(e.target.value))}>
+              {titulos.map((t, i) => <option key={t} value={i}>{t}</option>)}
+            </select>
+          </label>
+          <fieldset className="ig-campo"><legend>Encuadre</legend>
+            <div className="ig-seg">
+              <button type="button" aria-pressed={encuadre === 'actual'} className={encuadre === 'actual' ? 'activo' : undefined} onClick={() => setEncuadre('actual')}>Vista actual</button>
+              <button type="button" aria-pressed={encuadre === 'estado'} className={encuadre === 'estado' ? 'activo' : undefined} onClick={() => setEncuadre('estado')}>Todo el estado</button>
+            </div>
+          </fieldset>
+          <fieldset className="ig-campo"><legend>Incluye</legend>
+            {INCLUYE.map((o) => (
+              <label key={o.id} className="ig-check"><input type="checkbox" checked={incluye[o.id]} onChange={() => alternar(o.id)} /> {o.t}</label>
             ))}
+          </fieldset>
+          <div className="ig-botones">
+            <button type="button" className="gv-btn gv-btn--primario" onClick={descargarPdf}><Printer size={16} aria-hidden="true" /> Descargar PDF</button>
+            <button type="button" className="gv-btn" onClick={descargarPng} disabled={generando}><Download size={16} aria-hidden="true" /> {generando ? 'Generando…' : 'Descargar PNG'}</button>
           </div>
-        </div>
-      ) : (
+        </aside>
+
         <div className="infografia-vista">
           <article className="infografia" ref={lamina}>
             <header className="infografia__cabecera">
               <img src="/gobiernoparatodos.png" alt="Escudo del Estado de Campeche" />
               <img src="/logocampeche.png" alt="Gobierno de Campeche" />
               <div className="infografia__titulos">
-                <span className="infografia__etiqueta">{contenido.etiqueta}</span>
-                <h2>{contenido.tema}</h2>
-                {contenido.subtitulo && <p>{contenido.subtitulo}</p>}
+                <span className="infografia__etiqueta">Infografía</span>
+                <h2>{titulo}</h2>
+                <p className="ig-capas-titulo">Capas que contiene esta infografía</p>
+                <p className="ig-capas">{activas.filter((c) => !CAPAS_FIJAS.has(c.id)).map((c) => `${c.titulo} (${c.id})`).join(' · ') || 'Mapa base'}</p>
               </div>
-              <div className="infografia__sello"><b>SESIM</b><small>Sistema Estatal de Seguimiento de Indicadores de Movilidad y Seguridad Vial</small></div>
+              <div className="infografia__sello">
+                <b>SESIM</b>
+                <small>Sistema Estatal de Seguimiento de Indicadores de Movilidad y Seguridad Vial</small>
+                <small>Escala: {escalaTexto}</small>
+                <small>{hoy}</small>
+              </div>
             </header>
-            {esCaptura && (
-              <div className="infografia__captura">
-                {captura?.estado === 'cargando' && <EstadoCarga estado="cargando" mensaje="Desplegando los paneles y capturando la pantalla…" />}
-                {captura?.estado === 'error' && <EstadoCarga estado="error" titulo="No se pudo capturar la pantalla" mensaje={captura.mensaje} />}
-                {captura?.estado === 'lista' && <img src={captura.url} alt={`Captura de pantalla del geovisor: ${contenido.tema}`} />}
-              </div>
+
+            {incluye.mapa && (
+              <>
+                <div className="infografia__mapa ig-mapa">
+                  <MapaFijo capas={capasMapa} limites={limites} configDe={configLamina} onMapa={setMapaLamina} satelite={satelite} />
+                  {mapaLamina && <EscalaMapa mapa={mapaLamina} />}
+                  <span className="infografia__norte" aria-label="Norte">N<i /></span>
+                </div>
+                <section className="ig-seccion">
+                  <h3>Simbología</h3>
+                  <div className="ig-columnas">
+                    {porCategoria.map((cat) => (
+                      <div key={cat.id} className="ig-cat">
+                        <h4>{NOMBRES_CAT[cat.id]}</h4>
+                        {cat.capas.map((c) => <FilaLeyenda key={c.id} capa={c} config={configLamina(c.id)} />)}
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </>
             )}
-            {esCaptura && (
-              <section className="infografia__seguimiento infografia__seguimiento--banda">
-                <h3>Seguimiento e indicadores</h3>
-                <Indicadores capas={contenido.tematicas} />
+
+            {incluye.aviso && (
+              <section className="ig-seccion ig-aviso">
+                <h3>{AVISOS.aviso.titulo}</h3>
+                <p>{AVISOS.aviso.texto}</p>
               </section>
             )}
-            {!esCaptura && <div className={`infografia__cuerpo${contenido.tematicas.length > 1 ? ' infografia__cuerpo--ancho' : ''}`}>
-              <aside className="infografia__seguimiento">
-                <h3>Seguimiento e indicadores</h3>
-                <Indicadores capas={contenido.tematicas} />
-              </aside>
-              <div className="infografia__mapa">
-                <MapaFijo capas={contenido.capasMapa} limites={contenido.limites} configDe={configLamina} onMapa={setMapaLamina} />
-                {mapaLamina && <EscalaMapa mapa={mapaLamina} />}
-                <span className="infografia__norte" aria-label="Norte">N<i /></span>
-                {contenido.tematicas.length <= 1 && <div className="infografia__leyenda"><LeyendaMapa capas={contenido.capasMapa} configDe={configLamina} onAlternarCapa={() => {}} onAlternarCategoria={() => {}} /></div>}
-              </div>
-              {contenido.tematicas.length > 1 && <aside className="infografia__leyenda-columna"><LeyendaMapa capas={contenido.capasMapa} configDe={configLamina} onAlternarCapa={() => {}} onAlternarCategoria={() => {}} /></aside>}
-              {contenido.tematicas.length <= 1 && (
-                <aside className="infografia__fichas">
-                  <h3>Ficha técnica y metadatos</h3>
-                  {contenido.tematicas.length ? <Ficha capa={contenido.tematicas[0]} /> : <p className="infografia__nota">Solo mapa base y límites administrativos.</p>}
-                </aside>
-              )}
-            </div>}
-            {(esCaptura || contenido.tematicas.length > 1) && contenido.tematicas.length > 0 && (
-              <section className="infografia__fichas infografia__fichas--banda">
-                <h3>{contenido.tematicas.length > 1 ? 'Ficha técnica y metadatos de las capas encendidas' : 'Ficha técnica y metadatos'}</h3>
-                <div className="infografia__fichas-columnas">
-                  {contenido.tematicas.map((c) => <Ficha key={c.id} capa={c} />)}
+
+            {incluye.seguimiento && (
+              <section className="ig-seccion">
+                <h3>Indicadores</h3>
+                <Indicadores capas={tematicas} />
+              </section>
+            )}
+
+            {incluye.fichas && tematicas.length > 0 && (
+              <section className="ig-seccion">
+                <h3>Ficha técnica y metadatos de las capas encendidas</h3>
+                <div className="ig-fichas">
+                  {fichas.map((g) => <Ficha key={g.capas[0].id} grupo={g} />)}
                 </div>
               </section>
             )}
-            <footer className="infografia__pie">
-              <p><b>{AVISOS.cartografico.titulo}.</b> {AVISOS.cartografico.texto}</p>
-              <p>Generado el {hoy} desde el Geovisor SESIM Campeche · Mapa base: Esri · Sistema de referencia de visualización: EPSG:3857.</p>
-            </footer>
+
+            {incluye.fuentes && (
+              <section className="ig-seccion">
+                <h3>Fuentes e instituciones</h3>
+                {instrumentos.length > 0 && <p><b>Instrumentos de origen:</b> {instrumentos.map((i) => i.nombre).join(' · ')}</p>}
+                {instituciones.length > 0 && <p><b>Instituciones responsables:</b> {instituciones.join(' · ')}</p>}
+                <p className="ig-nota">Mapa base: Esri · Sistema de referencia de visualización: EPSG:3857 · Atributos publicados: {ATRIBUTOS_PUBLICOS.join(', ')}.</p>
+              </section>
+            )}
           </article>
         </div>
-      )}
+      </div>
     </div>
   );
 }

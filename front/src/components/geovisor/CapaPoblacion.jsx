@@ -10,7 +10,7 @@ import { COLOR_POBLACION, poblacionPorElemento, rangoPoblacion } from '../../lib
  * (`RANGOS_POBLACION`). Con la simbología apagada, puntos neutros. Al hacer clic, la ficha recibe
  * la localidad censal ligada (`cvegeo`) y su población.
  */
-export default function CapaPoblacion({ capa, opacidad = 1, simbologia = true, municipio = '', onSeleccionar }) {
+export default function CapaPoblacion({ capa, opacidad = 1, simbologia = true, municipio = '', onSeleccionar, interactivo = true }) {
   const { datos } = useDatosCapa(capa);
   const [censo, setCenso] = useState(null);
 
@@ -42,6 +42,7 @@ export default function CapaPoblacion({ capa, opacidad = 1, simbologia = true, m
       pointToLayer={(f, latlng) => L.circleMarker(latlng, estilo(f))}
       onEachFeature={(f, capaLeaflet) => {
         const peso = pesos.get(f.properties.id);
+        if (!interactivo) return;
         capaLeaflet.bindTooltip(`${f.properties.nombre} · ${peso ? `${peso.pob.toLocaleString('es-MX')} hab.` : 'sin dato censal'}`, { direction: 'top' });
         if (onSeleccionar) capaLeaflet.on('click', () => onSeleccionar({ capa, propiedades: { ...f.properties, cvegeo: peso?.cvegeo ?? null, pob_tot: peso?.pob ?? null } }));
       }}

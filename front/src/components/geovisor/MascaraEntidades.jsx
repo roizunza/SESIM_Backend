@@ -12,7 +12,7 @@ const ENTIDAD_PROPIA = 'Campeche';
  * lectura se concentra dentro del estado. Campeche no se dibuja. La opacidad del control de capas
  * regula qué tanto se atenúa; con la simbología apagada solo quedan los contornos.
  */
-export default function MascaraEntidades({ capa, opacidad = 1, simbologia = true }) {
+export default function MascaraEntidades({ capa, opacidad = 1, simbologia = true, oscuro = false }) {
   const mapa = useMap();
   const { datos } = useDatosCapa(capa);
 
@@ -30,10 +30,12 @@ export default function MascaraEntidades({ capa, opacidad = 1, simbologia = true
       pane: PANEL,
       interactive: false,
       filter: (f) => f.properties?.nombre !== ENTIDAD_PROPIA,
-      style: { color: '#c9c4c6', weight: 0.8, opacity: 0.9 * opacidad, fillColor: '#ffffff', fillOpacity: simbologia ? 0.78 * opacidad : 0 },
+      style: oscuro
+        ? { color: '#9fd0dd', weight: 0.8, opacity: 0.7 * opacidad, fillColor: '#0b1a21', fillOpacity: simbologia ? 0.55 * opacidad : 0 }
+        : { color: '#c9c4c6', weight: 0.8, opacity: 0.9 * opacidad, fillColor: '#ffffff', fillOpacity: simbologia ? 0.78 * opacidad : 0 },
     }).addTo(mapa);
     return () => capaLeaflet.remove();
-  }, [mapa, datos, opacidad, simbologia]);
+  }, [mapa, datos, opacidad, simbologia, oscuro]);
 
   return null;
 }

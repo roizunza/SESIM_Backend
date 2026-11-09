@@ -224,3 +224,95 @@
 .infografia__captura img { display: block; width: 100%; height: auto; border: 1px solid #d7d9dd; }
 .infografia__seguimiento--banda { border-right: 0; border-top: 1px solid #e2e4e8; margin-top: 14px; }
 .infografia__seguimiento--banda .infografia__indicadores { display: grid; grid-template-columns: repeat(3, 1fr); }
+
+/* ---- Infografía v8: opciones + lámina ---- */
+.ig-cuerpo { flex: 1; min-height: 0; display: grid; grid-template-columns: 320px 1fr; background: #eceae6; }
+.ig-opciones { background: #fff; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; border-right: 1px solid #d7d9dd; color: #1f2329; text-align: left; }
+.ig-leyenda { margin: 0; font-size: 0.9rem; line-height: 1.5; color: #4a4f57; }
+.ig-campo { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem; }
+.ig-campo > span, .ig-campo > legend { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7079; padding: 0; }
+.ig-campo select { min-height: 44px; border: 1px solid #c9ccd1; border-radius: 8px; padding: 0 10px; font: inherit; background: #fff; }
+.ig-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.ig-seg button { min-height: 44px; border: 1px solid #c9ccd1; border-radius: 8px; background: #fff; font: inherit; cursor: pointer; }
+.ig-seg button.activo { background: #9f2241; border-color: #9f2241; color: #fff; font-weight: 700; }
+.ig-check { display: flex; align-items: center; gap: 10px; min-height: 40px; font-size: 0.92rem; cursor: pointer; }
+.ig-check input { width: 18px; height: 18px; accent-color: #9f2241; }
+.ig-botones { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+.ig-botones .gv-btn { justify-content: center; }
+.ig-capas-titulo { margin: 8px 0 2px !important; font-size: 0.7rem !important; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #9d2449 !important; }
+.ig-capas { font-size: 0.8rem !important; line-height: 1.4; }
+.infografia__sello small { display: block; }
+.ig-mapa { position: relative; height: 640px; margin: 0; }
+.ig-mapa .infografia__mapa-leaflet { width: 100%; height: 100%; }
+.ig-seccion { padding: 16px 22px; border-top: 1px solid #e2e4e8; text-align: left; }
+.ig-seccion h3 { margin: 0 0 10px; padding-bottom: 6px; border-bottom: 2px solid #bc955c; color: #691c32; font-size: 1rem; }
+.ig-seccion h4 { margin: 0 0 8px; font-size: 0.82rem; letter-spacing: 0.06em; text-transform: uppercase; color: #9d2449; }
+.ig-seccion p { margin: 0 0 6px; font-size: 0.85rem; line-height: 1.5; }
+.ig-columnas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.ig-simb { margin-bottom: 10px; font-size: 0.82rem; }
+.ig-simb b code { color: #6b7079; font-weight: 400; }
+.ig-aviso p { color: #3a3f46; }
+.ig-nota { color: #6b7079; font-size: 0.75rem !important; }
+@media (max-width: 900px) { .ig-cuerpo { grid-template-columns: 1fr; overflow: auto; } .ig-opciones { border-right: 0; } }
+@media print { body.imprimiendo-infografia .ig-opciones { display: none; } body.imprimiendo-infografia .ig-cuerpo { display: block; background: none; } }
+.ig-opciones, .ig-opciones * { text-align: left; hyphens: none; }
+
+/* ---- Infografía: composición compacta ---- */
+.infografia, .infografia * { text-align: left; hyphens: none; }
+.ig-seccion { padding: 14px 22px 16px; }
+.ig-seccion h3 { margin-bottom: 10px; }
+.ig-columnas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 28px; align-items: start; }
+.ig-cat { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.ig-cat h4 { margin: 0 0 2px; padding-bottom: 4px; border-bottom: 1px solid #e2e4e8; }
+.ig-simb { font-size: 0.74rem; line-height: 1.3; break-inside: avoid; }
+.ig-simb__t { display: flex; align-items: center; gap: 8px; }
+.ig-simb__t b { font-weight: 600; }
+.ig-simb code { color: #6b7079; font-size: 0.68rem; }
+.ig-simb__l { margin: 3px 0 4px 4px; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 2px 14px; }
+.ig-simb__l .capa-legend-muestra { gap: 6px; font-size: 0.72rem; }
+.ig-simb .capa-legend-swatch-plano { width: 18px; height: 11px; }
+.ig-tabla { width: 100%; border-collapse: collapse; font-size: 0.74rem; line-height: 1.3; }
+.ig-tabla th, .ig-tabla td { padding: 4px 8px; border-bottom: 1px solid #ececec; vertical-align: top; }
+.ig-tabla thead th { font-size: 0.66rem; letter-spacing: 0.06em; text-transform: uppercase; color: #6b7079; border-bottom: 2px solid #d7d9dd; background: #faf8f4; }
+.ig-tabla tbody th { color: #691c32; font-weight: 700; white-space: nowrap; }
+.ig-tabla td:nth-child(3), .ig-tabla td:nth-child(5) { white-space: nowrap; color: #4a4f57; }
+.ig-fichas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: start; }
+.ig-ficha { padding: 10px 12px !important; border: 1px solid #e2e4e8 !important; border-radius: 8px; background: #faf8f4; margin: 0 !important; }
+.ig-ficha h4 { margin: 0 0 8px; font-size: 0.78rem; line-height: 1.35; text-transform: none; letter-spacing: 0; color: #691c32; display: flex; flex-wrap: wrap; gap: 2px 10px; }
+.ig-ficha h4 code { color: #6b7079; font-weight: 400; font-size: 0.68rem; }
+.ig-ficha dl { margin: 0; display: grid; gap: 5px; }
+.ig-ficha dl > div { display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 8px; font-size: 0.72rem; line-height: 1.4; }
+.ig-ficha dt { color: #6b7079; font-weight: 600; }
+.ig-ficha dd { margin: 0; color: #24282d; overflow-wrap: anywhere; }
+.ig-capas { font-size: 0.74rem !important; line-height: 1.35; }
+.ig-mapa { align-self: stretch; width: 100%; }
+.infografia-vista .infografia { width: 100%; max-width: 1400px; min-height: 0; }
+@media print { body.imprimiendo-infografia .infografia { width: 1400px; max-width: none; } }
+
+/* indicadores en dos cajas */
+.ig-cajas { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; align-items: start; }
+.ig-cajas .ig-tabla { border: 1px solid #e2e4e8; border-radius: 8px; overflow: hidden; }
+.ig-tabla td:nth-child(3) { white-space: nowrap; color: #4a4f57; }
+@media (max-width: 900px) { .ig-cajas { grid-template-columns: 1fr; } }
+
+/* ---- Pantalla de la infografía: paleta verde (la lámina conserva sus colores) ---- */
+.infografia-capa { background: rgba(31, 79, 67, 0.55); }
+.infografia-barra { background: #1f4f43; border-bottom: 3px solid #d9c9a3; color: #fff; }
+.infografia-barra strong { font-size: 1.05rem; letter-spacing: 0.01em; }
+.infografia-barra button { background: transparent; border-color: rgba(255,255,255,.45); color: #fff; }
+.infografia-barra button:hover:not(:disabled) { background: rgba(255,255,255,.12); border-color: #fff; color: #fff; }
+.ig-cuerpo { background: #f4eee2; }
+.ig-opciones { background: #fbf8f1; border-right: 1px solid #d9cfb8; color: #2b2a27; }
+.ig-leyenda { color: #4e4a42; }
+.ig-campo > span, .ig-campo > legend { color: #235b4e; }
+.ig-campo select { border-color: #d9cfb8; background: #fff; color: #2b2a27; }
+.ig-campo select:focus-visible, .ig-seg button:focus-visible, .ig-check input:focus-visible { outline: 3px solid #235b4e; outline-offset: 2px; }
+.ig-seg { justify-content: center; }
+.ig-seg button { display: flex; align-items: center; justify-content: center; text-align: center !important; border-color: #d9cfb8; background: #fff; color: #2b2a27; font-weight: 600; }
+.ig-seg button.activo { background: #235b4e; border-color: #235b4e; color: #fff; }
+.ig-check { color: #2b2a27; }
+.ig-check input { accent-color: #235b4e; }
+.ig-botones .gv-btn { border-color: #d9cfb8; color: #235b4e; background: #fff; }
+.ig-botones .gv-btn:hover:not(:disabled) { border-color: #235b4e; color: #1f4f43; background: #eef5f1; }
+.ig-botones .gv-btn--primario { background: #235b4e; border-color: #235b4e; color: #fff; }
+.ig-botones .gv-btn--primario:hover:not(:disabled) { background: #1f4f43; border-color: #1f4f43; color: #fff; }

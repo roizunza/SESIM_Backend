@@ -69,7 +69,7 @@
   --pal-est-2: #9F2241; --pal-est-2-rgb: 159, 34, 65;
   --pal-est-3: #8F6420; --pal-est-3-rgb: 143, 100, 32;
   --pal-est-4: #6E6E70; --pal-est-4-rgb: 110, 110, 112;
-  --pal-est-5: #3F8470; --pal-est-5-rgb: 63, 132, 112;
+  --pal-est-5: #7B5BA6; --pal-est-5-rgb: 123, 91, 166;
 
   /* Pirámide normativa (siete peldaños): fondo, acento y texto de cada uno */
   --pal-pir-1: #F3ECDD; --pal-pir-2: #E6E2D0; --pal-pir-3: #CBDDD2; --pal-pir-4: #A6C9BC; --pal-pir-5: #3F7F6C; --pal-pir-6: #2C6F5D; --pal-pir-7: #235B4E;
@@ -95,7 +95,7 @@
      --pal-guinda-rgb: 176, 56, 90; --pal-verde-rgb: 58, 166, 139; --pal-texto-rgb: 241, 240, 236; --pal-beige-rgb: 230, 220, 198;
      --pal-est-1: #E6DCC6; --pal-est-1-rgb: 230, 220, 198; --pal-est-2: #B0385A; --pal-est-2-rgb: 176, 56, 90;
      --pal-est-3: #98989A; --pal-est-3-rgb: 152, 152, 154; --pal-est-4: #3AA68B; --pal-est-4-rgb: 58, 166, 139;
-     --pal-est-5: #D6D6D8; --pal-est-5-rgb: 214, 214, 216;
+     --pal-est-5: #9B7DB8; --pal-est-5-rgb: 155, 125, 184;
      --pal-pir-1: #ECECEE; --pal-pir-2: #D6D6D8; --pal-pir-3: #BDBEC1; --pal-pir-4: #9B9DA1; --pal-pir-5: #74777C; --pal-pir-6: #4A4E54; --pal-pir-7: #2B3036;
      --pal-pir-a-1: #B0385A; --pal-pir-a-2: #B0385A; --pal-pir-a-3: #8E2845; --pal-pir-a-4: #262B30; --pal-pir-a-5: #ECECEE; --pal-pir-a-6: #ECECEE; --pal-pir-a-7: #ECECEE;
      --pal-pir-t-1: #14171A; --pal-pir-t-2: #14171A; --pal-pir-t-3: #14171A; --pal-pir-t-4: #14171A; --pal-pir-t-5: #FFFFFF; --pal-pir-t-6: #FFFFFF; --pal-pir-t-7: #FFFFFF;

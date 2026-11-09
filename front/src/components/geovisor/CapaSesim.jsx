@@ -22,7 +22,7 @@ function estiloNeutro(geom, opacidad) {
  *  · `municipio` → solo los elementos de ese municipio (`id_unidad`, Ruta 5 territorial).
  * Ningún elemento se oculta por falta de símbolo: cae al estilo de respaldo.
  */
-export default function CapaSesim({ capa, config = CONFIG_INICIAL, opacidad = 1, conEtiqueta = false, municipio = '', onSeleccionar }) {
+export default function CapaSesim({ capa, config = CONFIG_INICIAL, opacidad = 1, conEtiqueta = false, municipio = '', onSeleccionar, interactivo = true }) {
   const { datos, error } = useDatosCapa(capa);
   const estilo = useMemo(() => resolverEstilo(capa, config, datos?.features), [capa, config, datos]);
   const pathDe = useMemo(() => {
@@ -61,9 +61,13 @@ export default function CapaSesim({ capa, config = CONFIG_INICIAL, opacidad = 1,
   };
 
   const onEachFeature = (feature, layer) => {
-    if (onSeleccionar) layer.on('click', () => onSeleccionar({ capa, propiedades: feature.properties }));
+    if (interactivo && onSeleccionar) layer.on('click', (e) => onSeleccionar({ capa, propiedades: feature.properties, geometria: feature.geometry, latlng: e?.latlng ?? null }));
     const texto = conEtiqueta ? feature.properties?.nombre : null;
     if (texto) layer.bindTooltip(String(texto), { permanent: true, direction: 'center', className: 'capa-etiqueta-mapa' });
+    else if (interactivo && feature.properties?.nombre) {
+      const esc = (t) => String(t).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
+      layer.bindTooltip(`<strong>${esc(feature.properties.nombre)}</strong><small>${esc(capa.id)}</small>`, { sticky: true, direction: 'top', className: 'gv-hover', opacity: 1 });
+    }
   };
 
   // Cambiar estilo o filtros reconstruye la capa; la opacidad solo reestiliza (setStyle).
@@ -76,6 +80,7 @@ export default function CapaSesim({ capa, config = CONFIG_INICIAL, opacidad = 1,
       pointToLayer={punto}
       filter={(f) => (!municipio || f.properties?.id_unidad === municipio) && cumpleFiltros(f.properties, config.filtros)}
       onEachFeature={onEachFeature}
+      interactive={interactivo}
     />
   );
 }

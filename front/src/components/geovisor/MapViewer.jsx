@@ -1,35 +1,32 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useSearchParams } from 'react-router-dom';
-import { MapContainer, useMap } from 'react-leaflet';
-import { ChevronLeft, ChevronRight, ChevronDown, Layers, Info, Camera, Search, X, BarChart3, SlidersHorizontal, Maximize2, Minimize2, MapPin } from 'lucide-react';
+import { MapContainer, Popup, useMap } from 'react-leaflet';
+import { ChevronLeft, ChevronRight, Camera, X, Maximize2, Minimize2, Crosshair } from 'lucide-react';
 import 'leaflet/dist/leaflet.css';
 import './MapViewer.css';
+import './GeovisorV8.css';
 import PanelFab from '../perfiles/comun/PanelFab';
 import { BotonGuia } from './GuiaGeovisor';
 import RecorridoGeovisor, { recorridoVisto, marcarRecorrido } from './RecorridoGeovisor';
 import { usePanelLateral } from '../../lib/sesim/usePanelLateral';
-import { cargarArbolCapas, CAPAS_FIJAS, CAPAS_INICIALES, CAPAS_CON_ETIQUETA, CAPAS_MASCARA, CAPAS_POBLACION, ESTATUS_CAPA } from '../../lib/sesim/capas';
+import { cargarArbolCapas, CAPAS_FIJAS, CAPAS_INICIALES, CAPAS_CON_ETIQUETA, CAPAS_MASCARA, CAPAS_POBLACION } from '../../lib/sesim/capas';
 import { useFiltros } from '../../lib/sesim/filtrosGlobales';
 import { useCatalogo } from '../../lib/sesim/useCatalogo';
 import { fnCapasDeIndicador, tabla } from '../../lib/sesim/api';
 import EsriBasemap from './EsriBasemap';
 import CapaSesim from './CapaSesim';
-import CapaMetadataModal from './CapaMetadataModal';
-import PanelCapa from './PanelCapa';
+import DetalleCapa from './DetalleCapa';
+import PanelControl from './PanelControl';
 import LeyendaMapa from './LeyendaMapa';
 import EscalaMapa from './EscalaMapa';
-import EtiquetasLocalidades from './EtiquetasLocalidades';
 import RealceMunicipio from './RealceMunicipio';
 import MascaraEntidades from './MascaraEntidades';
 import CapaPoblacion from './CapaPoblacion';
-import AvisoLegal from '../plataforma/AvisoLegal';
-import EnlaceInstitucional from '../plataforma/EnlaceInstitucional';
+import { AVISOS } from '../../lib/avisosLegales';
 import Infografia from './Infografia';
 import { descargarCapa } from '../../lib/sesim/descargas';
-import html2canvas from 'html2canvas';
-import { CONFIG_INICIAL, filtrosActivosCapa } from '../../lib/sesim/estiloCapa';
-import { enlace } from '../../lib/rutas';
+import { CONFIG_INICIAL } from '../../lib/sesim/estiloCapa';
 
 /**
  * Geovisor público del SESIM.
@@ -58,28 +55,17 @@ const MapInstanceCapture = ({ setMapInstance }) => {
   return null;
 };
 
-const CapaControles = ({ opacidad, onOpacidad, etiqueta }) => (
-  <div className="capa-opacidad-fila">
-    <span className="capa-opacidad-etiqueta">Modificar transparencia</span>
-    <input
-      type="range" min="0" max="1" step="0.05" value={opacidad}
-      onChange={(e) => onOpacidad(Number(e.target.value))}
-      className="capa-opacidad-slider" aria-label={`Opacidad de ${etiqueta}`}
-    />
-  </div>
-);
-
 /** Recorrido del geovisor público: cada `sel` apunta a una zona real de la pantalla; si no está a la vista el paso se omite. */
 const CLAVE_RECORRIDO = 'sesim.geovisor.recorrido.v1';
 const PASOS_RECORRIDO = [
-  { id: 'escala', sel: '.capa-filtros-generales', titulo: 'Elige el territorio', texto: 'Empieza por todo el estado o por un municipio: las capas muestran solo sus elementos y el mapa se acerca a él.' },
-  { id: 'capas', sel: '.map-sidebar', selMovil: '.map-sidebar', titulo: 'Enciende capas', texto: 'Las capas se agrupan por categoría y estrategia.', items: [
-    { marca: '⌕', texto: 'Busca por nombre o clave.' }, { marca: '●', texto: 'El interruptor muestra u oculta toda la categoría.' }, { marca: '▾', texto: 'La flecha despliega sus capas.' }] },
-  { id: 'abrir-panel', selMovil: '.panel-fab', titulo: 'Abre el panel de capas', texto: 'Con «Capas» eliges el territorio, buscas y enciendes capas por categoría o estrategia.' },
-  { id: 'ficha', sel: '.capa-info-btn', titulo: 'Consulta la ficha', texto: 'La «i» abre la ficha técnica de la capa: fuente, escala, fecha y uso.' },
-  { id: 'estilo', sel: '.capa-estilo-btn', titulo: 'Simbología, filtros y atributos', texto: 'Cambia cómo se ve la capa, filtra sus elementos y consulta su tabla de atributos. La transparencia se ajusta con el deslizador de cada capa.' },
-  { id: 'leyenda', sel: '.leyenda-flotante', titulo: 'Lee la simbología', texto: 'La leyenda explica los colores; el ojo la oculta sin apagar la capa.' },
-  { id: 'controles', sel: '.map-custom-controls', titulo: 'Controles del mapa', texto: 'Cambia el mapa base, acerca o aleja, descarga las capas encendidas en GeoJSON, captura la pantalla o arma la infografía de una capa, y usa pantalla completa.', items: [
+  { id: 'escala', sel: '.gv-escala', titulo: 'Elige la escala de consulta', texto: 'Empieza por todo el estado o por un municipio: las capas muestran solo sus elementos, lo demás se atenúa y el mapa se acerca a él.' },
+  { id: 'capas', sel: '.map-sidebar', selMovil: '.map-sidebar', titulo: 'Explora y enciende capas', texto: 'En «Explorar» eliges Mapa base, Diagnóstico o Estrategias y enciendes capas.', items: [
+    { marca: '⌕', texto: 'Busca por nombre o clave.' }, { marca: '●', texto: 'El interruptor enciende o apaga la capa o la estrategia.' }, { marca: '5', texto: 'Los atajos encienden una estrategia completa.' }] },
+  { id: 'abrir-panel', selMovil: '.panel-fab', titulo: 'Abre el panel de capas', texto: 'Con «Capas» eliges la escala de consulta, buscas y enciendes capas.' },
+  { id: 'ficha', sel: '.gv-fila .gv-enlace', titulo: 'Consulta la ficha', texto: '«Ficha ›» abre el detalle de la capa: sinopsis, ficha técnica y descarga.' },
+  { id: 'estilo', sel: '.gv-pestanas', titulo: 'Capas en el mapa', texto: 'En «En el mapa» ajustas la transparencia, filtras los elementos y cambias el orden en que se dibujan las capas.' },
+  { id: 'leyenda', sel: '.leyenda-flotante', titulo: 'Lee la simbología', texto: 'La leyenda explica los colores; sus interruptores ocultan la simbología sin apagar la capa.' },
+  { id: 'controles', sel: '.map-custom-controls', titulo: 'Controles del mapa', texto: 'Cambia el mapa base, acerca o aleja, descarga las capas encendidas en GeoJSON, arma la infografía y usa pantalla completa.', items: [
     { marca: '?', texto: 'Con el botón «?» vuelves a este recorrido.' }] },
 ];
 
@@ -98,16 +84,17 @@ const MapViewer = ({ incluirBorrador = false }) => {
   const [activas, setActivas] = useState(() => new Set(CAPAS_FIJAS));
   const [abiertos, setAbiertos] = useState(() => new Set());
   const [opacidadPorCapa, setOpacidadPorCapa] = useState({});
-  const [ficha, setFicha] = useState(null);
+  const [detalle, setDetalle] = useState(null);
+  const [seleccion, setSeleccion] = useState(null);
+  const [pestana, setPestana] = useState('explorar');
+  const [tema, setTema] = useState('estrategia');
+  const [ordenDibujo, setOrdenDibujo] = useState([]);
+  const [ordenVersion, setOrdenVersion] = useState(0);
+  const [avisoAbierto, setAvisoAbierto] = useState(false);
   const [filtro, setFiltro] = useState('');
   const [indicadorFoco, setIndicadorFoco] = useState(null);
   const [configPorCapa, setConfigPorCapa] = useState({});
-  // Paneles de simbología, filtros y atributos: uno por cada capa de diagnóstico o estrategia
-  // encendida (y por las de mapa base que se abran a mano), apilados en el orden en que se encienden.
-  const [panelesMapaBase, setPanelesMapaBase] = useState(() => new Set());
-  const [panelesContraidos, setPanelesContraidos] = useState(() => new Set());
   const [mapaCompleto, setMapaCompleto] = useState(false);
-  const [columnaDerecha, setColumnaDerecha] = useState(true);
   const { filtros, fijar } = useFiltros();
   const municipio = filtros.municipio;
   const { datos: catalogoUT } = useCatalogo(['unidad_territorial']);
@@ -145,13 +132,11 @@ const MapViewer = ({ incluirBorrador = false }) => {
     });
   };
 
-  const toggleGrupo = (grupo) => {
+  const fijarGrupo = (grupo, encender) => {
     const ids = grupo.capas.map((c) => c.id).filter((id) => !CAPAS_FIJAS.has(id));
-    if (ids.length === 0) return;
-    const alguna = ids.some((id) => activas.has(id));
     setActivas((prev) => {
       const next = new Set(prev);
-      ids.forEach((id) => (alguna ? next.delete(id) : next.add(id)));
+      ids.forEach((id) => (encender ? next.add(id) : next.delete(id)));
       return next;
     });
   };
@@ -221,13 +206,67 @@ const MapViewer = ({ incluirBorrador = false }) => {
     return false;
   }, [activas, arbol]);
 
+  const rangoGeom = (id) => ORDEN_GEOMETRIA[arbol?.capasPorId.get(id)?.geom] ?? 1;
+  // Orden de dibujo (de abajo hacia arriba): por geometría al encender, ajustable a mano.
+  useEffect(() => {
+    if (!arbol) return;
+    setOrdenDibujo((prev) => {
+      const res = prev.filter((id) => activas.has(id) && arbol.capasPorId.has(id));
+      for (const id of activas) {
+        if (!arbol.capasPorId.has(id) || res.includes(id)) continue;
+        const r = rangoGeom(id);
+        const i = res.findIndex((x) => rangoGeom(x) > r);
+        res.splice(i < 0 ? res.length : i, 0, id);
+      }
+      return res.length === prev.length && res.every((x, i) => x === prev[i]) ? prev : res;
+    });
+  }, [activas, arbol]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const capasActivasOrdenadas = useMemo(() => {
     if (!arbol) return [];
-    return Array.from(activas)
-      .map((id) => arbol.capasPorId.get(id))
-      .filter(Boolean)
+    const enOrden = ordenDibujo.filter((id) => activas.has(id)).map((id) => arbol.capasPorId.get(id)).filter(Boolean);
+    const faltan = [...activas].filter((id) => !ordenDibujo.includes(id)).map((id) => arbol.capasPorId.get(id)).filter(Boolean)
       .sort((a, b) => (ORDEN_GEOMETRIA[a.geom] ?? 1) - (ORDEN_GEOMETRIA[b.geom] ?? 1));
-  }, [activas, arbol]);
+    return [...enOrden, ...faltan];
+  }, [activas, arbol, ordenDibujo]);
+
+  const moverCapa = (id, dir, categoria) => {
+    setOrdenDibujo((prev) => {
+      const i = prev.indexOf(id);
+      let j = i + dir;
+      while (j >= 0 && j < prev.length && arbol.capasPorId.get(prev[j])?.categoria !== categoria) j += dir;
+      if (i < 0 || j < 0 || j >= prev.length) return prev;
+      const res = [...prev];
+      [res[i], res[j]] = [res[j], res[i]];
+      return res;
+    });
+    setOrdenVersion((v) => v + 1);
+  };
+  const reordenar = (desde, hasta) => {
+    setOrdenDibujo((prev) => {
+      if (!prev.includes(desde) || !prev.includes(hasta)) return prev;
+      const res = prev.filter((x) => x !== desde);
+      res.splice(res.indexOf(hasta) + (prev.indexOf(desde) < prev.indexOf(hasta) ? 1 : 0), 0, desde);
+      return res;
+    });
+    setOrdenVersion((v) => v + 1);
+  };
+  const setOpacidadCategoria = (cat, v) => setOpacidadPorCapa((prev) => { const next = { ...prev }; for (const c of capasActivasOrdenadas) if (c.categoria === cat) next[c.id] = v; return next; });
+  const quitarTodas = () => setActivas(new Set(CAPAS_FIJAS));
+
+  /** Atajo de estrategia: enciende las capas de esa estrategia y apaga las de las demás. */
+  const aplicarEstrategia = (idEje) => {
+    const grupo = arbol?.categorias.find((c) => c.id === 'estrategia')?.grupos.find((g) => g.eje?.id === idEje);
+    if (!grupo) return;
+    const yaOn = grupo.capas.every((c) => activas.has(c.id));
+    setActivas((prev) => {
+      const next = new Set([...prev].filter((id) => arbol.capasPorId.get(id)?.categoria !== 'estrategia'));
+      if (!yaOn) grupo.capas.forEach((c) => next.add(c.id));
+      return next;
+    });
+    setAbiertos(new Set(yaOn ? [] : [grupo.id]));
+  };
+
 
   const alternarCategoria = (idCategoria, visible) =>
     setConfigPorCapa((prev) => {
@@ -242,33 +281,6 @@ const MapViewer = ({ incluirBorrador = false }) => {
     return capa.id.toLowerCase().includes(q) || capa.titulo.toLowerCase().includes(q) || (capa.conjunto_datos || '').toLowerCase().includes(q);
   };
 
-  const capasConPanel = useMemo(() => {
-    if (!arbol) return [];
-    return [...activas]
-      .map((id) => arbol.capasPorId.get(id))
-      .filter((c) => c && !CAPAS_FIJAS.has(c.id) && (c.categoria !== 'mapa_base' || panelesMapaBase.has(c.id)));
-  }, [activas, arbol, panelesMapaBase]);
-
-  const alternarPanel = (id) =>
-    setPanelesContraidos((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-
-  /** Botón de la capa: muestra su panel expandido y lo lleva a la vista (en mapa base lo agrega o lo quita). */
-  const mostrarPanel = (capa) => {
-    setColumnaDerecha(true);
-    if (capa.categoria === 'mapa_base' && panelesMapaBase.has(capa.id)) {
-      setPanelesMapaBase((prev) => { const next = new Set(prev); next.delete(capa.id); return next; });
-      return;
-    }
-    if (capa.categoria === 'mapa_base') setPanelesMapaBase((prev) => new Set(prev).add(capa.id));
-    setPanelesContraidos((prev) => { const next = new Set(prev); next.delete(capa.id); return next; });
-    setTimeout(() => document.querySelector(`.columna-derecha [data-capa="${capa.id}"]`)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 80);
-  };
-
   // Descarga de las capas activas: solo «titulo» y los atributos públicos de cada elemento.
   const [errorDescarga, setErrorDescarga] = useState(null);
   const handleDownloadActiveLayers = async () => {
@@ -281,32 +293,7 @@ const MapViewer = ({ incluirBorrador = false }) => {
   };
 
   const [infografia, setInfografia] = useState(false);
-  const handleScreenshot = () => setInfografia(true);
-
-  // Captura de toda la pantalla del geovisor: despliega los paneles, espera a que se acomoden y
-  // omite el cuadro de la infografía.
-  const capturarPantalla = useCallback(async () => {
-    setIsSidebarOpen(true);
-    setColumnaDerecha(true);
-    await new Promise((listo) => setTimeout(listo, 700));
-    const lienzo = await html2canvas(document.body, {
-      useCORS: true,
-      logging: false,
-      x: window.scrollX,
-      y: window.scrollY,
-      width: window.innerWidth,
-      height: window.innerHeight,
-      ignoreElements: (el) => el.classList?.contains('infografia-capa'),
-      // html2canvas no reproduce bien el desplazamiento (transform) de la perilla de los interruptores:
-      // en la copia se coloca con `right` y sin transiciones.
-      onclone: (doc) => {
-        const estilo = doc.createElement('style');
-        estilo.textContent = '*{transition:none!important}.switch-container input:checked+.switch-slider:before{transform:none!important;left:auto!important;right:2px}';
-        doc.head.appendChild(estilo);
-      },
-    });
-    return lienzo.toDataURL('image/png');
-  }, [setIsSidebarOpen]);
+  const handleScreenshot = () => { setSeleccion(null); setDetalle(null); setInfografia(true); };
 
   // Mapa a pantalla completa: se ocultan los controles y el encabezado del portal; Escape regresa.
   useEffect(() => {
@@ -320,6 +307,17 @@ const MapViewer = ({ incluirBorrador = false }) => {
       document.body.classList.remove('geovisor-completo');
     };
   }, [mapaCompleto, mapInstance]);
+
+  const ubicar = (d) => {
+    if (!mapInstance || !d?.geometria) return;
+    const lim = [Infinity, Infinity, -Infinity, -Infinity];
+    const rec = (c) => { if (typeof c[0] === 'number') { lim[0] = Math.min(lim[0], c[0]); lim[1] = Math.min(lim[1], c[1]); lim[2] = Math.max(lim[2], c[0]); lim[3] = Math.max(lim[3], c[1]); } else c.forEach(rec); };
+    rec(d.geometria.coordinates);
+    if (Number.isFinite(lim[0])) mapInstance.fitBounds([[lim[1], lim[0]], [lim[3], lim[2]]], { maxZoom: 16, padding: [60, 60] });
+  };
+  const abrirFicha = (capa) => setDetalle({ capa });
+  const alSeleccionar = (d) => { setSeleccion(d.latlng ? d : null); setDetalle(d); };
+  const nombreMunicipio = municipios.find((m) => m.id === municipio)?.nom_mun;
 
   return (
     <div className={`map-container-wrapper${mapaCompleto ? ' map-container-wrapper--completo' : ''}`}>
@@ -344,165 +342,48 @@ const MapViewer = ({ incluirBorrador = false }) => {
           {isSidebarOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
         </button>
 
-        <div className="sidebar-header">
-          <Layers size={20} className="header-icon" />
-          <h3>Control de Capas</h3>
-        </div>
-
-        <div className="capa-buscador">
-          <Search size={14} />
-          <input type="text" placeholder="Buscar capa por nombre o ID (p. ej. Inf09)" value={filtro} onChange={(e) => setFiltro(e.target.value)} />
-          {filtro && (
-            <button type="button" onClick={() => setFiltro('')} aria-label="Limpiar búsqueda"><X size={12} /></button>
-          )}
-        </div>
-
-        <div className="capa-filtros-generales">
-          <label htmlFor="geovisor-escala" className="capa-escala-titulo">Escala de consulta</label>
-          <p id="geovisor-escala-ayuda" className="capa-municipio-nota">Elija «Todo el estado» para ver las capas completas o un municipio para ver solo sus elementos y acercar el mapa a él.</p>
-          <label className="capa-municipio">
-            <MapPin size={14} aria-hidden="true" />
-            <select id="geovisor-escala" aria-describedby="geovisor-escala-ayuda" value={municipio} onChange={(e) => fijar('municipio', e.target.value)} disabled={!municipios.length}>
-              <option value="">Todo el estado</option>
-              {municipios.map((m) => <option key={m.id} value={m.id}>{m.nom_mun}</option>)}
-            </select>
-          </label>
-          {municipio && <p className="capa-municipio-nota">Las capas muestran solo los elementos del municipio; los límites estatal y municipal se conservan.</p>}
-        </div>
-
-        {indicadorFoco && (
-          <div className="indicador-foco">
-            <BarChart3 size={14} />
-            <div>
-              <span className="indicador-foco-titulo">Capas del indicador {indicadorFoco.indicador.id}</span>
-              <span className="indicador-foco-nombre">{indicadorFoco.indicador.nombre}</span>
-              <span className="indicador-foco-n">
-                {indicadorFoco.n} capa(s)
-                <EnlaceInstitucional to={enlace.fichaIndicador(indicadorFoco.indicador.id)} sinAcceso="ocultar"> · ver ficha</EnlaceInstitucional>
-              </span>
-            </div>
-            <button type="button" onClick={limpiarIndicador} aria-label="Quitar filtro de indicador"><X size={14} /></button>
-          </div>
-        )}
-
-        {errorCarga && <p className="text-muted" style={{ padding: '0 16px' }}>No se pudo cargar el catálogo de capas: {errorCarga}</p>}
-        {!arbol && !errorCarga && <p className="text-muted" style={{ padding: '0 16px' }}>Cargando…</p>}
-
-        {arbol && arbol.categorias.map((cat) => (
-          <div key={cat.id} className="sidebar-section">
-            <div className="section-title">
-              <Layers size={14} />
-              <span>{cat.etiqueta}</span>
-            </div>
-            <div className="overlay-options">
-              {cat.grupos.map((grupo) => {
-                const visibles = grupo.capas.filter(coincideFiltro);
-                if (visibles.length === 0) return null;
-                const ids = grupo.capas.map((c) => c.id);
-                const activo = ids.some((id) => activas.has(id));
-                const soloFijas = ids.every((id) => CAPAS_FIJAS.has(id));
-                const abierto = abiertos.has(grupo.id) || !!filtro.trim();
-                return (
-                  <div key={grupo.id} className="eje-group">
-                    <div className="eje-group-header">
-                      <label className="switch-container" title={grupo.etiqueta}>
-                        <input type="checkbox" checked={activo} disabled={soloFijas} onChange={() => toggleGrupo(grupo)} />
-                        <span className="switch-slider"></span>
-                        <span className="switch-label">{grupo.etiqueta}</span>
-                      </label>
-                      <button type="button" className="eje-expand-btn" onClick={() => toggleAbierto(grupo.id)} aria-label={abierto ? 'Contraer capas' : 'Ver capas'}>
-                        <ChevronDown size={14} style={{ transform: abierto ? 'rotate(180deg)' : 'none' }} />
-                      </button>
-                    </div>
-
-                    {abierto && (
-                      <div className="eje-sublayers">
-                        {visibles.map((capa) => {
-                          const fija = CAPAS_FIJAS.has(capa.id);
-                          return (
-                            <div key={capa.id} className="capa-fila">
-                              <div className="capa-fila-encabezado">
-                                <label className="switch-container compact" title={fija ? `${capa.titulo} (siempre encendida)` : capa.titulo}>
-                                  <input type="checkbox" checked={activas.has(capa.id)} disabled={fija} onChange={() => toggleCapa(capa.id)} />
-                                  <span className="switch-slider"></span>
-                                  <span className="switch-label">
-                                    {capa.titulo}
-                                    <span className="capa-id-chip">{capa.id}</span>
-                                    {capa.estatus !== 'vigente_publico' && <span className="capa-borrador-chip">{(ESTATUS_CAPA[capa.estatus] ?? capa.estatus).toLowerCase()}</span>}
-                                  </span>
-                                </label>
-                                {activas.has(capa.id) && (
-                                  <button
-                                    type="button"
-                                    className={`capa-info-btn capa-estilo-btn${capasConPanel.some((c) => c.id === capa.id) ? ' activo' : ''}`}
-                                    onClick={() => mostrarPanel(capa)}
-                                    title="Simbología, filtros y atributos"
-                                    aria-label={`Simbología, filtros y atributos de ${capa.titulo}`}
-                                    aria-pressed={capasConPanel.some((c) => c.id === capa.id)}
-                                  >
-                                    <SlidersHorizontal size={13} />
-                                    {filtrosActivosCapa(configDe(capa.id).filtros) > 0 && <span className="capa-estilo-badge">{filtrosActivosCapa(configDe(capa.id).filtros)}</span>}
-                                  </button>
-                                )}
-                                <button type="button" className="capa-info-btn" onClick={() => setFicha({ capa })} title="Ver ficha y metadatos" aria-label={`Ver ficha de ${capa.titulo}`}>
-                                  <Info size={13} />
-                                </button>
-                              </div>
-                              {activas.has(capa.id) && (
-                                <CapaControles etiqueta={capa.titulo} opacidad={getOpacidad(capa.id)} onOpacidad={(v) => setOpacidad(capa.id, v)} />
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-        <div className="sidebar-aviso">
-          <AvisoLegal tipo="cartografico" compacto />
-        </div>
+        {errorCarga && <span className="sr-only" role="alert">{errorCarga}</span>}
+        <PanelControl
+          arbol={arbol}
+          errorCarga={errorCarga}
+          pestana={pestana}
+          setPestana={setPestana}
+          tema={tema}
+          setTema={setTema}
+          nActivas={capasActivasOrdenadas.filter((c) => !CAPAS_FIJAS.has(c.id)).length}
+          filtro={filtro}
+          setFiltro={setFiltro}
+          coincide={coincideFiltro}
+          activas={activas}
+          toggleCapa={toggleCapa}
+          fijarGrupo={fijarGrupo}
+          abiertos={abiertos}
+          toggleAbierto={toggleAbierto}
+          aplicarEstrategia={aplicarEstrategia}
+          onFicha={abrirFicha}
+          activasOrdenadas={capasActivasOrdenadas}
+          ordenDibujo={ordenDibujo}
+          moverCapa={moverCapa}
+          reordenar={reordenar}
+          configDe={configDe}
+          fijarConfig={fijarConfig}
+          getOpacidad={getOpacidad}
+          setOpacidad={setOpacidad}
+          setOpacidadCategoria={setOpacidadCategoria}
+          quitarCapa={toggleCapa}
+          quitarTodas={quitarTodas}
+          municipios={municipios}
+          municipio={municipio}
+          fijar={fijar}
+          indicadorFoco={indicadorFoco}
+          limpiarIndicador={limpiarIndicador}
+        />
       </div>
 
-      {ficha && <CapaMetadataModal datos={ficha} onClose={() => setFicha(null)} />}
+      {detalle && <DetalleCapa key={`${detalle.capa.id}|${detalle.propiedades?.id ?? ''}`} datos={detalle} onCerrar={() => { setDetalle(null); setSeleccion(null); }} onUbicar={ubicar} />}
 
       {capasActivasOrdenadas.length > 0 && (
-        <>
-          <button
-            type="button"
-            className={`columna-derecha-toggle${columnaDerecha ? '' : ' columna-derecha-toggle--cerrada'}`}
-            onClick={() => setColumnaDerecha((v) => !v)}
-            aria-expanded={columnaDerecha}
-            aria-label={columnaDerecha ? 'Contraer el panel de simbología' : 'Mostrar el panel de simbología'}
-            title={columnaDerecha ? 'Contraer el panel de simbología' : 'Mostrar el panel de simbología'}
-          >
-            {columnaDerecha ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-          </button>
-          <aside className={`columna-derecha${columnaDerecha ? '' : ' columna-derecha--cerrada'}`} aria-label="Simbología, filtros y atributos">
-            {capasConPanel.length > 0 && (
-              <div className="columna-derecha__paneles">
-                {capasConPanel.map((capa) => (
-                  <PanelCapa
-                    key={capa.id}
-                    capa={capa}
-                    config={configDe(capa.id)}
-                    onCambio={(c) => fijarConfig(capa.id, c)}
-                    contraido={panelesContraidos.has(capa.id)}
-                    onAlternar={() => alternarPanel(capa.id)}
-                    onFicha={() => setFicha({ capa })}
-                    mapa={mapInstance}
-                  />
-                ))}
-              </div>
-            )}
-            {capasActivasOrdenadas.length > 0 && (
-              <LeyendaMapa capas={capasActivasOrdenadas} configDe={configDe} onAlternarCapa={alternarSimbologia} onAlternarCategoria={alternarCategoria} onFicha={(capa) => setFicha({ capa })} />
-            )}
-          </aside>
-        </>
+        <LeyendaMapa capas={[...capasActivasOrdenadas].reverse()} configDe={configDe} onAlternarCapa={alternarSimbologia} onAlternarCategoria={alternarCategoria} conDetalle={!!detalle} panelAbierto={isSidebarOpen && !esMovil} />
       )}
 
       <div className="map-custom-controls">
@@ -550,29 +431,54 @@ const MapViewer = ({ incluirBorrador = false }) => {
         <MapInstanceCapture setMapInstance={setMapInstance} />
         <EsriBasemap type={activeBaseLayer} opacity={1} />
         {capasActivasOrdenadas.map((capa) => (CAPAS_MASCARA.has(capa.id) ? (
-          <MascaraEntidades key={capa.id} capa={capa} opacidad={getOpacidad(capa.id)} simbologia={configDe(capa.id).simbologia} />
+          <MascaraEntidades key={`${capa.id}-${ordenVersion}`} capa={capa} opacidad={getOpacidad(capa.id)} simbologia={configDe(capa.id).simbologia} oscuro={activeBaseLayer === 'satelite'} />
         ) : CAPAS_POBLACION.has(capa.id) ? (
-          <CapaPoblacion key={capa.id} capa={capa} opacidad={getOpacidad(capa.id)} simbologia={configDe(capa.id).simbologia} municipio={municipio} onSeleccionar={setFicha} />
+          <CapaPoblacion key={`${capa.id}-${ordenVersion}`} capa={capa} opacidad={getOpacidad(capa.id)} simbologia={configDe(capa.id).simbologia} municipio={municipio} onSeleccionar={alSeleccionar} />
         ) : (
           <CapaSesim
-            key={capa.id}
+            key={`${capa.id}-${ordenVersion}`}
             capa={capa}
             opacidad={getOpacidad(capa.id) * (hayEstrategia && capa.categoria === 'mapa_base' ? 0.3 : 1)}
             config={configDe(capa.id)}
             conEtiqueta={CAPAS_CON_ETIQUETA.has(capa.id)}
             municipio={CAPAS_FIJAS.has(capa.id) ? '' : municipio}
-            onSeleccionar={setFicha}
+            onSeleccionar={alSeleccionar}
           />
         )))}
-        <EtiquetasLocalidades municipio={municipio} />
         <RealceMunicipio municipio={municipio} />
+        {seleccion?.latlng && (
+          <Popup position={seleccion.latlng} className="gv-popup" minWidth={260} maxWidth={420} eventHandlers={{ remove: () => setSeleccion(null) }}>
+            <div className="gv-popup__cuerpo">
+              <div className="gv-popup__cab">
+                <span className="capa-id-chip">{seleccion.capa.id}</span>
+                {(seleccion.propiedades?.id_unidad ?? seleccion.propiedades?.numero ?? seleccion.propiedades?.num) != null && (
+                  <span className="gv-popup__num">{seleccion.propiedades?.id_unidad ?? seleccion.propiedades?.numero ?? seleccion.propiedades?.num}</span>
+                )}
+              </div>
+              <div className="gv-popup__acciones">
+                <button type="button" className="gv-popup__ver" onClick={() => setDetalle(seleccion)}>Ver detalle ›</button>
+                <button type="button" onClick={() => ubicar(seleccion)}><Crosshair size={14} aria-hidden="true" /> Ubicar</button>
+              </div>
+            </div>
+          </Popup>
+        )}
       </MapContainer>
       {mapInstance && createPortal(
         <div className="mapa-pie">
           <EscalaMapa mapa={mapInstance} />
-          <span className="mapa-pie__nota">Información de referencia sin validez jurídica · SESIM Campeche</span>
+          <span className="mapa-pie__nota">Información de referencia sin validez jurídica · SESIM Campeche · Los datos pueden actualizarse sin previo aviso</span>
+          <button type="button" className="mapa-pie__aviso" onClick={() => setAvisoAbierto(true)}>Aviso completo ›</button>
         </div>,
         mapInstance.getContainer(),
+      )}
+      {avisoAbierto && (
+        <div className="gv-aviso" role="dialog" aria-modal="true" aria-label={AVISOS.aviso.titulo}>
+          <div className="gv-aviso__caja">
+            <h3>{AVISOS.aviso.titulo}</h3>
+            <p>{AVISOS.aviso.texto}</p>
+            <button type="button" className="gv-btn gv-btn--primario" onClick={() => setAvisoAbierto(false)}>Cerrar</button>
+          </div>
+        </div>
       )}
       {errorDescarga && (
         <div className="mapa-aviso-error" role="alert">
@@ -586,7 +492,8 @@ const MapViewer = ({ incluirBorrador = false }) => {
           activas={capasActivasOrdenadas}
           limitesActuales={mapInstance ? [[mapInstance.getBounds().getSouth(), mapInstance.getBounds().getWest()], [mapInstance.getBounds().getNorth(), mapInstance.getBounds().getEast()]] : null}
           configDe={configDe}
-          capturarPantalla={capturarPantalla}
+          satelite={activeBaseLayer === 'satelite'}
+          escalaTexto={municipio ? `Municipal · ${nombreMunicipio ?? ''}` : 'Estatal'}
           onCerrar={() => setInfografia(false)}
         />,
         document.body,
