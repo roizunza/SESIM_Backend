@@ -1,0 +1,79 @@
+/* Asistente de subida de capas del capturista (alcance: .cc-*) */
+.cc-drawer { width: min(600px, 100vw); }
+.cc-titulo { margin: 0 0 8px; color: var(--c-guinda, #9f2241); font-family: var(--font-heading, inherit); }
+.cc-pasos { display: flex; gap: 6px; margin: 0; padding: 0; list-style: none; flex-wrap: wrap; }
+.cc-paso { font-size: .8rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #eceae5; color: #5b6168; }
+.cc-paso--act { background: #9f2241; color: #fff; }
+.cc-paso--ok { background: #e3e8e1; color: #2f5a3a; }
+.cc-cuerpo { display: flex; flex-direction: column; gap: 14px; }
+.cc-campo { display: flex; flex-direction: column; gap: 6px; font-size: .9rem; font-weight: 600; color: #24282d; border: 0; padding: 0; margin: 0; }
+.cc-campo small, .cc-carga small { font-weight: 400; color: #5b6168; line-height: 1.4; }
+.cc-error { color: #b3261e !important; }
+.cc-dos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 560px) { .cc-dos { grid-template-columns: 1fr; } }
+.cc-carga { display: flex; flex-direction: column; gap: 8px; padding: 14px; border: 2px dashed #cfc9be; border-radius: 12px; background: #faf8f4; }
+.cc-carga > svg { color: #9f2241; }
+.cc-aviso { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 10px; font-size: .9rem; line-height: 1.45; font-weight: 400; }
+.cc-aviso svg { flex: none; margin-top: 2px; }
+.cc-aviso--error { background: #fdecea; border: 1px solid #f1b8b3; color: #7a1c15; }
+.cc-aviso--info { background: #f3efe6; border: 1px solid #ddd3bd; color: #3d3a33; }
+.cc-veredicto { display: flex; gap: 8px; align-items: center; margin: 0; font-weight: 600; font-size: .92rem; }
+.cc-veredicto--ok { color: #2f5a3a; }
+.cc-veredicto--mal { color: #b3261e; }
+.cc-tabla { width: 100%; border-collapse: collapse; font-size: .875rem; }
+.cc-tabla th { text-align: left; font-weight: 600; padding: 8px 8px 8px 0; width: 38%; vertical-align: top; color: #24282d; }
+.cc-tabla td { padding: 8px 0; vertical-align: top; color: #3d4148; }
+.cc-tabla td small { display: block; margin-top: 2px; color: #7a1c15; }
+.cc-tabla td:last-child { width: 28px; text-align: right; color: #2f5a3a; }
+.cc-tabla tr { border-bottom: 1px solid #ece8df; }
+.cc-tabla tr.cc-mal td:last-child { color: #b3261e; }
+.cc-ficha-fija { text-align: left; hyphens: none; display: grid; grid-template-columns: 42% 1fr; gap: 6px 12px; margin: 0; padding: 12px; background: #f3efe6; border-radius: 10px; font-size: .875rem; }
+.cc-ficha-fija dt { color: #5b6168; }
+.cc-ficha-fija dd { margin: 0; font-weight: 600; color: #24282d; overflow-wrap: anywhere; }
+.cc-opciones { gap: 6px; }
+.cc-opciones legend { font-size: .9rem; font-weight: 600; padding: 0; margin-bottom: 6px; }
+.cc-opciones label { display: flex; gap: 8px; align-items: flex-start; font-weight: 400; min-height: 32px; }
+.cc-nota { display: flex; gap: 8px; align-items: flex-start; margin: 0; font-size: .85rem; color: #5b6168; line-height: 1.45; }
+.cc-hecho { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; padding: 32px 8px; color: #2f5a3a; }
+.cc-hecho p { margin: 0; font-weight: 700; font-size: 1.05rem; color: #24282d; }
+.cc-hecho small { color: #5b6168; line-height: 1.45; }
+.cc-pie { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.cc-pie .btn-base { width: auto; }
+.cc-drawer :focus-visible { outline: 2px solid #9f2241; outline-offset: 2px; }
+
+/* ===== Asistente · bloque 2 ===== */
+.cc-modo { display: flex; gap: 8px; align-items: flex-start; padding: 8px 12px; border-radius: 10px; background: #fff7d6; border: 1px solid #ecd98a; color: #5a4a00; font-size: .82rem; line-height: 1.4; }
+.cc-modo svg { flex: none; margin-top: 2px; }
+.cc-intro { margin: 0; line-height: 1.5; color: #3d4148; }
+.cc-destinos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+@media (max-width: 560px) { .cc-destinos { grid-template-columns: 1fr; } }
+.cc-destino { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 14px; text-align: left; border: 2px solid #ddd8cf; border-radius: 14px; background: #fff; color: #24282d; cursor: pointer; min-height: 132px; }
+.cc-destino:hover { border-color: #b9b3a6; }
+.cc-destino strong { font-size: 1rem; }
+.cc-destino span { font-size: .8rem; line-height: 1.4; color: #5b6168; }
+.cc-destino svg { color: #9f2241; }
+.cc-destino--act { border-color: #9f2241; background: #fbf1f3; }
+.cc-ya { padding: 12px 14px; border-radius: 12px; background: #f3efe6; font-size: .88rem; }
+.cc-ya p { margin: 0 0 4px; }
+.cc-ya ul { margin: 6px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 2px; }
+.cc-ya small { color: #5b6168; }
+.cc-ya code { background: #fff; padding: 0 6px; border-radius: 4px; }
+.cc-nota-archivo { margin: 0; font-size: .9rem; line-height: 1.5; color: #3d4148; }
+.cc-lista { padding: 12px 14px; border-radius: 12px; background: #fff3f4; border: 1px solid #f1c5cc; font-size: .88rem; color: #5b1a28; }
+.cc-lista--ok { background: #edf5ee; border-color: #bfd9c4; color: #2f5a3a; }
+.cc-lista p { margin: 0; display: flex; gap: 8px; align-items: center; font-weight: 600; }
+.cc-lista ul { margin: 6px 0 0; padding-left: 26px; display: flex; flex-direction: column; gap: 2px; }
+.girando { animation: cc-gira 1s linear infinite; }
+@keyframes cc-gira { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .girando { animation: none; } }
+.cc-drawer, .cc-drawer p, .cc-drawer small, .cc-drawer span { text-align: left; hyphens: none; }
+
+/* campos obligatorios */
+.cc-req { color: #9f2241; font-weight: 800; margin-left: 4px; font-size: 1.05em; }
+.cc-obl { margin: 0 0 10px; font-size: .82rem; color: #5b6168; text-align: left; }
+
+.cc-chips { list-style: none; margin: 8px 0 4px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.cc-chips li { display: inline-flex; align-items: center; gap: 4px; padding: 3px 4px 3px 10px; border-radius: 999px; background: #efe7dd; font-size: .82rem; }
+.cc-chips button { border: 0; background: transparent; cursor: pointer; color: #9f2241; display: inline-flex; padding: 2px; }
+
+.cc-enlace { border: 0; background: none; padding: 0; color: #9f2241; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }

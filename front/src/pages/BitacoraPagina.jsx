@@ -5,6 +5,7 @@ import { useSesion, PERFILES } from '../lib/sesim/sesion';
 import { useOperacion, bitacoraVisible, ETIQUETA_ESTADO } from '../lib/sesim/operacion';
 import { fechaCorta, ACCION_LEGIBLE } from '../components/perfiles/comun/formato';
 import BitacoraCuentas from '../components/perfiles/comun/BitacoraCuentas';
+import MiHistorial from '../components/perfiles/capturista/MiHistorial';
 import BitacoraLogs from '../components/bitacora/BitacoraLogs';
 import '../components/perfiles/comun/Comun.css';
 
@@ -19,7 +20,13 @@ import '../components/perfiles/comun/Comun.css';
  * las del diccionario (tabla_afectada, id_registro, accion, datos_previos,
  * datos_nuevos, ip_origen, fecha).
  */
+/** El capturista ve su historial en una sola línea de tiempo (sin pestañas técnicas ni datos locales); el resto, la bitácora de siempre. */
 export default function BitacoraPagina() {
+  const sesion = useSesion();
+  return sesion?.perfil === 'capturista' ? <MiHistorial /> : <BitacoraGeneral />;
+}
+
+function BitacoraGeneral() {
   const sesion = useSesion();
   const op = useOperacion();
   const navigate = useNavigate();

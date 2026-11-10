@@ -5,6 +5,8 @@ import {
 } from '../../../lib/sesim/medicionesApi';
 import { subirEvidencia, validarArchivoEvidencia, EVIDENCIA_MAX_BYTES } from '../../../lib/sesim/catalogoApi';
 import { vEquivalenciaPimus } from '../../../lib/sesim/api';
+import { useCatalogo } from '../../../lib/sesim/useCatalogo';
+import { ESTATUS_CAPA } from '../../../lib/sesim/capas';
 import '../comun/Comun.css';
 
 /**
@@ -24,8 +26,9 @@ const TIPOS_DOCUMENTO = ['Oficio', 'Reporte', 'Fotografía', 'Publicación ofici
 const ANIOS = Array.from({ length: 8 }, (_, i) => new Date().getFullYear() - i);
 const SUBPERIODOS = { anual: [], semestral: [1, 2], trimestral: [1, 2, 3, 4], mensual: Array.from({ length: 12 }, (_, i) => i + 1) };
 
-export default function MedicionModal({ abierto, idMedicion, sesion, catalogo, onClose, onGuardada }) {
+export default function MedicionModal({ abierto, idMedicion, sesion, catalogo, onClose, onGuardada, onVerCapa }) {
   const api = useMediciones();
+  const { datos: rel } = useCatalogo(['capa_indicador']);
   const existente = idMedicion ? api.mediciones.find((m) => m.id === idMedicion) : null;
   const periodoExistente = existente ? api.periodos.find((p) => p.id === existente.id_periodo) : null;
 
@@ -111,6 +114,10 @@ export default function MedicionModal({ abierto, idMedicion, sesion, catalogo, o
   const dictamen = actual?.estado === 'rechazado' ? ultimoDictamenDe(actual.id, api.dictamenes) : null;
   const ambitoFijo = !!sesion?.id_unidad;
   const pimusMunicipio = equivalencias.filter((e) => e.instrumento?.id_unidad_ambito === idMunicipio);
+  // Un indicador se mide a partir de la(s) capa(s) geoespaciales vinculadas (capa_indicador).
+  const capasFuente = indicador
+    ? (rel?.capa_indicador ?? []).filter((r) => r.id_indicador === indicador.id).map((r) => (catalogo.capa ?? []).find((c) => c.id === r.id_capa)).filter(Boolean)
+    : [];
 
   const faltantes = [];
   if (!idIndicador) faltantes.push('el indicador');
@@ -247,6 +254,20 @@ export default function MedicionModal({ abierto, idMedicion, sesion, catalogo, o
                 </div>
                 <p className="cap-cajon__cuenta">{indicadoresFiltrados.length} {indicadoresFiltrados.length === 1 ? 'indicador' : 'indicadores'} · desplázate para ver más</p>
               </>
+            )}
+            {indicador && (
+              <div className={`aviso ${capasFuente.length ? 'aviso-info' : 'aviso-error'}`} style={{ marginTop: 6 }}>
+                <strong>Capa de origen del dato</strong>
+                {capasFuente.length === 0 && <div>Este indicador todavía no tiene una capa geoespacial vinculada. Avisa a la administración para que la vincule antes de capturar.</div>}
+                {capasFuente.slice(0, 4).map((c) => (
+                  <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'center', marginTop: 4 }}>
+                    <span><code>{c.id}</code> {c.titulo} <small>({ESTATUS_CAPA[c.estatus] ?? c.estatus})</small></span>
+                    {onVerCapa && <button type="button" className="btn-base btn-tertiary" style={{ width: 'auto', height: 28 }} onClick={() => onVerCapa(c.id)}>Ver en el mapa</button>}
+                  </div>
+                ))}
+                {capasFuente.length > 4 && <small>… y {capasFuente.length - 4} capas más vinculadas a este indicador.</small>}
+                {capasFuente.length > 0 && <small>El valor que captures es el de este indicador para el municipio y el periodo que elijas, calculado a partir de esa capa.</small>}
+              </div>
             )}
             {pimusMunicipio.length > 0 && (
               <div className="aviso aviso-info" style={{ marginTop: 6 }}>
