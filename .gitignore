@@ -17,3 +17,4 @@ respaldo_front_*.zip
 # copias del .env con secretos
 .env.*
 !.env.example
+respaldo_geovisor_v7/
