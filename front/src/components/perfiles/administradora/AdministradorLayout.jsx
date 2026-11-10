@@ -1,232 +1,196 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { GeoJSON } from 'react-leaflet';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import L from 'leaflet';
-import { Link } from 'react-router-dom';
-import { Download, Play, Map as MapIcon, X, SlidersHorizontal, ChevronUp } from 'lucide-react';
+import { Layers, Eye } from 'lucide-react';
+import { Catalogo } from '../capturista/CapturistaSidebar';
+import { geojsonDeCapa } from '../../../lib/sesim/api';
 import AdministradorSidebar from './AdministradorSidebar';
-import DashboardKPIs from './DashboardKPIs';
-import PanelDictamen from './PanelDictamen';
-import CapaCargaModal from './CapaCargaModal';
+import DictamenCapa from './DictamenCapa';
+import TableroTerritorial from './TableroTerritorial';
 import InvitacionesPanel from './InvitacionesPanel';
 import RechazosPanel from '../comun/RechazosPanel';
-import { pendientesRechazo } from '../../../lib/sesim/catalogoApi';
-import MapaPerfil from '../comun/MapaPerfil';
-import DetalleMedicion from '../comun/DetalleMedicion';
-import { useCatalogoOperativo } from '../comun/useCatalogoOperativo';
-import CapaSesim from '../../geovisor/CapaSesim';
-import CapaMetadataModal from '../../geovisor/CapaMetadataModal';
-import { cargarArbolCapas } from '../../../lib/sesim/capas';
+import MapaCaptura from '../capturista/MapaCaptura';
 import PanelFab from '../comun/PanelFab';
+import { pendientesRechazo } from '../../../lib/sesim/catalogoApi';
+import { cargarArbolCapas } from '../../../lib/sesim/capas';
+import { CONFIG_INICIAL } from '../../../lib/sesim/estiloCapa';
 import { usePanelLateral } from '../../../lib/sesim/usePanelLateral';
 import { useSesion } from '../../../lib/sesim/sesion';
-import { useOperacion, medicionesVisibles, fnCompletitudCaptura, lineaBaseDe, ESTADOS } from '../../../lib/sesim/operacion';
-import { fnSemaforo, COLORES_SEMAFORO } from '../../../lib/sesim/semaforo';
-import { nombreUnidad } from '../comun/formato';
+import RecorridoGeovisor, { recorridoVisto, marcarRecorrido } from '../../geovisor/RecorridoGeovisor';
 import '../capturista/Capturista.css';
-import './Admin.css';
 import '../comun/Comun.css';
+import './AdminPerfil.css';
 
 /**
- * Perfil ADMINISTRADOR y ADMINISTRADOR TITULAR (Tabla 3).
- *  · Valida, rechaza (con comentario) y publica mediciones (F10).
- *  · Mantiene el catálogo de capas: carga nuevas y revisa las que están en
- *    borrador (14 en el dataset v4).
- *  · Tablero por indicador/periodo: completitud (F09), semáforo (F04) y
- *    coropleta municipal (F05).
- *  · Solo el Titular: invitaciones (F16) y bajas de usuario.
+ * Perfil ADMINISTRADOR y ADMINISTRADOR TITULAR (paleta verde de perfiles-tema.css; mismo diseño que el capturista).
+ *  · Dictamina capas: valida, publica o devuelve; aprueba o rechaza actualizaciones de capas vigentes.
+ *  · Define la restricción de uso de cada capa (publicar exige «pública»).
+ *  · Sigue las devoluciones y sus plazos de 10 días hábiles.
+ *  · Solo el Titular: usuarios e invitaciones.
+ * Todo viene del servidor (api.* con RLS); ninguna pantalla guarda datos por su cuenta.
+ *
+ * Pendiente (siguiente bloque): el tablero territorial, que vivirá en el geovisor con datos reales.
  */
+const PASOS_GUIA = [
+  { id: 'hacer', sel: '.cap-pestanas', titulo: 'Tres pestañas, tres tareas', texto: 'Cada pestaña es una tarea con su propia acción. Tú no subes ni actualizas capas: las dictaminas.', items: [
+    { marca: '1', texto: 'Dictaminar: validas, publicas o devuelves lo que envía el equipo, de lo más urgente a lo menos.' },
+    { marca: '2', texto: 'Instrumentos: das de alta y envías a revisión; solo el Administrador Titular los dictamina.' },
+    { marca: '3', texto: 'Indicadores: das de alta y editas el catálogo. El umbral del semáforo lo fija el Titular.' }] },
+  { id: 'accesos', sel: '.adm-accesos', titulo: 'Devoluciones y plazos', texto: 'Aquí ves todo lo que se devolvió, a quién, el motivo y los 10 días hábiles que le quedan. Lo que devolviste y lo que te devolvieron a ti. El Titular además administra usuarios e invitaciones.' },
+  { id: 'abrir-panel', sel: '.cap-toggle', selMovil: '.panel-fab', titulo: 'Abre o pliega tu panel', texto: 'Muestra el panel completo o lo deja como barra de íconos para tener más mapa.' },
+  { id: 'capas', sel: '.adm-capas-btn', titulo: 'Capas del mapa', texto: 'Junto al zoom y la simbología. Abre el catálogo de capas (Mapa base, Diagnóstico e Indicadores) para encenderlas en el mapa y abrir su ficha. Al dictaminar, la capa se enciende y se centra sola: el mapa siempre queda a la vista.' },
+  { id: 'dictaminar', sel: '.adm-grupo, .cap-mesa', titulo: 'Qué espera tu dictamen', texto: 'Se ordena de lo más urgente a lo menos: actualizaciones propuestas a capas vigentes, capas nuevas en revisión y capas validadas que faltan publicar. Toca una para abrir su ficha.' },
+  { id: 'ficha', sel: '.cap-mesa', titulo: 'La ficha de cada capa', texto: 'Muestra a qué categoría pertenece (Mapa base, Diagnóstico o Indicadores), en qué estado va y si ya está aprobada, la justificación de quien la envió y el botón «Ver campos y registros»: una ventana que puedes mover, redimensionar y minimizar para no tapar el mapa.' },
+  { id: 'reglas', sel: '.cap-pestanas', titulo: 'Reglas que cuida el sistema', texto: 'Cuatro ojos: quien envió una capa no la valida ni la publica. Para publicar, su restricción de uso debe ser «pública». Devolver o rechazar exige un motivo y abre 10 días hábiles para quien debe corregir.' },
+  { id: 'herramientas', sel: '.mc-grupo', titulo: 'Herramientas y simbología, juntas', texto: 'Capas del mapa, satélite o mapa claro, acercar, alejar, medir y esta guía van en una sola barra con la simbología debajo. Arrástrala desde el asa de la izquierda (o desde «Simbología») para moverla: viajan juntas.' },
+  { id: 'modos', sel: '.adm-modos', titulo: 'Mapa, Tablero y Semáforo', texto: 'Tablero resume lo publicado (indicadores, municipios con dato, capas por estado). Semáforo lista los indicadores con su color y, al elegir uno, pinta los municipios en el mapa. Todo viene del servidor y solo cuenta lo publicado.' },
+  { id: 'bitacora', sel: '.cap-bitacora', titulo: 'La bitácora completa', texto: 'Todo lo que pasa en capas, instrumentos, catálogos y cuentas, por día, con filtros por tipo, estado y usuario. Se puede exportar a CSV. Solo se agrega, nunca se edita.' },
+  { id: 'guia', sel: '.cap-guia-btn', titulo: 'Vuelve cuando quieras', texto: 'Con el botón «?» abres de nuevo esta guía.' },
+];
+
 const AdministradorLayout = () => {
   const sesion = useSesion();
-  const op = useOperacion();
-  const { catalogo } = useCatalogoOperativo();
-  const [isSidebarOpen, setIsSidebarOpen, esMovil] = usePanelLateral();
-  const [filtrosAbiertos, setFiltrosAbiertos] = useState(false);
-  const [seleccion, setSeleccion] = useState(null);
+  const [panelAbierto, setPanelAbierto, esMovil] = usePanelLateral();
   const [arbol, setArbol] = useState(null);
-  const [capaVista, setCapaVista] = useState(null);
-  const [fichaCapa, setFichaCapa] = useState(null);
-  const [cargada, setCargada] = useState(null); // { capa, geojson } de CapaCargaModal
-  const [modalCarga, setModalCarga] = useState(false);
-  const [invitaciones, setInvitaciones] = useState(false);
+  const [errorArbol, setErrorArbol] = useState('');
+  const [version, setVersion] = useState(0);
+  const [activas, setActivas] = useState(() => new Set());
+  const [configPorCapa, setConfigPorCapa] = useState({});
+  const [dictamen, setDictamen] = useState(null); // id de la capa abierta
   const [rechazos, setRechazos] = useState(false);
   const [nRechazos, setNRechazos] = useState(0);
+  const [invitaciones, setInvitaciones] = useState(false);
+  const [mapa, setMapa] = useState(null);
+  const [capasAbiertas, setCapasAbiertas] = useState(false);
+  const [modo, setModo] = useState('mapa'); // 'mapa' | 'tablero' | 'semaforo'
+  const [coloresUnidad, setColoresUnidad] = useState(null);
+  const claveGuia = `sesim.administracion.recorrido.v1.${sesion?.id ?? 'anon'}`;
+  const [guia, setGuia] = useState(() => !recorridoVisto(claveGuia));
+  const cerrarGuia = () => { marcarRecorrido(claveGuia); setGuia(false); };
+
+  const contarRechazos = useCallback(() => {
+    pendientesRechazo().then((r) => { if (Array.isArray(r)) setNRechazos(r.length); }).catch(() => {});
+  }, []);
+  useEffect(() => { contarRechazos(); }, [contarRechazos]);
+
   useEffect(() => {
     let vivo = true;
-    pendientesRechazo().then((r) => { if (vivo && Array.isArray(r)) setNRechazos(r.length); }).catch(() => {});
+    cargarArbolCapas({ incluirBorrador: true })
+      .then((a) => { if (vivo) { setArbol(a); setErrorArbol(''); } })
+      .catch((e) => { if (vivo) setErrorArbol(e.message); });
     return () => { vivo = false; };
-  }, []);
-  const [filtro, setFiltro] = useState({ instrumento: '', eje: '', indicador: '', periodo: '' });
-  const [resumen, setResumen] = useState(null);
+  }, [version]);
 
-  useEffect(() => {
-    cargarArbolCapas({ incluirBorrador: true }).then(setArbol).catch(() => setArbol(null));
-  }, []);
+  const capasTodas = useMemo(() => (arbol ? [...arbol.capasPorId.values()] : []), [arbol]);
+  const capasEnMapa = useMemo(() => [...activas].map((id) => arbol?.capasPorId.get(id)).filter(Boolean), [activas, arbol]);
+  const configDe = useCallback((id) => configPorCapa[id] ?? CONFIG_INICIAL, [configPorCapa]);
+  const capaAbierta = dictamen ? arbol?.capasPorId.get(dictamen) ?? null : null;
 
-  const visibles = useMemo(() => medicionesVisibles(sesion, op), [sesion, op]);
-  const periodosPorId = useMemo(() => new Map(op.periodo.map((p) => [p.id, p])), [op.periodo]);
-  const medicion = visibles.find((m) => m.id === seleccion);
-  const capasBorrador = useMemo(() => (arbol ? Array.from(arbol.capasPorId.values()).filter((c) => c.estatus !== 'vigente_publico') : []), [arbol]);
-  const capaCatalogo = capaVista && arbol ? arbol.capasPorId.get(capaVista) : null;
+  const alternarCapa = (id) => setActivas((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  const alternarSimbologia = (id) => setConfigPorCapa((p) => ({ ...p, [id]: { ...configDe(id), simbologia: !configDe(id).simbologia } }));
+  const alternarCategoria = (idCat, visible) => setConfigPorCapa((p) => {
+    const n = { ...p };
+    capasEnMapa.forEach((c) => { if (c.categoria === idCat) n[c.id] = { ...(p[c.id] ?? CONFIG_INICIAL), simbologia: visible }; });
+    return n;
+  });
+  const cerrar = () => { if (esMovil) setPanelAbierto(false); };
 
-  const indicadoresFiltrados = useMemo(() => {
-    if (!catalogo) return [];
-    let lista = catalogo.indicador;
-    if (filtro.eje) lista = lista.filter((i) => String(i.id_eje) === filtro.eje);
-    if (filtro.instrumento) {
-      const ids = new Set(catalogo.indicador_instrumento.filter((v) => v.id_instrumento === filtro.instrumento).map((v) => v.id_indicador));
-      lista = lista.filter((i) => ids.has(i.id));
-    }
-    return lista;
-  }, [catalogo, filtro.eje, filtro.instrumento]);
-
-  /** F05 + F04 + F09 para el indicador/periodo elegidos. */
-  const generar = () => {
-    if (!catalogo || !filtro.indicador) return;
-    const indicador = catalogo.indicadores.get(filtro.indicador);
-    const periodo = filtro.periodo ? periodosPorId.get(Number(filtro.periodo)) : null;
-    const delIndicador = op.medicion_indicador.filter((m) => m.id_indicador === indicador.id && (!periodo || m.id_periodo === periodo.id));
-    const porEstado = Object.fromEntries(ESTADOS.map((e) => [e, delIndicador.filter((m) => m.estado === e).length]));
-    const lb = lineaBaseDe(indicador, op);
-    const publicadas = delIndicador.filter((m) => m.estado === 'vigente_publico' && m.id_unidad.length === 5);
-    // Por municipio, la medición publicada más reciente del corte.
-    const porMunicipio = new Map();
-    for (const m of publicadas) {
-      const prev = porMunicipio.get(m.id_unidad);
-      if (!prev || (periodosPorId.get(m.id_periodo)?.fecha_inicio ?? '') > (periodosPorId.get(prev.id_periodo)?.fecha_inicio ?? '')) porMunicipio.set(m.id_unidad, m);
-    }
-    const semaforos = Array.from(porMunicipio.values()).map((m) => ({
-      id_unidad: m.id_unidad,
-      nom_mun: nombreUnidad(catalogo.unidades, m.id_unidad),
-      valor: m.valor,
-      semaforo: fnSemaforo({ valor: m.valor, linea_base: lb.linea_base, valor_meta: indicador.valor_meta, tendencia: indicador.tendencia }),
-    }));
-    setResumen({
-      indicador,
-      periodo,
-      porEstado,
-      completitud: fnCompletitudCaptura(indicador.id, periodo?.id, catalogo.municipios, op),
-      semaforos,
-      coropleta: new Map(semaforos.map((s) => [s.id_unidad, COLORES_SEMAFORO[s.semaforo]])),
-    });
-    setSeleccion(null);
-  };
-
-  /** Exporta a CSV las mediciones visibles del filtro (columnas del diccionario). */
-  const exportarCsv = () => {
-    const filas = visibles.filter((m) => (!filtro.indicador || m.id_indicador === filtro.indicador) && (!filtro.periodo || m.id_periodo === Number(filtro.periodo)));
-    const cols = ['id', 'id_indicador', 'id_unidad', 'id_periodo', 'periodo', 'valor', 'valor_texto', 'estado', 'usuario_captura', 'usuario_validacion', 'fecha_captura', 'fecha_validacion'];
-    const esc = (v) => (v === null || v === undefined ? '' : `"${String(v).replace(/"/g, '""')}"`);
-    const csv = [cols.join(','), ...filas.map((m) => cols.map((c) => esc(c === 'periodo' ? periodosPorId.get(m.id_periodo)?.etiqueta : m[c])).join(','))].join('\n');
-    const url = URL.createObjectURL(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }));
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `sesim_mediciones_${filtro.indicador || 'todas'}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const leyenda = resumen ? (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <strong style={{ fontSize: 12 }}>{resumen.indicador.id} · semáforo por municipio</strong>
-      {['verde', 'amarillo', 'rojo', 'mejora', 'estable', 'retrocede', 'sin línea base'].map((s) => (
-        <span key={s} className="semaforo-chip"><i style={{ background: COLORES_SEMAFORO[s] }} />{s}</span>
-      ))}
-      <button className="btn-base btn-tertiary" style={{ height: 28, marginTop: 4 }} onClick={() => setResumen(null)}><X size={13} /> Quitar coropleta</button>
-    </div>
-  ) : capaCatalogo || cargada ? (
-    <span style={{ fontSize: 12 }}>Vista previa: <strong>{(capaCatalogo ?? cargada.capa).id}</strong> · {(capaCatalogo ?? cargada.capa).titulo} (borrador)</span>
-  ) : null;
+  // Al abrir una capa para dictaminar se enciende en el mapa y se centra, dejando libres el panel y la ficha.
+  const verEnMapa = useCallback(async (id) => {
+    setActivas((s) => new Set([...s, id]));
+    const capa = arbol?.capasPorId.get(id);
+    if (!capa || !mapa) return;
+    try {
+      const gj = await geojsonDeCapa(capa);
+      const b = L.geoJSON(gj).getBounds();
+      if (b.isValid()) mapa.flyToBounds(b, { paddingTopLeft: [esMovil ? 20 : (panelAbierto ? 480 : 110), 90], paddingBottomRight: [esMovil ? 20 : 520, 70], duration: 1, maxZoom: 14 });
+    } catch { /* capa sin geometría cargada todavía: solo se enciende */ }
+  }, [arbol, mapa, esMovil, panelAbierto]);
+  const abrirDictamen = (id) => { setModo('mapa'); setDictamen(id); setCapasAbiertas(false); cerrar(); verEnMapa(id); };
+  const cambiarModo = (m) => { setModo(m); if (m !== 'mapa') { setDictamen(null); setCapasAbiertas(false); cerrar(); } };
+  const nPendientes = useMemo(() => capasTodas.filter((c) => c.metadatos_extra?.actualizacion_pendiente?.estado === 'pendiente' || c.estatus === 'revision' || c.estatus === 'vigente_admin').length, [capasTodas]);
 
   return (
-    <div className="dashboard-fullscreen-container con-banner">
-      <MapaPerfil resaltarUnidad={medicion?.id_unidad} coropleta={resumen?.coropleta} simbologia={leyenda}>
-        {capaCatalogo && <CapaSesim capa={capaCatalogo} onSeleccionar={setFichaCapa} />}
-        {cargada && <GeoJSON key={cargada.capa.id + cargada.capa.titulo} data={cargada.geojson} style={{ color: '#F59E0B', weight: 2, fillColor: '#F59E0B', fillOpacity: 0.3 }} pointToLayer={(f, ll) => L.circleMarker(ll, { radius: 5, color: '#fff', weight: 1, fillColor: '#F59E0B', fillOpacity: 0.9 })} />}
-      </MapaPerfil>
+    <div className={`dashboard-fullscreen-container cap-contenedor adm-contenedor${!esMovil && !panelAbierto ? ' cap-contenedor--riel' : ''}`}>
+      <MapaCaptura
+        capas={capasEnMapa}
+        capasDibujo={capasEnMapa}
+        configDe={configDe}
+        onAlternarCapa={alternarSimbologia}
+        onAlternarCategoria={alternarCategoria}
+        panelAbierto={panelAbierto && !esMovil}
+        onMapa={setMapa}
+        agrupar
+        coloresUnidad={coloresUnidad}
+        extraHerramientas={(
+          <button type="button" className="adm-capas-btn" aria-expanded={capasAbiertas} onClick={() => setCapasAbiertas((v) => !v)} title="Capas del mapa" aria-label="Capas del mapa">
+            <Layers size={18} aria-hidden="true" />{activas.size > 0 && <span className="adm-n">{activas.size}</span>}
+          </button>
+        )}
+        panelCapas={capasAbiertas && (
+          <div className="cap-barra adm-capas-card" role="dialog" aria-label="Capas del mapa">
+            <Catalogo arbol={arbol} activas={activas} onAlternarCapa={alternarCapa} onActualizarCapa={abrirDictamen}
+              AccionIcono={Eye} accionTitulo={(id) => `Abrir la ficha y el dictamen de ${id}`} ayudaAccion="pulsa el ojo para abrir su ficha y dictaminarla" />
+          </div>
+        )}
+        onGuia={() => setGuia(true)}
+        rotuloGuia="la guía de la administración"
+        textoVacio="Aquí aparecerán los colores de lo que veas en el mapa. Enciende una capa con el botón de capas de esta barra o ábrela desde «Dictaminar» y pulsa «Ver la capa en el mapa»."
+      />
 
-      <PanelFab abierto={isSidebarOpen} esMovil={esMovil} onAbrir={() => setIsSidebarOpen(true)} onCerrar={() => setIsSidebarOpen(false)} etiqueta="Solicitudes" />
+      <div className="adm-modos" role="group" aria-label="Modo de la vista">
+        <button type="button" aria-pressed={modo === 'mapa'} onClick={() => cambiarModo('mapa')}>Mapa</button>
+        <button type="button" aria-pressed={modo === 'tablero'} onClick={() => cambiarModo(modo === 'tablero' ? 'mapa' : 'tablero')}>Tablero</button>
+        <button type="button" aria-pressed={modo === 'semaforo'} onClick={() => cambiarModo(modo === 'semaforo' ? 'mapa' : 'semaforo')}>Semáforo</button>
+      </div>
+
+      <PanelFab abierto={panelAbierto} esMovil={esMovil} onAbrir={() => setPanelAbierto(true)} onCerrar={() => setPanelAbierto(false)} etiqueta="Mi panel" />
 
       <div className="floating-sidebar-wrapper">
         <AdministradorSidebar
-          isSidebarOpen={isSidebarOpen}
-          setIsSidebarOpen={setIsSidebarOpen}
+          abierto={panelAbierto}
+          setAbierto={setPanelAbierto}
+          esMovil={esMovil}
           sesion={sesion}
-          catalogo={catalogo}
-          mediciones={visibles}
-          periodosPorId={periodosPorId}
-          seleccion={seleccion}
-          onSeleccionar={(id) => { setSeleccion(id); setResumen(null); if (esMovil) setIsSidebarOpen(false); }}
-          capasBorrador={capasBorrador}
-          capaVista={capaVista}
-          onVerCapa={(id) => { setCapaVista(capaVista === id ? null : id); setCargada(null); }}
-          onCargarCapa={() => { setModalCarga(true); if (esMovil) setIsSidebarOpen(false); }}
-          onInvitaciones={() => { setInvitaciones(true); if (esMovil) setIsSidebarOpen(false); }}
-          onRechazos={() => { setRechazos(true); if (esMovil) setIsSidebarOpen(false); }}
+          arbol={arbol}
+          capasTodas={capasTodas}
+          activas={activas}
+          onAlternarCapa={alternarCapa}
           nRechazos={nRechazos}
+          onDictaminar={abrirDictamen}
+          onAbrirCapas={() => { setCapasAbiertas(true); cerrar(); }}
+          onRechazos={() => { setRechazos(true); cerrar(); }}
+          onInvitaciones={() => { setInvitaciones(true); cerrar(); }}
+          onGuia={() => setGuia(true)}
         />
       </div>
 
-      {catalogo && medicion && (
-        <DetalleMedicion
-          idMedicion={medicion.id}
-          catalogo={catalogo}
-          onClose={() => setSeleccion(null)}
-          pie={<PanelDictamen medicion={medicion} sesion={sesion} />}
+      {capaAbierta && (
+        <DictamenCapa
+          key={capaAbierta.id + capaAbierta.estatus}
+          capa={capaAbierta}
+          onClose={() => setDictamen(null)}
+          onHecho={() => { setVersion((v) => v + 1); contarRechazos(); }}
+          onVerEnMapa={verEnMapa}
         />
       )}
 
-      {resumen && !medicion && <DashboardKPIs resumen={resumen} onClose={() => setResumen(null)} />}
+      {modo !== 'mapa' && <TableroTerritorial key={modo} modo={modo} capas={capasTodas} pendientes={nPendientes} onCerrar={() => cambiarModo('mapa')} onColores={setColoresUnidad} />}
 
-      {fichaCapa && <CapaMetadataModal datos={fichaCapa} onClose={() => setFichaCapa(null)} />}
-
-      <CapaCargaModal isOpen={modalCarga} onClose={() => setModalCarga(false)} catalogo={catalogo} onVerificar={(r) => { setCargada(r); setCapaVista(null); }} />
-
-      {rechazos && <RechazosPanel sesion={sesion} onClose={() => setRechazos(false)} onCambio={setNRechazos} />}
+      {rechazos && <RechazosPanel sesion={sesion} onClose={() => { setRechazos(false); contarRechazos(); }} onCambio={setNRechazos} />}
       {invitaciones && sesion?.perfil === 'administrador_titular' && <InvitacionesPanel sesion={sesion} onClose={() => setInvitaciones(false)} />}
 
-      <div className={`fullwidth-bottom-banner${filtrosAbiertos ? ' abierto' : ''}`} style={{ left: !esMovil && isSidebarOpen ? '280px' : '0', transition: 'left 0.3s ease' }}>
-        <button type="button" className="banner-handle" onClick={() => setFiltrosAbiertos(!filtrosAbiertos)} aria-expanded={filtrosAbiertos}>
-          <span><SlidersHorizontal size={15} /> Filtros y tablero</span>
-          <ChevronUp size={16} style={{ transform: filtrosAbiertos ? 'rotate(180deg)' : 'none', transition: 'transform .2s' }} />
-        </button>
-        <div className="banner-filter-row">
-          <div className="filter-group">
-            <label>Instrumento de origen</label>
-            <select value={filtro.instrumento} onChange={(e) => setFiltro({ ...filtro, instrumento: e.target.value, indicador: '' })}>
-              <option value="">Todos</option>
-              {catalogo?.instrumento_origen.map((i) => <option key={i.id} value={i.id}>{i.clave}</option>)}
-            </select>
-          </div>
-          <div className="filter-group">
-            <label>Eje temático</label>
-            <select value={filtro.eje} onChange={(e) => setFiltro({ ...filtro, eje: e.target.value, indicador: '' })}>
-              <option value="">Todos</option>
-              {catalogo?.eje_tematico.map((e) => <option key={e.id} value={e.id}>{e.numero_eje}. {e.nombre}</option>)}
-            </select>
-          </div>
-          <div className="filter-group">
-            <label>Indicador ({indicadoresFiltrados.length})</label>
-            <select value={filtro.indicador} onChange={(e) => setFiltro({ ...filtro, indicador: e.target.value })}>
-              <option value="">Seleccione indicador…</option>
-              {indicadoresFiltrados.map((i) => <option key={i.id} value={i.id}>{i.id} · {i.nombre}</option>)}
-            </select>
-          </div>
-          <div className="filter-group">
-            <label>Periodo</label>
-            <select value={filtro.periodo} onChange={(e) => setFiltro({ ...filtro, periodo: e.target.value })}>
-              <option value="">Todos</option>
-              {op.periodo.map((p) => <option key={p.id} value={p.id}>{p.etiqueta}</option>)}
-            </select>
-          </div>
-          <div className="filter-buttons-column">
-            <button className="btn-base btn-primary" onClick={generar} disabled={!filtro.indicador}><Play size={16} fill="currentColor" /> Generar</button>
-            {filtro.indicador
-              ? <Link className="btn-base btn-secondary" style={{ textDecoration: 'none' }} to={`/geovisor?indicador=${filtro.indicador}`}><MapIcon size={16} /> Ver capas (F06)</Link>
-              : <button className="btn-base btn-secondary" disabled><MapIcon size={16} /> Ver capas (F06)</button>}
-            <button className="btn-base btn-tertiary" onClick={exportarCsv}><Download size={16} /> Exportar CSV</button>
-          </div>
-        </div>
-      </div>
+      <RecorridoGeovisor
+        abierto={guia}
+        onCerrar={cerrarGuia}
+        pasos={PASOS_GUIA}
+        titulo={sesion?.perfil === 'administrador_titular' ? 'Guía del Administrador Titular' : 'Guía del administrador'}
+        etiqueta="Guía de la administración"
+        encabezado="Dictamina, publica y mantén el catálogo"
+        intro="Te mostramos cómo dictaminar capas, qué puedes dar de alta, las reglas que cuida el sistema y dónde queda todo registrado, en {total} pasos."
+        recordatorio={<>Siempre podrás volver con el botón <b>?</b> de tu panel o del mapa.</>}
+      />
+
+      {errorArbol && <div className="aviso aviso-error cap-aviso-flotante">No se pudo cargar el catálogo: {errorArbol}</div>}
     </div>
   );
 };

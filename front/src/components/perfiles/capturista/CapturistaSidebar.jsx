@@ -29,7 +29,7 @@ const ESTADOS = [
   { id: 'aprobada', titulo: 'Aprobadas', Icono: ShieldCheck, que: 'Validadas (uso interno) o publicadas (visibles al público). Ya forman parte del sistema.', sigue: 'Nada: quedan en el historial.' },
 ];
 
-function Fila({ Icono, tipo, titulo, detalle, estado, alerta, activo, onClick }) {
+export function Fila({ Icono, tipo, titulo, detalle, estado, alerta, activo, onClick }) {
   const cuerpo = (
     <>
       <span className="cap-marca" aria-hidden="true"><Icono size={16} /></span>
@@ -48,7 +48,7 @@ function Fila({ Icono, tipo, titulo, detalle, estado, alerta, activo, onClick })
 }
 
 /** Pestaña «Catálogo»: las capas por sus tres categorías. */
-function Catalogo({ arbol, activas, onAlternarCapa, onActualizarCapa }) {
+export function Catalogo({ arbol, activas, onAlternarCapa, onActualizarCapa, AccionIcono = RefreshCw, accionTitulo = (id) => `Actualizar la capa ${id}`, ayudaAccion = 'pulsa el botón ↻ para subir su versión nueva' }) {
   const [cat, setCat] = useState('mapa_base');
   const [q, setQ] = useState('');
   const [abiertos, setAbiertos] = useState(() => new Set());
@@ -66,7 +66,7 @@ function Catalogo({ arbol, activas, onAlternarCapa, onActualizarCapa }) {
           <button key={c.id} type="button" role="tab" aria-selected={cat === c.id} className={cat === c.id ? 'cap-segmento cap-segmento--act' : 'cap-segmento'} onClick={() => setCat(c.id)}><c.Icono size={14} aria-hidden="true" /> {c.titulo}</button>
         ))}
       </div>
-      <p className="cap-ayuda">{actual.ayuda} Enciende una capa para verla en el mapa o pulsa el botón ↻ para subir su versión nueva.</p>
+      <p className="cap-ayuda">{actual.ayuda} Enciende una capa para verla en el mapa o {ayudaAccion}.</p>
       <label className="cap-buscador">
         <Search size={16} aria-hidden="true" />
         <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar por nombre o clave" aria-label="Buscar capa por nombre o clave" />
@@ -91,7 +91,7 @@ function Catalogo({ arbol, activas, onAlternarCapa, onActualizarCapa }) {
                     <small>{c.id}{c.estatus !== 'vigente_publico' && <span className="cap-capa__est"> · {ESTATUS_CAPA[c.estatus] ?? c.estatus}</span>}</small>
                   </span>
                 </label>
-                <button type="button" className="cap-capa__act" onClick={() => onActualizarCapa(c.id)} title={`Actualizar la capa ${c.id}`} aria-label={`Actualizar la capa ${c.id}`}><RefreshCw size={15} aria-hidden="true" /></button>
+                <button type="button" className="cap-capa__act" onClick={() => onActualizarCapa(c.id)} title={accionTitulo(c.id)} aria-label={accionTitulo(c.id)}><AccionIcono size={15} aria-hidden="true" /></button>
               </div>
             ))}
           </div>

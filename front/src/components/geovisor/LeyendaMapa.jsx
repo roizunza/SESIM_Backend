@@ -109,7 +109,7 @@ function LeyendaCapa({ capa, config, onAlternar, estatica }) {
  * Diagnóstico y Estrategias; cada categoría y cada capa tienen su interruptor de simbología y cada
  * capa su control de transparencia. Mapa base va contraído. Con `estatica` es solo lectura (infografía).
  */
-export default function LeyendaMapa({ capas, configDe, onAlternarCapa, onAlternarCategoria, estatica = false, conDetalle = false, panelAbierto = false }) {
+export default function LeyendaMapa({ capas, configDe, onAlternarCapa, onAlternarCategoria, estatica = false, conDetalle = false, panelAbierto = false, agrupada = false }) {
   const [abierta, setAbierta] = useState(true);
   const [pos, setPos] = useState(null);
   const caja = useRef(null);
@@ -121,7 +121,7 @@ export default function LeyendaMapa({ capas, configDe, onAlternarCapa, onAlterna
     setPos({ x: Math.min(Math.max(0, x), Math.max(0, padre.clientWidth - el.offsetWidth)), y: Math.min(Math.max(0, y), Math.max(0, padre.clientHeight - 48)) });
   };
   const iniciarArrastre = (e) => {
-    if (estatica || (e.button !== undefined && e.button > 0)) return;
+    if (estatica || agrupada || (e.button !== undefined && e.button > 0)) return;
     const el = caja.current;
     const padre = el.offsetParent.getBoundingClientRect();
     const r = el.getBoundingClientRect();
@@ -146,8 +146,8 @@ export default function LeyendaMapa({ capas, configDe, onAlternarCapa, onAlterna
   return (
     <div
       ref={caja}
-      className={`leyenda-flotante gl${panelAbierto ? ' leyenda-flotante--panel' : ''}${abierta ? '' : ' leyenda-flotante--cerrada'}${conDetalle && !pos ? ' leyenda-flotante--con-detalle' : ''}`}
-      style={pos ? { left: pos.x, top: pos.y, right: 'auto', bottom: 'auto' } : undefined}
+      className={`leyenda-flotante gl${agrupada ? ' leyenda-flotante--agrupada' : ''}${panelAbierto ? ' leyenda-flotante--panel' : ''}${abierta ? '' : ' leyenda-flotante--cerrada'}${conDetalle && !pos ? ' leyenda-flotante--con-detalle' : ''}`}
+      style={pos && !agrupada ? { left: pos.x, top: pos.y, right: 'auto', bottom: 'auto' } : undefined}
     >
       <div className="leyenda-flotante-header">
         {estatica ? <span>Simbología</span> : (

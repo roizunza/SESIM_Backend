@@ -303,6 +303,15 @@ export function crearServidorDemo({ anonKey, datos = {}, expiraEn = 3600, secret
     }
     if (nombre === 'bitacora') return json(200, paginar(yo.rol === 'capturista' ? bitacora.filter((b) => b.objetivo_id_usuario === yo.id) : bitacora));
     if (nombre === 'bitacora_operativa') return json(200, paginar(yo.rol === 'capturista' ? bitacoraOperativa.filter((b) => b.codigo_usuario === yo.id.slice(0, 8)) : bitacoraOperativa));
+    if (nombre === 'bitacora_catalogos') {
+      // Muestra para la bitácora de la administración (el servidor real la lee de api.bitacora_catalogos con RLS).
+      const base = [
+        { id: 'k1', creado_en: ahoraIso(), actor_id_usuario: yo.id, rol: yo.rol, actor_nombre: yo.nombre, tabla: 'eje_tematico', recurso_id: '3', accion: 'UPDATE', titulo: 'Movilidad Activa' },
+        { id: 'k2', creado_en: ahoraIso(), actor_id_usuario: yo.id, rol: yo.rol, actor_nombre: yo.nombre, tabla: 'capa_indicador', recurso_id: 'DIt01|IND-001', accion: 'INSERT', titulo: 'DIt01|IND-001' },
+        { id: 'k3', creado_en: ahoraIso(), actor_id_usuario: yo.id, rol: yo.rol, actor_nombre: yo.nombre, tabla: 'invitacion', recurso_id: 'inv-1', accion: 'INSERT', titulo: 'nuevo@campeche.gob.mx' },
+      ];
+      return json(200, paginar(yo.rol === 'administrador_titular' ? base : yo.rol === 'capturista' ? [] : base.filter((b) => b.tabla !== 'invitacion')));
+    }
     if (nombre === 'dia_inhabil') return json(200, paginar(filtrar(diasInhabiles, url.searchParams)));
     return json(404, { code: 'PGRST205', message: `No existe la tabla api.${nombre}.` });
   }

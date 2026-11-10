@@ -1,0 +1,8 @@
+/* Bitácora de la administración: la misma pantalla que la del capturista, en la paleta verde del perfil (perfiles-tema.css). */
+.mh.mh--verde { background: linear-gradient(180deg, color-mix(in srgb, var(--per-principal) 62%, var(--per-superficie)) 0%, var(--per-superficie) 48%, var(--per-fondo) 100%); }
+.mh--verde .mh-chip--act { color: var(--per-superficie); }
+.mh--verde .mh-chip--act span { background: color-mix(in srgb, var(--per-principal) 22%, #fff); color: var(--per-superficie); }
+.mh--verde .mh-ev blockquote { border-left-color: var(--per-principal); }
+.mh--verde .mh-ev blockquote svg, .mh--verde .mh-mas { color: #1f6b59; }
+.mh--verde .mh-alcance { margin: 0; font-size: .8rem; line-height: 1.45; color: rgba(255, 255, 255, .78); text-align: left; hyphens: none; }
+.mh--verde .mh-ico { color: var(--per-superficie); }

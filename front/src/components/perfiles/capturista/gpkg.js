@@ -172,8 +172,15 @@ export async function revisarGeoPackage(archivo, tipoEsperado = null) {
           : { bien: true, texto: `«${c}» identifica a los ${tot} elementos sin repetirse.` };
     }
 
+    // Ficha de campos (se guarda con la capa para que la administración vea qué trae el archivo): nombre, tipo, vacíos y ejemplo.
+    const tipos = new Map(q(`PRAGMA table_info(${comilla(tabla)})`).map((r) => [r[1], String(r[2] || '').toLowerCase()]));
+    const campos = columnas.slice(0, 80).map((c) => {
+      const [nulos, ej] = q(`SELECT SUM(${comilla(c)} IS NULL OR TRIM(CAST(${comilla(c)} AS TEXT)) = ''), (SELECT CAST(${comilla(c)} AS TEXT) FROM ${comilla(tabla)} WHERE ${comilla(c)} IS NOT NULL AND TRIM(CAST(${comilla(c)} AS TEXT)) <> '' LIMIT 1) FROM ${comilla(tabla)}`)[0];
+      return { nombre: c, tipo: tipos.get(c) || '', vacios: Number(nulos ?? 0), ejemplo: ej == null ? '' : String(ej).slice(0, 60) };
+    });
+
     const valido = filas.every((x) => x.bien) && n > 0;
-    return { filas, valido, n, tipo, columnas, identificadores, tabla, geojson: { type: 'FeatureCollection', features: vista }, vistaParcial: n > vista.length };
+    return { filas, valido, n, tipo, columnas, campos, identificadores, tabla, geojson: { type: 'FeatureCollection', features: vista }, vistaParcial: n > vista.length };
   } catch (e) {
     return fallo('Lectura del archivo', 'No se pudo leer', `${MENSAJE_FORMATO} (${e.message})`);
   } finally {

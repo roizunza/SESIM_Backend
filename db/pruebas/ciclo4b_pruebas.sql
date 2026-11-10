@@ -64,7 +64,7 @@ declare
   ca uuid := '00000000-0000-0000-0000-00000000c0a1'; cb uuid := '00000000-0000-0000-0000-00000000c0b2';
   ad uuid := '00000000-0000-0000-0000-0000000000ad'; a2 uuid := '00000000-0000-0000-0000-0000000000ae';
   ficha jsonb := '{"custodio":"SEDUMOP","fuente_origen":"Prueba","linaje":"Levantamiento de prueba","sistema_coordenadas":"EPSG:4326"}';
-  prop jsonb := '{"archivo":"nueva.gpkg","n_elementos":120,"fecha_corte":"2026-10-01","motivo":"Datos más recientes","justificacion":"Se incorporan las localidades nuevas del censo 2025 y se corrige la geometría.","columna_id_origen":"id","variacion_elementos":0.2}';
+  prop jsonb := '{"archivo":"nueva.gpkg","n_elementos":120,"fecha_corte":"2026-10-01","motivo":"Datos más recientes","justificacion":"Se incorporan las localidades nuevas del censo 2025 y se corrige la geometría.","columna_id_origen":"id","variacion_elementos":0.2,"campos":[{"nombre":"id","tipo":"INTEGER"},{"nombre":"nombre","tipo":"TEXT"}]}';
   r text; v_dic uuid; ind text; quien uuid;
 begin
   select id into ind from core.indicador limit 1;
@@ -101,9 +101,14 @@ begin
   perform pg_temp.reg('B11 Fecha de corte futura se rechaza', r like '23514%', r);
   r := pg_temp.intenta_como(quien, format($q$select api.fn_proponer_actualizacion_capa('TC4B-01', %L)$q$, prop || jsonb_build_object('indicadores_agregar', jsonb_build_array('NOEXISTE'))));
   perform pg_temp.reg('B12 Indicador inexistente se rechaza', r like 'P0002%', r);
+  r := pg_temp.intenta_como(ca, format($q$select api.fn_proponer_actualizacion_capa('TC4B-01', %L)$q$, prop || '{"campos":"x"}'::jsonb));
+  perform pg_temp.reg('B12b Campos que no son una lista se rechazan', r like '22023%', r);
   r := pg_temp.intenta_como(quien, format($q$select api.fn_proponer_actualizacion_capa('TC4B-01', %L)$q$, prop || jsonb_build_object('indicadores_agregar', jsonb_build_array(ind))));
   perform pg_temp.reg('B13 Un capturista propone la actualizacion de una capa vigente (aunque no sea suya)', r = 'OK', r);
   perform pg_temp.sin_identidad();
+  perform pg_temp.sin_identidad();
+  perform pg_temp.reg('B13b La propuesta guarda la lista de campos para el dictamen',
+    (select jsonb_array_length(metadatos_extra -> 'actualizacion_pendiente' -> 'campos') = 2 from core.capa where id='TC4B-01'), '');
   perform pg_temp.reg('B14 La capa sigue vigente_publico mientras se dictamina',
     (select estatus from core.capa where id='TC4B-01') = 'vigente_publico' and (select n_elementos from core.capa where id='TC4B-01') = 100, '');
   quien := ca;
@@ -149,6 +154,13 @@ begin
   perform pg_temp.intenta_como(quien, format($q$select api.fn_guardar_capa(%L)$q$, jsonb_build_object('id','TC4B-02','titulo','Otra','proposito','Prueba','tipo_geometria','Punto','srid_origen',4326,'responsable','SEDUMOP','metadatos_extra',ficha)));
   r := pg_temp.intenta_como(quien, format($q$select api.fn_proponer_actualizacion_capa('TC4B-02', %L)$q$, prop));
   perform pg_temp.reg('B29 Una capa en borrador no se actualiza por la via de propuesta', r like '55000%', r);
+  -- bitacora de catalogos y vinculos (api.bitacora_catalogos): la administracion la ve, otro capturista no ve lo ajeno
+  perform pg_temp.yo(ad);
+  perform pg_temp.reg('B30 La administracion ve en la bitacora de catalogos el vinculo capa-indicador',
+    pg_temp.cuenta($q$select 1 from api.bitacora_catalogos where tabla = 'capa_indicador' and recurso_id like 'TC4B-01%'$q$) >= 1, '');
+  perform pg_temp.yo(cb);
+  perform pg_temp.reg('B31 Otro capturista no ve lo ajeno en la bitacora de catalogos',
+    pg_temp.cuenta($q$select 1 from api.bitacora_catalogos where recurso_id like 'TC4B-01%'$q$) = 0, '');
 end $$;
 
 select n, case when ok then 'PASA' else 'FALLA' end as resultado, caso, detalle from resultados order by n;

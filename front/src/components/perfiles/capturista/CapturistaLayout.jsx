@@ -38,16 +38,22 @@ import '../comun/Comun.css';
 const PASOS_GUIA_TODOS = [
   { id: 'hacer', sel: '.cap-hacer', titulo: CAPTURA_MEDICIONES ? 'Tres cosas que puedes hacer' : 'Dos cosas que puedes hacer', texto: CAPTURA_MEDICIONES ? 'Subir una capa, actualizar una que ya existe o capturar la medición de un indicador. Cada botón dice qué hace.' : 'Subir una capa nueva o actualizar una que ya existe. Cada botón dice qué hace.', items: [
     { marca: '1', texto: 'Subir capa: la agregas a un grupo o indicador que ya existe, nunca de la nada.' },
-    { marca: '2', texto: 'Actualizar capa: subes la versión nueva y justificas el cambio.' },
+    { marca: '2', texto: 'Actualizar capa: subes la versión nueva y explicas el cambio. Si la capa ya está vigente, tu cambio se manda como propuesta y la administración lo dictamina.' },
     ...(CAPTURA_MEDICIONES ? [{ marca: '3', texto: 'Capturar medición: el valor de un indicador por municipio y periodo.' }] : [])] },
-  { id: 'archivo', sel: '.cap-subir', titulo: 'El archivo, siempre GeoPackage', texto: 'Solo se acepta un GeoPackage (.gpkg) en EPSG:4326. El sistema lo revisa al instante y, si no pasa, te dice qué corregir.' },
+  { id: 'archivo', sel: '.cap-subir', titulo: 'El archivo, siempre GeoPackage', texto: 'Solo se acepta un GeoPackage (.gpkg) de hasta 50 MB, en EPSG:4326 y con una sola capa de elementos. El sistema lo revisa al instante y, si no pasa, te dice qué corregir. Los campos con asterisco (*) son obligatorios.' },
   { id: 'abrir-panel', sel: '.cap-toggle', selMovil: '.panel-fab', titulo: 'Abre o pliega tu panel', texto: 'Muestra tu panel completo o lo deja como una barra de íconos para tener más mapa.' },
-  { id: 'pestanas', sel: '.cap-pestanas', titulo: 'Catálogo y Mi mesa de trabajo', texto: '«Catálogo» reúne todas las capas en sus tres categorías (Mapa base, Diagnóstico, Indicadores): enciéndelas en el mapa o actualízalas. «Mi mesa de trabajo» muestra tu trabajo por estado.' },
-  { id: 'estados', sel: '.cap-estados, .cap-pestanas', titulo: 'Los estados de tu trabajo', texto: 'Tus capas pasan por estos estados. Elige uno para ver qué significa y qué sigue.', items: [
-    { marca: '⮌', texto: 'Devueltas: pidieron correcciones; hay 10 días hábiles.' }, { marca: '✎', texto: 'Sin enviar: borradores.' }, { marca: '⧗', texto: 'En revisión: solo esperar.' }, { marca: '✓', texto: 'Aprobadas: ya son parte del sistema.' }] },
-  { id: 'herramientas', sel: '.mc-herramientas', titulo: 'Herramientas del mapa', texto: 'Cambia entre satélite y mapa claro, acerca, aleja, mide distancias o vuelve a abrir esta guía.' },
+  { id: 'pestanas', sel: '.cap-pestanas', titulo: 'Dos pestañas: Catálogo y Mi mesa de trabajo', texto: 'Catálogo es para explorar y elegir capas; Mi mesa de trabajo es para saber qué está pendiente de ti. Cambia entre una y otra cuando quieras.' },
+  { id: 'categorias', sel: '.cap-segmentos', titulo: 'El catálogo, en tres categorías', texto: 'Cada capa pertenece a una categoría. Al subir o actualizar eliges la misma, así que el orden es siempre el mismo.', items: [
+    { marca: '1', texto: 'Mapa base: la referencia territorial (límites, vialidades, localidades).' },
+    { marca: '2', texto: 'Diagnóstico: capas que describen un tema o problema, agrupadas por grupo.' },
+    { marca: '3', texto: 'Indicadores: capas ligadas a un indicador; una capa puede ligarse a varios.' }] },
+  { id: 'capas', sel: '.cap-capa', titulo: 'Enciende capas y actualízalas', texto: 'Marca la casilla para ver la capa en el mapa; su simbología aparece en la leyenda. El botón ↻ de la derecha abre «Actualizar capa» ya con esa capa elegida.' },
+  { id: 'estados', sel: '.cap-estados, .cap-pestanas', titulo: 'Mi mesa de trabajo: los estados', texto: 'Tu trabajo pasa por estos estados. Elige uno para ver qué significa y qué sigue.', items: [
+    { marca: '⮌', texto: 'Devueltas: la administración pidió correcciones; tienes 10 días hábiles para atenderlas.' }, { marca: '✎', texto: 'Sin enviar: borradores; puedes continuarlos y enviarlos a revisión.' }, { marca: '⧗', texto: 'En revisión: solo esperar el dictamen.' }, { marca: '✓', texto: 'Aprobadas: ya forman parte del sistema.' }] },
+  { id: 'devueltas', sel: '.cap-ver-todo, .cap-estados', titulo: 'Cuando algo se devuelve', texto: 'En «Devueltas» ves el motivo y los días hábiles que te quedan. Si era una capa nueva, la corriges y la reenvías; si era una actualización de una capa vigente, propones el cambio de nuevo. La capa vigente sigue publicada mientras tanto.' },
+  { id: 'herramientas', sel: '.mc-herramientas', titulo: 'Herramientas del mapa', texto: 'En este orden: cambiar entre satélite y mapa claro, acercar, alejar, medir distancias y abrir esta guía.' },
   { id: 'simbologia', sel: '.leyenda-flotante, .mc-leyenda-vacia', titulo: 'Simbología', texto: 'Muestra los colores de lo que tienes en el mapa, incluida la capa que estás subiendo. Puedes arrastrarla y apagar la de una capa o categoría.' },
-  { id: 'bitacora', sel: '.cap-bitacora', titulo: 'Tu bitácora', texto: 'Cada cosa que haces queda registrada: quién, qué y cuándo.' },
+  { id: 'bitacora', sel: '.cap-bitacora', titulo: 'Tu bitácora', texto: 'Es tu historial: cada cosa que haces y cada decisión de la administración sobre tu trabajo, por día. Puedes filtrarlo, buscar y exportarlo a CSV. Solo se agrega, nunca se edita.' },
   { id: 'guia', sel: '.cap-guia-btn', titulo: 'Vuelve cuando quieras', texto: 'Con el botón «?» abres de nuevo esta guía.' },
 ];
 
@@ -75,7 +81,7 @@ const CapturistaLayout = () => {
   const [version, setVersion] = useState(0);
   const [activas, setActivas] = useState(() => new Set());
   const [configPorCapa, setConfigPorCapa] = useState({});
-  const claveGuia = `sesim.capturista.recorrido.v3.${sesion?.id ?? 'anon'}`;
+  const claveGuia = `sesim.capturista.recorrido.v4.${sesion?.id ?? 'anon'}`;
   const [guia, setGuia] = useState(() => !recorridoVisto(claveGuia));
 
   const cargarRechazos = useCallback(() => {
@@ -287,7 +293,7 @@ const CapturistaLayout = () => {
         titulo="Guía del capturista"
         etiqueta="Guía del capturista"
         encabezado="Sube capas, corrige y envía tu trabajo"
-        intro="Te mostramos dónde subir y actualizar capas, dónde ver lo que te devolvieron, en {total} pasos de menos de un minuto."
+        intro="Te mostramos cómo subir y actualizar capas, cómo se organiza el catálogo, qué hacer con lo que te devuelven y dónde queda tu historial, en {total} pasos."
         recordatorio={<>Siempre podrás volver con el botón <b>?</b> de tu panel o del mapa.</>}
       />
     </div>

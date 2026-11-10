@@ -143,7 +143,7 @@ export default function CapaCapturaModal({ modo = 'nueva', capaInicial = null, c
       if (actualizar && vigente) {
         await proponerActualizacionCapa(base.id, {
           archivo: archivo.name, n_elementos: revision.n, fecha_corte: ficha.corte, motivo: ficha.motivo, justificacion: ficha.justificacion.trim(),
-          columna_id_origen: colId, variacion_elementos: Number(variacion.toFixed(3)), indicadores_agregar: extra,
+          columna_id_origen: colId, variacion_elementos: Number(variacion.toFixed(3)), indicadores_agregar: extra, campos: revision.campos,
         });
         setEstado({ ocupado: false, error: '', aviso: '', hecho: `Tu propuesta de actualización de ${base.id} quedó enviada. La capa sigue vigente hasta que la administración la apruebe o la rechace.` });
         onGuardada?.(base.id);
@@ -152,7 +152,7 @@ export default function CapaCapturaModal({ modo = 'nueva', capaInicial = null, c
       if (actualizar) {
         await guardarCapa({
           id: base.id, n_elementos: revision.n, archivo: archivo.name,
-          metadatos_extra: { fecha_corte: ficha.corte, motivo_actualizacion: ficha.motivo, justificacion_actualizacion: ficha.justificacion.trim(), columna_id_origen: colId, variacion_elementos: Number(variacion.toFixed(3)) },
+          metadatos_extra: { fecha_corte: ficha.corte, motivo_actualizacion: ficha.motivo, justificacion_actualizacion: ficha.justificacion.trim(), columna_id_origen: colId, campos: revision.campos, variacion_elementos: Number(variacion.toFixed(3)) },
         });
         for (const ind of extra) {
           try { await vincularCapaIndicador(base.id, ind); } catch { aviso = `El vínculo con ${ind} queda pendiente: lo registra la administración.`; }
@@ -165,7 +165,7 @@ export default function CapaCapturaModal({ modo = 'nueva', capaInicial = null, c
           n_elementos: revision.n, archivo: archivo.name,
           metadatos_extra: {
             custodio: ficha.custodio, fuente_origen: ficha.fuente, linaje, sistema_coordenadas: 'EPSG:4326 — WGS 84',
-            periodicidad: ficha.periodicidad, fecha_corte: ficha.corte, categoria: destino.cat, columna_id_origen: colId,
+            periodicidad: ficha.periodicidad, fecha_corte: ficha.corte, categoria: destino.cat, columna_id_origen: colId, campos: revision.campos,
           },
         });
         if (indicador) {

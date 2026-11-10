@@ -6,6 +6,7 @@ import { useOperacion, bitacoraVisible, ETIQUETA_ESTADO } from '../lib/sesim/ope
 import { fechaCorta, ACCION_LEGIBLE } from '../components/perfiles/comun/formato';
 import BitacoraCuentas from '../components/perfiles/comun/BitacoraCuentas';
 import MiHistorial from '../components/perfiles/capturista/MiHistorial';
+import BitacoraAdmin from '../components/perfiles/administradora/BitacoraAdmin';
 import BitacoraLogs from '../components/bitacora/BitacoraLogs';
 import '../components/perfiles/comun/Comun.css';
 
@@ -20,10 +21,12 @@ import '../components/perfiles/comun/Comun.css';
  * las del diccionario (tabla_afectada, id_registro, accion, datos_previos,
  * datos_nuevos, ip_origen, fecha).
  */
-/** El capturista ve su historial en una sola línea de tiempo (sin pestañas técnicas ni datos locales); el resto, la bitácora de siempre. */
+/** El capturista y la administración ven su bitácora en una sola línea de tiempo, leída del servidor (sin datos locales); el Auditor conserva la de siempre hasta su bloque. */
 export default function BitacoraPagina() {
   const sesion = useSesion();
-  return sesion?.perfil === 'capturista' ? <MiHistorial /> : <BitacoraGeneral />;
+  if (sesion?.perfil === 'capturista') return <MiHistorial />;
+  if (sesion?.perfil === 'administrador' || sesion?.perfil === 'administrador_titular') return <BitacoraAdmin />;
+  return <BitacoraGeneral />;
 }
 
 function BitacoraGeneral() {
