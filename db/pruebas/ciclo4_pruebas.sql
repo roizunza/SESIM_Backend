@@ -102,13 +102,26 @@ begin
   perform pg_temp.yo(ad);
   r := pg_temp.intenta($q$select api.fn_guardar_eje('{"id":93,"numero_eje":93,"nombre":"X","campo_inventado":1}')$q$);
   perform pg_temp.reg('G07 Una clave que no existe en el modelo se rechaza (22023)', r like '22023%', r);
-  perform pg_temp.yo(ad);
+  perform pg_temp.yo(ti);
   r := pg_temp.intenta($q$select api.fn_guardar_indicador('{"id":"ZZ01","id_eje":5,"id_sector":"SD-01","id_fuente":1,"nombre":"Indicador de prueba","nivel_mir":"Propósito","estatus_aprobado":true}')$q$);
   perform pg_temp.reg('G08 No se aprueba un indicador sin tendencia ni cifra de meta (23514)', r like '23514%', r);
   perform pg_temp.yo(ad);
-  r := pg_temp.intenta($q$select api.fn_guardar_indicador('{"id":"ZZ01","id_eje":5,"id_sector":"SD-01","id_fuente":1,"nombre":"Indicador de prueba","nivel_mir":"Propósito","tendencia":"Ascendente","valor_meta":10,"estatus_aprobado":true}')$q$);
-  perform pg_temp.reg('G09 Con tendencia y meta el indicador se crea aprobado y con su eje principal',
-    r = 'OK' and (select count(*) from core.indicador_eje where id_indicador='ZZ01' and id_eje=5 and principal) = 1, r);
+  r := pg_temp.intenta($q$select api.fn_guardar_indicador('{"id":"ZZ01","id_eje":5,"id_sector":"SD-01","id_fuente":1,"nombre":"Indicador de prueba","nivel_mir":"Propósito","tendencia":"Ascendente","valor_meta":10}')$q$);
+  perform pg_temp.reg('G09a El Administrador sube un indicador (queda sin aprobar) con su eje principal',
+    r = 'OK' and (select count(*) from core.indicador_eje where id_indicador='ZZ01' and id_eje=5 and principal) = 1
+    and (select not estatus_aprobado from core.indicador where id='ZZ01'), r);
+  perform pg_temp.yo(ad);
+  r := pg_temp.intenta($q$select api.fn_guardar_indicador('{"id":"ZZ01","estatus_aprobado":true}')$q$);
+  perform pg_temp.reg('G09b El Administrador no aprueba indicadores (42501: solo el Titular)', r like '42501%', r);
+  perform pg_temp.yo(ti);
+  r := pg_temp.intenta($q$select api.fn_guardar_indicador('{"id":"ZZ01","estatus_aprobado":true}')$q$);
+  perform pg_temp.reg('G09 El Titular aprueba el indicador', r = 'OK' and (select estatus_aprobado from core.indicador where id='ZZ01'), r);
+  perform pg_temp.yo(ad);
+  r := pg_temp.intenta($q$select api.fn_guardar_indicador('{"id":"ZZ01","nombre":"Cambio"}')$q$);
+  perform pg_temp.reg('G09d El Administrador no edita un indicador ya aprobado (42501)', r like '42501%', r);
+  perform pg_temp.yo(ad);
+  r := pg_temp.intenta($q$select api.fn_guardar_indicador('{"id":"ZZ01","activo":false}')$q$);
+  perform pg_temp.reg('G09e El Administrador no da de baja indicadores (42501)', r like '42501%', r);
   perform pg_temp.yo(ad);
   r := pg_temp.intenta($q$select api.fn_asignar_indicador_eje('ZZ01', 1)$q$);
   perform pg_temp.reg('G10 Se asigna un eje adicional al indicador y queda auditado',
@@ -228,21 +241,28 @@ begin
 
   -- cuatro ojos: A2 envia, A2 no valida; AD si
   perform pg_temp.yo(a2);
+  r := pg_temp.intenta(format($q$select api.fn_guardar_capa(%L)$q$,
+        jsonb_build_object('id','TC4-02','titulo','Capa 2','tipo_geometria','Línea','metadatos_extra',ficha)));
+  perform pg_temp.reg('C24a El Administrador no da de alta capas (42501: solo el Capturista)', r like '42501%', r);
+  perform pg_temp.yo(ca);
   perform pg_temp.intenta(format($q$select api.fn_guardar_capa(%L)$q$,
         jsonb_build_object('id','TC4-02','titulo','Capa 2','tipo_geometria','Línea','metadatos_extra',ficha)));
+  perform pg_temp.yo(ca);
+  r := pg_temp.intenta($q$select api.fn_enviar_capa_revision('TC4-02')$q$);
+  perform pg_temp.reg('C24 El Capturista da de alta y envia la capa', r = 'OK', r);
   perform pg_temp.yo(a2);
   r := pg_temp.intenta($q$select api.fn_enviar_capa_revision('TC4-02')$q$);
-  perform pg_temp.reg('C24 Un Administrador tambien da de alta y envia capas', r = 'OK', r);
-  perform pg_temp.yo(a2);
+  perform pg_temp.reg('C24b El Administrador no envia capas a revision (42501)', r like '42501%', r);
+  perform pg_temp.yo(ca);
   r := pg_temp.intenta($q$select api.fn_dictaminar_capa('TC4-02','validar')$q$);
-  perform pg_temp.reg('C25 Cuatro ojos: quien envio la capa no la valida (42501)', r like '42501%', r);
+  perform pg_temp.reg('C25 El Capturista no dictamina su propia capa (42501)', r like '42501%', r);
   perform pg_temp.yo(ad);
   r := pg_temp.intenta($q$select api.fn_dictaminar_capa('TC4-02','validar')$q$);
   perform pg_temp.reg('C26 Otro administrador si la valida', r = 'OK', r);
-  perform pg_temp.yo(a2);
+  perform pg_temp.yo(ca);
   perform pg_temp.intenta(format($q$select api.fn_guardar_capa(%L)$q$,
         jsonb_build_object('id','TC4-03','titulo','Capa 3','tipo_geometria','Polígono','metadatos_extra', ficha || '{"restriccion_uso":"interna"}'::jsonb)));
-  perform pg_temp.yo(a2);
+  perform pg_temp.yo(ca);
   perform pg_temp.intenta($q$select api.fn_enviar_capa_revision('TC4-03')$q$);
   perform pg_temp.yo(ad);
   perform pg_temp.intenta($q$select api.fn_dictaminar_capa('TC4-03','validar')$q$);
@@ -306,6 +326,9 @@ begin
   r := pg_temp.intenta(format($q$select api.fn_guardar_instrumento(%L)$q$, jsonb_build_object('id', v_inst, 'nombre','Cambio')));
   perform pg_temp.reg('I14 Un instrumento publicado no se edita (55000)', r like '55000%', r);
   perform pg_temp.yo(ad);
+  r := pg_temp.intenta(format($q$select api.fn_baja_instrumento(%L)$q$, v_inst));
+  perform pg_temp.reg('I15a El Administrador no da de baja instrumentos (42501: solo el Titular)', r like '42501%', r);
+  perform pg_temp.yo(ti);
   r := pg_temp.intenta(format($q$select api.fn_baja_instrumento(%L)$q$, v_inst));
   perform pg_temp.reg('I15 No se da de baja un instrumento publicado (55000)', r like '55000%', r);
   perform pg_temp.yo(ti);
@@ -537,14 +560,15 @@ begin
   perform pg_temp.reg('R28 Reabierto, el Capturista reenvia y queda atendida', r = 'OK' and (select estado from core.rechazo_seguimiento where id_dictamen=v_dic2)='atendida', r);
 
   -- Un Administrador puede reenviar aunque haya vencido (no esta sujeto al plazo del Capturista)
-  perform pg_temp.yo(ad);
+  perform pg_temp.yo(ca);
   perform pg_temp.intenta(format($q$select api.fn_guardar_capa(%L)$q$,
      jsonb_build_object('id','TC4-R3','titulo','Capa rechazos 3','tipo_geometria','Punto','srid_origen',6372,'metadatos_extra',ficha)));
-  perform pg_temp.yo(ad); perform pg_temp.intenta($q$select api.fn_enviar_capa_revision('TC4-R3')$q$);
+  perform pg_temp.yo(ca); perform pg_temp.intenta($q$select api.fn_enviar_capa_revision('TC4-R3')$q$);
   perform pg_temp.yo(a2); perform pg_temp.intenta($q$select api.fn_dictaminar_capa('TC4-R3','rechazar','Falta')$q$);
   perform pg_temp.sin_identidad();
-  perform pg_temp.reg('R29 El destinatario de un rechazo puede ser un Administrador (si el envio fue suyo)',
-    (select count(*) from core.rechazo_seguimiento where objeto_id='TC4-R3' and id_destinatario=ad) = 1, '');
+  perform pg_temp.reg('R29 El rechazo de una capa va al Capturista que la envio (no a la administracion)',
+    (select count(*) from core.rechazo_seguimiento where objeto_id='TC4-R3' and id_destinatario=ca) = 1
+    and (select count(*) from core.rechazo_seguimiento where objeto_id='TC4-R3' and id_destinatario=ad) = 0, '');
 
   -- Instrumentos
   perform pg_temp.yo(ad);
