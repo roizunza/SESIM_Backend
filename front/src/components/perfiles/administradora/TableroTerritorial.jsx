@@ -27,7 +27,7 @@ function useDatosTablero() {
   return estado;
 }
 
-export default function TableroTerritorial({ modo, capas = [], pendientes = 0, onCerrar, onColores }) {
+export default function TableroTerritorial({ modo, capas = [], pendientes = 0, onCerrar, onColores, soloLectura = false }) {
   const { cat, error } = useDatosTablero();
   const [sel, setSel] = useState(null);
 
@@ -91,7 +91,7 @@ export default function TableroTerritorial({ modo, capas = [], pendientes = 0, o
                 <section className="dc-bloque" aria-label="Capas por estado">
                   <h4>Capas por estado</h4>
                   <ul className="tt-leyenda">{Object.keys(ESTATUS_CAPA).map((k) => <li key={k}>{ESTATUS_CAPA[k]} <b>{capasPorEstatus[k] ?? 0}</b></li>)}</ul>
-                  <p className="dc-nota"><Info size={14} aria-hidden="true" /> {pendientes} por dictaminar ahora.</p>
+                  <p className="dc-nota"><Info size={14} aria-hidden="true" /> {soloLectura ? `${pendientes} en el flujo de dictamen (tú solo observas).` : `${pendientes} por dictaminar ahora.`}</p>
                 </section>
                 {conDato === 0 && <p className="dc-nota"><Info size={14} aria-hidden="true" /> Aún no hay mediciones publicadas: el tablero se llena cuando el equipo captura y la administración publica mediciones.</p>}
               </>

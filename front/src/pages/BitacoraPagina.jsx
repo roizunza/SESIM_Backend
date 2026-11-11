@@ -21,11 +21,11 @@ import '../components/perfiles/comun/Comun.css';
  * las del diccionario (tabla_afectada, id_registro, accion, datos_previos,
  * datos_nuevos, ip_origen, fecha).
  */
-/** El capturista y la administración ven su bitácora en una sola línea de tiempo, leída del servidor (sin datos locales); el Auditor conserva la de siempre hasta su bloque. */
+/** El capturista y la administración ven su bitácora en una sola línea de tiempo, leída del servidor (sin datos locales); el Auditor usa la misma que la administración, en consulta. */
 export default function BitacoraPagina() {
   const sesion = useSesion();
   if (sesion?.perfil === 'capturista') return <MiHistorial />;
-  if (sesion?.perfil === 'administrador' || sesion?.perfil === 'administrador_titular') return <BitacoraAdmin />;
+  if (['administrador', 'administrador_titular', 'auditor'].includes(sesion?.perfil)) return <BitacoraAdmin />;
   return <BitacoraGeneral />;
 }
 

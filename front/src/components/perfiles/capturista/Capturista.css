@@ -634,3 +634,7 @@ select.form-input {
 .cap-capa { flex-wrap: nowrap; align-items: center; padding: 2px 6px 2px 8px; margin: 1px 0; }
 .cap-capa__sel { flex: 1 1 auto; padding: 6px 6px 6px 8px; }
 .cap-capa__act { margin: 0; width: 34px; min-width: 34px; height: 34px; padding: 0; justify-content: center; border-radius: 10px; }
+
+/* El contenedor del panel lateral se fija al alto del mapa, para que el pie del panel (Bitácora, Guía, Salir) no quede fuera de pantalla. */
+.cap-contenedor { position: relative; }
+.cap-contenedor .floating-sidebar-wrapper { position: absolute; top: 0; left: 0; height: 100%; z-index: 1000; display: flex; }

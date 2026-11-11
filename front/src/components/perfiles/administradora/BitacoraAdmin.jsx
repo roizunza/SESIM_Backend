@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, Download, Search, FilePlus2, Send, ShieldCheck, Globe2, CornerUpLeft, RefreshCw, PencilLine, UserRound, History,
-  ChevronDown, Quote, BookMarked, FileText, KeyRound, Link2, Trash2,
+  ChevronDown, Quote, BookMarked, FileText, KeyRound, Link2, Trash2, Route,
 } from 'lucide-react';
 import { backend } from '../../../lib/sesim/supabase';
 import { useSesion } from '../../../lib/sesim/sesion';
@@ -107,7 +107,8 @@ export default function BitacoraAdmin() {
   const navigate = useNavigate();
   const sesion = useSesion();
   const yo = sesion?.id;
-  const titular = sesion?.perfil === 'administrador_titular';
+  const auditor = sesion?.perfil === 'auditor';
+  const titular = sesion?.perfil === 'administrador_titular' || auditor;
   const [eventos, setEventos] = useState(null);
   const [usuarios, setUsuarios] = useState([]);
   const [errores, setErrores] = useState([]);
@@ -172,9 +173,10 @@ export default function BitacoraAdmin() {
       <header className="mh-cab">
         <button type="button" className="mh-volver" onClick={() => navigate('/admin-visor')}><ArrowLeft size={16} /> Regresar al mapa</button>
         <div className="mh-tit">
-          <h2><History size={22} aria-hidden="true" /> Bitácora de la administración</h2>
+          <h2><History size={22} aria-hidden="true" /> {auditor ? 'Bitácora de auditoría' : 'Bitácora de la administración'}</h2>
           <p>{titular ? 'Todo lo que pasa en el sistema.' : 'Todo lo que hace el equipo.'} Es un registro.</p>
         </div>
+        {(auditor || sesion?.perfil === 'administrador_titular') && <button type="button" className="mh-volver" onClick={() => navigate('/trazabilidad')}><Route size={16} /> Ver la trazabilidad</button>}
       </header>
 
       <div className="mh-cuerpo">
@@ -200,7 +202,7 @@ export default function BitacoraAdmin() {
             </select>
           </label>
           <button type="button" className="mh-exportar" onClick={exportar} disabled={!visibles.length}><Download size={15} /> Exportar CSV</button>
-          <p className="mh-alcance">{titular ? 'Como Titular ves todo, incluidas las invitaciones y las cuentas de la administración.' : 'No incluye las invitaciones ni las cuentas de la administración: son del Titular.'}</p>
+          <p className="mh-alcance">{auditor ? 'Como Auditor ves todo, incluidas las invitaciones y las cuentas, solo para consulta: no modificas nada.' : titular ? 'Como Titular ves todo, incluidas las invitaciones y las cuentas de la administración.' : 'No incluye las invitaciones ni las cuentas de la administración: son del Titular.'}</p>
         </aside>
 
         <div className="mh-feed">

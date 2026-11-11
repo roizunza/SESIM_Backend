@@ -30,7 +30,7 @@ function Valor({ texto }) {
 }
 const fila = (k, v) => (v === null || v === undefined || v === '' ? null : [k, String(v)]);
 
-export default function DictamenCapa({ capa, onClose, onHecho, onVerEnMapa }) {
+export default function DictamenCapa({ capa, onClose, onHecho, onVerEnMapa, soloLectura = false }) {
   const m = capa.metadatos_extra ?? {};
   const prop = m.actualizacion_pendiente?.estado === 'pendiente' ? m.actualizacion_pendiente : null;
   const [motivo, setMotivo] = useState('');
@@ -136,7 +136,7 @@ export default function DictamenCapa({ capa, onClose, onHecho, onVerEnMapa }) {
             <dl className="dc-ficha">{filas.map(([k, v]) => <div key={k} className="dc-fila"><dt>{k}</dt><dd><Valor texto={v} /></dd></div>)}</dl>
           </section>
 
-          {!prop && capa.estatus === 'vigente_admin' && (
+          {!soloLectura && !prop && capa.estatus === 'vigente_admin' && (
             <section className="dc-bloque" aria-label="Restricción de uso">
               <h4><Lock size={15} aria-hidden="true" /> Restricción de uso</h4>
               <p className="dc-nota">La define la administración. Para publicar debe ser «pública»; una capa «interna» se queda para uso de la dependencia.</p>
@@ -152,7 +152,7 @@ export default function DictamenCapa({ capa, onClose, onHecho, onVerEnMapa }) {
           {hecho && <div className="aviso aviso-ok" role="status">{hecho}</div>}
           {error && <div className="aviso aviso-error" role="alert">{error}</div>}
 
-          {(prop || ['revision', 'vigente_admin'].includes(capa.estatus)) && !hecho && (
+          {!soloLectura && (prop || ['revision', 'vigente_admin'].includes(capa.estatus)) && !hecho && (
             <section className="dc-bloque" aria-label="Dictamen">
               <h4>Tu dictamen</h4>
               <label className="dc-campo">Motivo o comentario <small>{necesitaMotivo ? 'Obligatorio solo si devuelves o rechazas.' : ''}</small>
@@ -170,7 +170,10 @@ export default function DictamenCapa({ capa, onClose, onHecho, onVerEnMapa }) {
               {!prop && capa.estatus === 'vigente_admin' && !publica && <p className="dc-nota"><Info size={14} aria-hidden="true" /> «Publicar» se activa cuando la restricción de uso es «pública».</p>}
             </section>
           )}
-          {!prop && !['revision', 'vigente_admin'].includes(capa.estatus) && !hecho && (
+          {soloLectura && (
+            <div className="aviso aviso-info"><Info size={14} aria-hidden="true" /> Consulta de auditoría: ves la ficha y el historial, pero no dictaminas. Restricción de uso: {m.restriccion_uso ?? 'sin definir'}.</div>
+          )}
+          {!soloLectura && !prop && !['revision', 'vigente_admin'].includes(capa.estatus) && !hecho && (
             <div className="aviso aviso-info"><Info size={14} aria-hidden="true" /> Esta capa está {ESTATUS_CAPA[capa.estatus]?.toLowerCase() ?? capa.estatus}: no tiene nada pendiente de dictamen.</div>
           )}
         </div>

@@ -71,7 +71,7 @@
 /* Selector de modo del tablero (reservado): Mapa | Tablero | Semáforo */
 .adm-modos { position: absolute; z-index: 1000; bottom: 40px; left: calc(var(--ancho-barra, 0px) + 16px); display: inline-flex; gap: 4px; padding: 5px; border-radius: 999px; background: rgba(255,255,255,.94); box-shadow: 0 8px 24px -8px rgba(0,0,0,.35); backdrop-filter: blur(6px); }
 .adm-modos button { border: 0; padding: 8px 18px; border-radius: 999px; background: transparent; color: #24282d; font-weight: 600; font-size: .84rem; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
-.adm-modos button[aria-pressed="true"] { background: #14392f; color: #fff; }
+.adm-modos button[aria-pressed="true"] { background: var(--per-superficie, #14392f); color: #fff; }
 .adm-modos button:disabled { opacity: .55; cursor: not-allowed; }
 .adm-modos small { font-size: .66rem; padding: 1px 6px; border-radius: 999px; background: #e6efe9; color: #14392f; }
 @media (max-width: 820px) { .adm-modos { bottom: 76px; } }

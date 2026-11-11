@@ -31,6 +31,7 @@ import AdminMapViewer from './components/geovisor/AdminMapViewer';
 
 /* Bitácora (tabla `bitacora`, visible según perfil) */
 import BitacoraPagina from './pages/BitacoraPagina';
+import Trazabilidad from './components/trazabilidad/Trazabilidad';
 
 /* Canje de invitación (pública: la persona aún no tiene cuenta) */
 import AceptarInvitacion from './pages/AceptarInvitacion';
@@ -59,6 +60,7 @@ function App() {
 
       <Route element={<AdminLayout />}>
         <Route path="/bitacora" element={<BitacoraPagina />} />
+        <Route path="/trazabilidad" element={<Trazabilidad />} />
       </Route>
 
       {/* Rutas anteriores: se redirigen a las nuevas conservando sus parámetros */}

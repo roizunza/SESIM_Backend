@@ -10,6 +10,7 @@ import { CAPAS_MASCARA, CAPAS_POBLACION } from '../../../lib/sesim/capas';
 import 'leaflet/dist/leaflet.css';
 import '../../geovisor/MapViewer.css';
 import '../../geovisor/GeovisorV8.css';
+import '../administradora/Admin.css';
 import './MapaCaptura.css';
 
 /**

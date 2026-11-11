@@ -27,3 +27,10 @@
   --per-acento: #B0385A; --per-realce: #3AA68B; --per-neutro: #E6DCC6; --per-apoyo: #D6D6D8;
   --per-texto: #F1F0EC; --per-sobre-acento: #FFFFFF;
 }
+
+/* Auditor: el chip de la cabecera (y todo lo que lee --rol) en gris, igual que su paleta. */
+.app-shell[data-rol="auditor"] {
+  --rol: #6B7076; --rol-rgb: 107, 112, 118; --rol-ink: #2F343A;
+  --rol-soft: rgba(107, 112, 118, 0.12); --rol-line: rgba(107, 112, 118, 0.38);
+  --glow: 0 0 0 3px rgba(107, 112, 118, 0.18);
+}
