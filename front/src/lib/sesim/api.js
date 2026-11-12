@@ -344,3 +344,25 @@ export async function localidadesDe(idMunicipio) {
   const ut = await tabla('unidad_territorial');
   return ut.filter((u) => u.id_padre === idMunicipio).sort((a, b) => a.nom_loc.localeCompare(b.nom_loc, 'es'));
 }
+
+/**
+ * Estadística territorial del tablero público (Ciclo 9): km y elementos por capa, municipio y clasificación.
+ * Sale de `api.tablero_territorio()` (PostGIS); si el RPC no existe aún o falla, se lee el archivo estático
+ * `public/sesim/catalogo/tablero_territorio.json` (generado de las mismas capas por scripts/datos/05_exportar_tablero_territorio.py).
+ */
+let cacheTablero = null;
+export function tableroTerritorio() {
+  if (!cacheTablero) {
+    const estatico = () => leerEstatico(`${BASE_ESTATICA}/tablero_territorio.json`);
+    const deBase = ORIGEN_CAPAS !== 'estatico' && typeof cliente.leerRpc === 'function' && cliente.configurado?.() !== false;
+    const p = deBase
+      ? cliente.leerRpc('tablero_territorio', {}).then((d) => (Array.isArray(d?.filas) && d.filas.length ? d : estatico())).catch((err) => {
+          console.warn(`Tablero: no se pudo leer de la base (${err?.message}); se usa el archivo estático.`);
+          return estatico();
+        })
+      : estatico();
+    cacheTablero = p.catch((err) => { cacheTablero = null; throw err; });
+  }
+  return cacheTablero;
+}
+cliente.suscribir(() => { cacheTablero = null; });
