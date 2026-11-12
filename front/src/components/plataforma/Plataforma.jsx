@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header';
 import Footer from './Footer';
 import Underfooter from './Underfooter';
+import { RUTAS } from '../../lib/rutas';
 import AvisoLegal from './AvisoLegal';
 import FiltrosProvider from '../../lib/sesim/FiltrosProvider';
 import { useAltoCabecera } from '../../lib/useAltoCabecera';
@@ -41,7 +42,7 @@ const Plataforma = () => {
           <Outlet />
         </FiltrosProvider>
       </main>
-      {pathname !== '/' && (
+      {pathname !== '/' && pathname !== RUTAS.acceso && (
         <div className="aviso-pie">
           <AvisoLegal tipo="general" discreto />
         </div>

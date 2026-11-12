@@ -2,7 +2,7 @@ import { useId, useMemo, useState } from 'react';
 import { ChevronDown, ChevronUp, Info, Paintbrush, Filter, Table2, Download, Crosshair, Plus, Trash2 } from 'lucide-react';
 import { useDatosCapa } from '../../lib/sesim/useDatosCapa';
 import { analizarCampos, cumpleFiltros, filtrosActivosCapa, resolverEstilo } from '../../lib/sesim/estiloCapa';
-import { aCsv, descargar, sufijoFecha, geojsonPublico, ATRIBUTOS_PUBLICOS } from '../../lib/sesim/descargas';
+import { aCsv, descargar, descargarFeaturesGpkg, sufijoFecha, ATRIBUTOS_PUBLICOS } from '../../lib/sesim/descargas';
 import EstadoCarga from '../plataforma/EstadoCarga';
 import './PanelCapa.css';
 
@@ -192,7 +192,7 @@ function Tabla({ capa, campos, filtradas, onEnfocar }) {
     if (formato === 'csv') {
       descargar(`${nombre}.csv`, aCsv(filtradas.map((f) => f.properties), ATRIBUTOS_PUBLICOS), 'text/csv;charset=utf-8');
     } else {
-      descargar(`${nombre}.geojson`, JSON.stringify(geojsonPublico(capa.titulo, filtradas)), 'application/geo+json');
+      descargarFeaturesGpkg(capa, filtradas, `${nombre}.gpkg`);
     }
   };
 
@@ -200,7 +200,7 @@ function Tabla({ capa, campos, filtradas, onEnfocar }) {
     <div className="panel-capa__seccion">
       <div className="panel-capa__acciones">
         <button type="button" onClick={() => exportar('csv')} disabled={!filtradas.length}><Download size={14} aria-hidden="true" /> CSV</button>
-        <button type="button" onClick={() => exportar('geojson')} disabled={!filtradas.length}><Download size={14} aria-hidden="true" /> GeoJSON</button>
+        <button type="button" onClick={() => exportar('gpkg')} disabled={!filtradas.length}><Download size={14} aria-hidden="true" /> GeoPackage</button>
       </div>
       {filtradas.length === 0 ? (
         <EstadoCarga estado="vacio" mensaje="Ningún elemento cumple los filtros." compacto />

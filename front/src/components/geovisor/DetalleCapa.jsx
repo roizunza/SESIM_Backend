@@ -166,11 +166,11 @@ export default function DetalleCapa({ datos, pestanaInicial, onCerrar, onUbicar 
         {pestana === 'descarga' && (
           <>
             <button type="button" className="gv-btn gv-btn--primario" onClick={() => descargarCapa(capa).catch((e) => setErrorDescarga(e.message))}>
-              <Download size={16} aria-hidden="true" /> Descargar GeoJSON
+              <Download size={16} aria-hidden="true" /> Descargar GeoPackage (.gpkg)
             </button>
             {errorDescarga && <EstadoCarga estado="error" titulo="No se pudo descargar la capa" mensaje={errorDescarga} compacto />}
             <Bloque titulo="Qué incluye el archivo">
-              <Fila k="Formato" v="GeoJSON (RFC 7946), UTF-8" />
+              <Fila k="Formato" v="GeoPackage (OGC GPKG), tabla de geometrías" />
               <Fila k="Sistema de referencia" v="WGS 84" />
               <Fila k="Elementos" v={Number(capa.n_elementos).toLocaleString('es-MX')} />
               <Fila k="Campos" v={ATRIBUTOS_PUBLICOS.join(' · ')} />

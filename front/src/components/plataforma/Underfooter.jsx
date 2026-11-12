@@ -1,8 +1,11 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
+import { RUTAS } from '../../lib/rutas';
 
 export default function Underfooter() {
+  const { pathname } = useLocation();
   return (
-    <div className="underfooter">
+    <div className={`underfooter${pathname === RUTAS.acceso ? ' underfooter--claro' : ''}`}>
       <div className="underfooter__inner">
         <p className="underfooter__copy">
           © 2026 Gobierno del Estado de Campeche. Todos los derechos reservados.

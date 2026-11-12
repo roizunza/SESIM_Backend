@@ -39,7 +39,7 @@ export default function RecorridoGeovisor({
   // Textos de la bienvenida: por omisión los del geovisor; otros módulos (p. ej. el capturista) los reemplazan.
   etiqueta = 'Geovisor SESIM',
   encabezado = 'Explora el territorio capa por capa',
-  intro = 'Enciende capas de diagnóstico y estrategias, filtra por municipio y consulta la ficha de cada una. Te mostramos cómo en {total} pasos de menos de un minuto.',
+  intro = 'Enciende capas de diagnóstico y estrategias, filtra por municipio y consulta la ficha de cada una. Te mostramos cómo en menos de un minuto.',
   recordatorio = <>Siempre podrás volver con el botón <b>?</b> del mapa.</>,
 }) {
   const esMovil = useEsMovil();

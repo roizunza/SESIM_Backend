@@ -166,7 +166,7 @@ const CapaMetadataModal = ({ datos, onClose }) => {
             <Campo etiqueta="Tipo de representación" valor={`Vectorial · ${capa.tipo_geometria} · ${Number(capa.n_elementos).toLocaleString('es-MX')} elementos`} />
             <Campo etiqueta="Escala de la fuente" valor={escala} />
             <Campo etiqueta="Sistema de referencia de la fuente" valor={meta.sistema_coordenadas} />
-            <Campo etiqueta="Sistema de referencia de publicación" valor="WGS 84 (EPSG:4326), GeoJSON RFC 7946; visualización en Web Mercator (EPSG:3857)" />
+            <Campo etiqueta="Sistema de referencia de publicación" valor="WGS 84 (EPSG:4326), GeoPackage (OGC); visualización en Web Mercator (EPSG:3857)" />
           </Seccion>
 
           <Seccion titulo="Fechas y mantenimiento">
@@ -195,7 +195,7 @@ const CapaMetadataModal = ({ datos, onClose }) => {
           </Seccion>
 
           <Seccion titulo="Distribución">
-            <Campo etiqueta="Formato" valor="GeoJSON (RFC 7946), codificación UTF-8" />
+            <Campo etiqueta="Formato" valor="GeoPackage (OGC GPKG 1.3)" />
             <Campo etiqueta="Atributos incluidos" valor={`titulo de la capa; por elemento: ${ATRIBUTOS_PUBLICOS.join(', ')}`} />
             <button type="button" className="capa-modal-descarga" onClick={() => descargarCapa(capa).catch((e) => setErrorDescarga(e.message))}>
               <Download size={14} aria-hidden="true" /> Descargar la capa

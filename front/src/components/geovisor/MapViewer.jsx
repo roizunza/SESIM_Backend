@@ -25,7 +25,7 @@ import MascaraEntidades from './MascaraEntidades';
 import CapaPoblacion from './CapaPoblacion';
 import { AVISOS } from '../../lib/avisosLegales';
 import Infografia from './Infografia';
-import { descargarCapa } from '../../lib/sesim/descargas';
+import { descargarCapasGpkg } from '../../lib/sesim/descargas';
 import { CONFIG_INICIAL } from '../../lib/sesim/estiloCapa';
 
 /**
@@ -58,18 +58,19 @@ const MapInstanceCapture = ({ setMapInstance }) => {
 /** Recorrido del geovisor público: cada `sel` apunta a una zona real de la pantalla; si no está a la vista el paso se omite. */
 const CLAVE_RECORRIDO = 'sesim.geovisor.recorrido.v1';
 const PASOS_RECORRIDO = [
-  { id: 'escala', sel: '.gv-escala', titulo: 'Elige la escala de consulta', texto: 'Empieza por todo el estado o por un municipio: las capas muestran solo sus elementos, lo demás se atenúa y el mapa se acerca a él.' },
-  { id: 'capas', sel: '.map-sidebar', selMovil: '.map-sidebar', titulo: 'Explora y enciende capas', texto: 'En «Explorar» eliges Mapa base, Diagnóstico o Estrategias y enciendes capas.', items: [
-    { marca: '⌕', texto: 'Busca por nombre o clave.' }, { marca: '●', texto: 'El interruptor enciende o apaga la capa o la estrategia.' }, { marca: '5', texto: 'Los atajos encienden una estrategia completa.' }] },
-  { id: 'abrir-panel', selMovil: '.panel-fab', titulo: 'Abre el panel de capas', texto: 'Con «Capas» eliges la escala de consulta, buscas y enciendes capas.' },
-  { id: 'ficha', sel: '.gv-fila .gv-enlace', titulo: 'Consulta la ficha', texto: '«Ficha ›» abre el detalle de la capa: sinopsis, ficha técnica y descarga.' },
-  { id: 'estilo', sel: '.gv-pestanas', titulo: 'Capas en el mapa', texto: 'En «En el mapa» ajustas la transparencia, filtras los elementos y cambias el orden en que se dibujan las capas.' },
-  { id: 'leyenda', sel: '.leyenda-flotante', titulo: 'Lee la simbología', texto: 'La leyenda explica los colores; sus interruptores ocultan la simbología sin apagar la capa.' },
-  { id: 'controles', sel: '.map-custom-controls', titulo: 'Controles del mapa', texto: 'Cambia el mapa base, acerca o aleja, descarga las capas encendidas en GeoJSON, arma la infografía y usa pantalla completa.', items: [
+  { id: 'abrir-panel', selMovil: '.panel-fab', titulo: 'Abre el panel de capas', texto: 'Con el botón «Capas» abres el panel donde eliges qué ver en el mapa.' },
+  { id: 'pestanas', sel: '.gv-pestanas', selMovil: '.gv-pestanas', titulo: 'Dos pestañas', texto: 'El panel tiene dos vistas, y el número junto a «En el mapa» te dice cuántas capas llevas encendidas.', items: [
+    { marca: '1', texto: 'Explorar: el catálogo de capas disponibles.' }, { marca: '2', texto: 'En el mapa: lo que tienes abierto, con su transparencia, filtros y orden.' }] },
+  { id: 'busqueda', sel: '.capa-buscador', selMovil: '.capa-buscador', titulo: 'Búsqueda rápida', texto: 'Escribe parte del nombre o la clave de una capa (por ejemplo «Inf09») y verás los resultados de todos los temas a la vez.' },
+  { id: 'temas', sel: '.gv-temas', selMovil: '.gv-temas', titulo: 'Tres categorías', texto: 'Las capas se ordenan en tres temas. Cambia de uno a otro con las pestañas.', items: [
+    { marca: '◐', texto: 'Mapa base: límites, localidades, transporte y medio físico.' }, { marca: '◑', texto: 'Diagnóstico: cómo está hoy la movilidad y la seguridad vial.' }, { marca: '◒', texto: 'Estrategias: lo que propone la Estrategia Estatal. Elige una y aparecen sus capas.' }] },
+  { id: 'teñidas', sel: '.gv-fila--on, .gv-grupo--on, .gv-paso .gv-lista', titulo: 'Las capas con otro color', texto: 'Una fila teñida significa que esa capa ya está encendida en el mapa. Las demás están disponibles pero apagadas.', items: [
+    { marca: '●', texto: 'El interruptor de la izquierda enciende o apaga la capa.' }, { marca: '›', texto: '«Ficha» abre su detalle: sinopsis, ficha técnica y descarga.' }] },
+  { id: 'escala', sel: '.gv-escala', selMovil: '.gv-escala', titulo: 'Escala de consulta', texto: 'Elige todo el estado o un municipio. Las capas muestran solo los elementos de ese municipio, lo demás se atenúa y el mapa se acerca a él.' },
+  { id: 'leyenda', sel: '.leyenda-flotante', titulo: 'Simbología', texto: 'La leyenda explica los colores de cada capa. Sus interruptores ocultan la simbología sin apagar la capa.' },
+  { id: 'controles', sel: '.map-custom-controls', titulo: 'Controles del mapa', texto: 'Aquí cambias el mapa base, acercas o alejas, descargas las capas encendidas en un GeoPackage, armas la infografía y activas la pantalla completa.', items: [
     { marca: '?', texto: 'Con el botón «?» vuelves a este recorrido.' }] },
 ];
-
-const CIFRAS_RECORRIDO = [{ valor: '66', etiqueta: 'capas públicas' }, { valor: '13', etiqueta: 'municipios' }, { valor: '5', etiqueta: 'estrategias' }];
 
 const MapViewer = ({ incluirBorrador = false }) => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -286,7 +287,7 @@ const MapViewer = ({ incluirBorrador = false }) => {
   const handleDownloadActiveLayers = async () => {
     setErrorDescarga(null);
     try {
-      for (const capa of capasActivasOrdenadas) await descargarCapa(capa);
+      if (capasActivasOrdenadas.length) await descargarCapasGpkg(capasActivasOrdenadas);
     } catch (e) {
       setErrorDescarga(e.message);
     }
@@ -411,7 +412,7 @@ const MapViewer = ({ incluirBorrador = false }) => {
           <button onClick={() => mapInstance && mapInstance.zoomOut()} className="map-ctrl-btn" aria-label="Alejar" title="Alejar">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"><line x1="5" y1="12" x2="19" y2="12" /></svg>
           </button>
-          <button onClick={handleDownloadActiveLayers} className="map-ctrl-btn" aria-label="Descargar capas activas (GeoJSON)" title="Descargar capas activas (GeoJSON)">
+          <button onClick={handleDownloadActiveLayers} className="map-ctrl-btn" aria-label="Descargar capas activas (GeoPackage)" title="Descargar capas activas (GeoPackage)">
             <svg width="16" height="16" viewBox="0 0 512 512" fill="currentColor">
               <path d="M256 0C114.6 0 0 114.6 0 256c0 141.4 114.6 256 256 256s256-114.6 256-256C512 114.6 397.4 0 256 0zM256 362.7c-7.5 0-14.7-3-20-8.3L129.3 247.7c-11-11-11-29 0-40s29-11 40 0l58.7 58.7V117.3c0-15.6 12.7-28.3 28.3-28.3s28.3 12.7 28.3 28.3v149.1l58.7-58.7c11-11 29-11 40 0s11 29 0 40L276 354.3C270.7 359.7 263.5 362.7 256 362.7z" />
             </svg>
@@ -425,7 +426,7 @@ const MapViewer = ({ incluirBorrador = false }) => {
           <BotonGuia className="map-ctrl-btn" onClick={() => setGuiaAbierta(true)} />
         </div>
       </div>
-      <RecorridoGeovisor abierto={guiaAbierta} onCerrar={() => { marcarRecorrido(CLAVE_RECORRIDO); setGuiaAbierta(false); }} pasos={PASOS_RECORRIDO} cifras={CIFRAS_RECORRIDO} />
+      <RecorridoGeovisor abierto={guiaAbierta} onCerrar={() => { marcarRecorrido(CLAVE_RECORRIDO); setGuiaAbierta(false); }} pasos={PASOS_RECORRIDO} />
 
       <MapContainer center={[19.3, -90.5]} zoom={8} minZoom={6} maxBounds={CAMPECHE_BOUNDS} maxBoundsViscosity={0.8} zoomControl={false} className="leaflet-map" preferCanvas={true}>
         <MapInstanceCapture setMapInstance={setMapInstance} />

@@ -55,8 +55,29 @@ export function geojsonPublico(titulo, features) {
   };
 }
 
-/** Descarga la capa completa ya depurada (lee el archivo publicado y lo filtra antes de guardarlo). */
-export async function descargarCapa(capa, nombre = `${capa.id}.geojson`) {
-  const datos = await geojsonDeCapa(capa).catch((e) => { throw new Error(`No se pudo leer la capa ${capa.id}: ${e.message}`); });
-  descargar(nombre, JSON.stringify(geojsonPublico(capa.titulo, datos.features ?? [])), 'application/geo+json');
+/** Capa lista para el GeoPackage: solo los atributos públicos de cada elemento. */
+const capaParaGpkg = (capa, features) => ({
+  id: capa.id,
+  titulo: capa.titulo,
+  atributos: ATRIBUTOS_PUBLICOS,
+  features: features.map((f) => ({ geometry: f.geometry, properties: Object.fromEntries(ATRIBUTOS_PUBLICOS.map((k) => [k, f.properties?.[k]])) })),
+});
+
+const leerCapa = (capa) => geojsonDeCapa(capa).then((d) => d.features ?? []).catch((e) => { throw new Error(`No se pudo leer la capa ${capa.id}: ${e.message}`); });
+
+/** Descarga una o varias capas en un solo GeoPackage (una tabla por capa), ya depuradas. */
+export async function descargarCapasGpkg(capas, nombre) {
+  const { construirGpkg } = await import('./gpkg');
+  const listas = [];
+  for (const capa of capas) listas.push(capaParaGpkg(capa, await leerCapa(capa)));
+  descargar(nombre ?? (capas.length === 1 ? `${capas[0].id}.gpkg` : `capas_sesim_${sufijoFecha()}.gpkg`), await construirGpkg(listas), 'application/geopackage+sqlite3');
+}
+
+/** Descarga la capa completa ya depurada, en GeoPackage. */
+export const descargarCapa = (capa, nombre) => descargarCapasGpkg([capa], nombre);
+
+/** Descarga un subconjunto ya cargado (p. ej. los elementos filtrados de una capa) en GeoPackage. */
+export async function descargarFeaturesGpkg(capa, features, nombre) {
+  const { construirGpkg } = await import('./gpkg');
+  descargar(nombre, await construirGpkg([capaParaGpkg(capa, features)]), 'application/geopackage+sqlite3');
 }

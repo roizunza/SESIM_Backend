@@ -169,6 +169,11 @@ const StreetLinesBackground = ({
   colorPulso = [65, 71, 76],
   alphaBase = 0.14,
   grosor = 1,
+  // [lon, lat] del origen de la ola: si se da, siempre arranca en el nodo más cercano a ese punto
+  // (la traza se enciende del centro a la periferia). Sin él, el origen es aleatorio.
+  origen: origenFijo = null,
+  // Segundos que tarda la ola en alcanzar el punto más lejano.
+  duracionOla = 3.5,
 } = {}) => {
   const canvasRef = useRef(null);
 
@@ -192,7 +197,14 @@ const StreetLinesBackground = ({
 
     function reiniciarOla() {
       if (!grafo || grafo.nodos.length === 0) return;
-      const origen = Math.floor(Math.random() * grafo.nodos.length);
+      let origen = Math.floor(Math.random() * grafo.nodos.length);
+      if (origenFijo) {
+        let mejor = Infinity;
+        grafo.nodos.forEach((n, i) => {
+          const d = (n.lon - origenFijo[0]) ** 2 + (n.lat - origenFijo[1]) ** 2;
+          if (d < mejor) { mejor = d; origen = i; }
+        });
+      }
       distancias = dijkstra(grafo, origen);
       distanciaMaxima = 0;
       for (const d of distancias) if (Number.isFinite(d) && d > distanciaMaxima) distanciaMaxima = d;
@@ -200,7 +212,7 @@ const StreetLinesBackground = ({
       // ~3.5 segundos para que la ola cruce el radio más largo alcanzable
       // desde el origen elegido (el doble de frecuencia que la versión
       // anterior, de ~7s), sin importar la escala real de los datos.
-      velocidadOla = distanciaMaxima / 3.5;
+      velocidadOla = distanciaMaxima / duracionOla;
       tiempoOla = 0;
     }
 

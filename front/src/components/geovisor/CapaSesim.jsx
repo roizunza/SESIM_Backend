@@ -1,18 +1,12 @@
-import { useMemo } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
 import { useDatosCapa } from '../../lib/sesim/useDatosCapa';
-import { estiloPorGeometria } from '../../lib/sesim/simbologia';
-import { CONFIG_INICIAL, cumpleFiltros, resolverEstilo } from '../../lib/sesim/estiloCapa';
-import { toPathOptions, toPointLayer } from '../../lib/leafletSymbology';
+import { CONFIG_INICIAL, cumpleFiltros } from '../../lib/sesim/estiloCapa';
+import { toPointLayer } from '../../lib/leafletSymbology';
+import { esPorTeselas } from '../../lib/sesim/teselas';
+import { useEstiloCapa } from './useEstiloCapa';
+import CapaTeselas from './CapaTeselas';
 import { escalaSimbolo } from '../../lib/sesim/capas';
-
-/** Trazo de contexto cuando la simbología de la capa está apagada: visible, sin protagonismo. */
-function estiloNeutro(geom, opacidad) {
-  if (geom === 'polygon') return { color: '#7B8189', weight: 0.8, opacity: 0.7 * opacidad, fillColor: '#B9BEC4', fillOpacity: 0.08 * opacidad };
-  if (geom === 'point') return { radius: 3, color: '#ffffff', weight: 0.6, fillColor: '#7B8189', fillOpacity: 0.6 * opacidad, opacity: opacidad };
-  return { color: '#8A8F96', weight: 1, opacity: 0.6 * opacidad };
-}
 
 /**
  * Dibuja UNA capa del catálogo con su configuración visual:
@@ -22,28 +16,9 @@ function estiloNeutro(geom, opacidad) {
  *  · `municipio` → solo los elementos de ese municipio (`id_unidad`, Ruta 5 territorial).
  * Ningún elemento se oculta por falta de símbolo: cae al estilo de respaldo.
  */
-export default function CapaSesim({ capa, config = CONFIG_INICIAL, opacidad = 1, conEtiqueta = false, municipio = '', onSeleccionar, interactivo = true }) {
+function CapaGeoJson({ capa, config, opacidad, conEtiqueta, municipio, onSeleccionar, interactivo }) {
   const { datos, error } = useDatosCapa(capa);
-  const estilo = useMemo(() => resolverEstilo(capa, config, datos?.features), [capa, config, datos]);
-  const pathDe = useMemo(() => {
-    const s = capa.simbologia;
-    return (props) => {
-      if (estilo.tipo === 'neutro') return estiloNeutro(capa.geom, opacidad);
-      if (estilo.tipo === 'campo') return estiloPorGeometria(estilo.colorDe(props), capa.geom, opacidad);
-      if (s.modo === 'qgis') {
-        const simbolo = s.simboloDe(props);
-        if (simbolo) return toPathOptions(simbolo, opacidad);
-      }
-      return estiloPorGeometria(s.colorDe(props), capa.geom, opacidad);
-    };
-  }, [capa, estilo, opacidad]);
-  const estiloLeaflet = useMemo(
-    () => (f) => {
-      const ruta = pathDe(f.properties);
-      return ruta.radius ? { ...ruta, radius: ruta.radius * escalaSimbolo(capa.id, f.properties?.clasif) } : ruta;
-    },
-    [pathDe, capa.id],
-  );
+  const { estilo, estiloLeaflet } = useEstiloCapa(capa, config, opacidad, datos?.features);
 
   if (error) {
     console.error(`No se pudo cargar la capa ${capa.id}:`, error);
@@ -83,4 +58,10 @@ export default function CapaSesim({ capa, config = CONFIG_INICIAL, opacidad = 1,
       interactive={interactivo}
     />
   );
+}
+
+/** Capas de hasta 25,000 elementos: GeoJSON. Las pesadas (Ciclo 9) se dibujan por teselas. */
+export default function CapaSesim({ capa, config = CONFIG_INICIAL, opacidad = 1, conEtiqueta = false, municipio = '', onSeleccionar, interactivo = true }) {
+  const props = { capa, config, opacidad, conEtiqueta, municipio, onSeleccionar, interactivo };
+  return esPorTeselas(capa) ? <CapaTeselas {...props} /> : <CapaGeoJson {...props} />;
 }

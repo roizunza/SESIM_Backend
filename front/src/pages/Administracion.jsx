@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Navigate } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, User } from 'lucide-react';
 import { autenticar, activarSesion, descartarCandidata, useSesion, useVerificandoSesion } from '../lib/sesim/sesion';
 import { registrarAcceso } from '../lib/sesim/operacion';
 import { MODO_DEMOSTRACION } from '../lib/modo';
+import StreetLinesBackground from '../components/plataforma/StreetLinesBackground';
 import './Administracion.css';
 
 /*
@@ -64,23 +65,29 @@ const Administracion = () => {
   const showPoliciesModal = !!candidata;
 
   return (
-    <div className="admin-container">
+    <div className="admin-container admin-container--red">
+      <div className="admin-red" aria-hidden="true">
+        <StreetLinesBackground factorZoom={1.05} colorBase={[184, 186, 190]} colorPulso={[120, 124, 130]} alphaBase={0.45} grosor={1.5} origen={[-90.535, 19.845]} duracionOla={11} />
+      </div>
       <div className="admin-login-card">
-        <h1 className="admin-login-title">Inicio de Sesión</h1>
+        <h1 className="admin-login-title">Inicio de sesión</h1>
 
         <form className="admin-login-form" onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="email">Correo electrónico</label>
+            <div className="password-input-wrapper">
             <input
               type="email"
               id="email"
               className="form-input"
-              placeholder="ejemplo@gobcampeche.com.mx"
+              placeholder="nombre@campeche.gob.mx"
               autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+            <span className="admin-icono-campo" aria-hidden="true"><User size={18} /></span>
+            </div>
           </div>
 
           <div className="form-group">
@@ -112,9 +119,6 @@ const Administracion = () => {
           <button type="submit" className="admin-login-submit" disabled={enviando}>
             {enviando ? 'Verificando…' : 'Entrar'}
           </button>
-          <p className="admin-login-ayuda">
-            Las cuentas las da de alta el Administrador Titular. Si no tiene una, solicítela a la Secretaría.
-          </p>
           {MODO_DEMOSTRACION && (
             <p className="admin-login-ayuda admin-login-demo">
               Entorno de demostración: los registros se conservan mientras el servidor del portal esté en marcha.

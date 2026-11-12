@@ -218,6 +218,13 @@
 }
 .underfooter__social-link:hover { color: var(--c-white); }
 
+/* Variante clara (pantalla de acceso): beige como el pie, letra verde. */
+.underfooter.underfooter--claro { background: var(--pal-fondo-2); border-top: 1px solid var(--pal-linea); }
+.underfooter--claro .underfooter__copy { color: var(--pal-titulo); }
+.underfooter--claro .underfooter__social-link { color: var(--pal-titulo); opacity: .8; }
+.underfooter--claro .underfooter__social-link:hover { color: var(--pal-titulo); opacity: 1; }
+.underfooter--claro .underfooter__social span { color: var(--pal-titulo) !important; opacity: .3; }
+
 @media (max-width: 1024px) {
   .footer__inner { grid-template-columns: repeat(2, 1fr); }
 }

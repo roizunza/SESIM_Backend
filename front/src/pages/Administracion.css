@@ -212,3 +212,46 @@
 .admin-login-ayuda { font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 6px; }
 .admin-login-ayuda code { background: #F3F4F6; padding: 0 4px; border-radius: 3px; }
 .admin-login-demo { color: var(--c-verde); font-weight: 600; }
+
+/* Login a pantalla completa: la red vial del landing ocupa todo el espacio y
+   la caja de inicio de sesión flota encima como vidrio líquido. Contraste del
+   texto sobre el vidrio ≥ 4.5:1 (WCAG AA) aun en el peor caso (fondo hueso). */
+.admin-container--red { min-height: calc(100vh - 62px); overflow: hidden; background: var(--pal-fondo); }
+.admin-container--red::before { display: none; }
+.admin-red { position: absolute; inset: 0; z-index: 0; }
+.admin-red canvas { width: 100%; height: 100%; display: block; }
+.admin-container--red .admin-login-card {
+  max-width: 480px; padding: 44px 44px 36px !important; border-radius: 28px !important; text-align: left; color: #fff;
+  background: linear-gradient(165deg, rgba(20,70,59,.50), rgba(11,44,37,.46) 55%, rgba(8,36,30,.50)) !important;
+  -webkit-backdrop-filter: blur(3px) saturate(1.2); backdrop-filter: blur(2px) saturate(1.2);
+  border: 1.5px solid rgba(255,255,255,.75) !important;
+  box-shadow: 0 40px 80px -34px rgba(20,30,25,.65), inset 0 1.5px 0 rgba(255,255,255,.5), inset 0 -24px 40px -34px rgba(0,0,0,.4) !important;
+}
+.admin-container--red .admin-login-card::before { display: none; }
+.admin-container--red .admin-login-title { color: #fff; font-size: 36px; line-height: 1.1; margin: 0 0 22px; letter-spacing: -.01em; }
+.admin-container--red .admin-login-subtitle { color: #fff; font-size: 16px; line-height: 1.5; margin: 0 0 28px; }
+.admin-container--red .admin-login-form { gap: 18px; text-align: left; }
+.admin-container--red .form-group { margin: 0; }
+.admin-container--red .form-group label { color: #fff !important; font-size: 14px; font-weight: 600; margin: 0 0 7px; }
+.admin-container--red .admin-login-card .form-input {
+  height: 52px; padding: 0 50px 0 18px !important; border-radius: 14px !important; font-size: 16px; color: #fff;
+  background: rgba(8,36,30,.45) !important; border: 1.5px solid rgba(255,255,255,.7) !important; box-shadow: none;
+}
+.admin-container--red .admin-login-card .form-input::placeholder { color: rgba(255,255,255,.82); }
+.admin-container--red .admin-login-card .form-input:focus { border-color: #fff !important; background: rgba(8,36,30,.6) !important; box-shadow: 0 0 0 3px rgba(255,255,255,.4) !important; }
+.admin-container--red .admin-login-card .form-input:-webkit-autofill { -webkit-text-fill-color: #fff; transition: background-color 9999s; }
+.admin-icono-campo, .admin-container--red .password-toggle-btn { position: absolute; right: 16px; color: #fff; display: flex; }
+.admin-container--red .password-toggle-btn { background: none; border: 0; cursor: pointer; padding: 4px; border-radius: 8px; }
+.admin-container--red .password-toggle-btn:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.admin-container--red .admin-login-submit {
+  height: 52px; border-radius: 14px !important; font-size: 17px; font-weight: 700; margin-top: 6px; color: #fff;
+  background: linear-gradient(180deg, #B02A4D, #8D1C3B) !important; border: 1.5px solid rgba(255,255,255,.55);
+  box-shadow: 0 14px 30px -12px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.35);
+}
+.admin-container--red .admin-login-submit:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.admin-container--red .admin-login-ayuda { color: #fff; text-align: center; font-size: 14px; line-height: 1.5; margin: 2px 0 0; }
+.admin-container--red .admin-login-demo { font-weight: 600; font-size: 13px; }
+.admin-container--red .admin-login-error { color: #fff; background: rgba(159,34,65,.85); border: 1px solid rgba(255,255,255,.6); border-radius: 12px; padding: 10px 14px; font-size: 14px; }
+.admin-container--red .admin-login-card h1, .admin-container--red .admin-login-card p { text-shadow: 0 1px 2px rgba(0,0,0,.3); }
+@media (max-width: 520px) { .admin-container--red .admin-login-card { padding: 32px 22px 28px !important; } .admin-container--red .admin-login-title { font-size: 30px; } }
+.admin-container--red .admin-login-card .form-group label { color: #fff !important; font-size: 12px !important; letter-spacing: .1em !important; text-shadow: 0 1px 2px rgba(0,0,0,.35); }

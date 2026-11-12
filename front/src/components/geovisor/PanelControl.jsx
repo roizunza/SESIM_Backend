@@ -53,6 +53,14 @@ function Explorar({ arbol, filtro, setFiltro, activas, toggleCapa, fijarGrupo, a
   }, [arbol, buscando, filtro, coincide]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const estrategiaActiva = (g) => g.capas.length > 0 && g.capas.every((c) => activas.has(c.id));
+  // Estrategia elegida con el atajo: sus capas se listan debajo, una por una, para apagar las que no se quieran.
+  const [ejeSel, setEjeSel] = useState(null);
+  const grupoSel = tema === 'estrategia' ? categoria?.grupos.find((g) => g.eje?.id === ejeSel) : null;
+  const elegirEstrategia = (e, grupo) => {
+    setEjeSel(estrategiaActiva(grupo) ? null : e.id);
+    aplicarEstrategia(e.id);
+    setTimeout(() => document.querySelector('.gv-grupo--abierta')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 120);
+  };
   const fila = (c) => <FilaCapa key={c.id} capa={c} activa={activas.has(c.id)} onToggle={() => toggleCapa(c.id)} onFicha={() => onFicha(c)} />;
 
   return (
@@ -88,51 +96,68 @@ function Explorar({ arbol, filtro, setFiltro, activas, toggleCapa, fijarGrupo, a
                 {EJES_ESTRATEGICOS.map((e) => {
                   const grupo = categoria?.grupos.find((g) => g.eje?.id === e.id);
                   if (!grupo) return null;
-                  const on = estrategiaActiva(grupo);
+                  const on = estrategiaActiva(grupo) || ejeSel === e.id;
                   return (
-                    <button key={e.id} type="button" className={`gv-atajo${on ? ' activo' : ''}`} style={{ '--c': e.color }} data-claro={e.id === 'eje2' || e.id === 'eje5' ? 'no' : 'si'} aria-pressed={on} onClick={() => aplicarEstrategia(e.id)}>
+                    <button key={e.id} type="button" className={`gv-atajo${on ? ' activo' : ''}`} style={{ '--c': e.color }} data-claro={e.id === 'eje2' || e.id === 'eje5' ? 'no' : 'si'} aria-pressed={on} onClick={() => elegirEstrategia(e, grupo)}>
                       <b>{e.numero}</b><span>{e.nombreAtajo}</span>
                     </button>
                   );
                 })}
               </div>
-              <p className="gv-nota">Enciende todas las capas de esa estrategia y apaga las de las demás. Para mezclar, enciende capas sueltas abajo.</p>
+              <p className="gv-nota">Enciende todas las capas de esa estrategia y apaga las de las demás. Abajo aparecen sus capas para que apagues las que no necesites.</p>
             </div>
           )}
 
           <div className="gv-paso">
-            <p className="gv-etiqueta">{tema === 'mapa_base' ? 'Capas' : 'Capas por grupo'}</p>
-            <div className="gv-lista">
-              {tema === 'mapa_base' && (() => {
-                const vistos = new Set();
-                const capas = categoria?.grupos.flatMap((g) => g.capas).filter((c) => !vistos.has(c.id) && vistos.add(c.id)) ?? [];
-                return capas.map(fila);
-              })()}
+            {tema === 'mapa_base' && (() => {
+              const vistos = new Set();
+              const capas = categoria?.grupos.flatMap((g) => g.capas).filter((c) => !vistos.has(c.id) && vistos.add(c.id)) ?? [];
+              return (<><p className="gv-etiqueta">Capas</p><div className="gv-lista">{capas.map(fila)}</div></>);
+            })()}
 
-              {tema !== 'mapa_base' && categoria?.grupos.map((grupo) => {
-                const abierto = abiertos.has(grupo.id);
-                const ids = grupo.capas.map((c) => c.id).filter((id) => !CAPAS_FIJAS.has(id));
-                const nOn = ids.filter((id) => activas.has(id)).length;
-                return (
-                  <section key={grupo.id} className={`gv-grupo${grupo.eje ? ' gv-grupo--eje' : ''}${nOn ? ' gv-grupo--on' : ''}`} style={grupo.eje ? { '--c': grupo.eje.color } : undefined}>
-                    <button type="button" className="gv-grupo__titulo" onClick={() => toggleAbierto(grupo.id)} aria-expanded={abierto}>
-                      <span className="gv-grupo__nombre">{grupo.etiqueta}</span>
-                      {nOn > 0 && <span className="gv-grupo__on">{nOn} en el mapa</span>}
-                      <ChevronDown size={18} aria-hidden="true" style={{ transform: abierto ? 'rotate(180deg)' : 'none' }} />
-                    </button>
-                    {abierto && (
-                      <div className="gv-grupo__capas">
-                        <div className="gv-grupo__barra">
-                          <button type="button" className="gv-enlace" onClick={() => fijarGrupo(grupo, true)}>Encender todas</button>
-                          <button type="button" className="gv-enlace" onClick={() => fijarGrupo(grupo, false)} disabled={nOn === 0}>Apagar todas</button>
-                        </div>
-                        {grupo.capas.map(fila)}
-                      </div>
-                    )}
-                  </section>
-                );
-              })}
-            </div>
+            {tema === 'diagnostico' && (
+              <>
+                <p className="gv-etiqueta">Capas por grupo</p>
+                <div className="gv-lista">
+                  {categoria?.grupos.map((grupo) => {
+                    const abierto = abiertos.has(grupo.id);
+                    const ids = grupo.capas.map((c) => c.id).filter((id) => !CAPAS_FIJAS.has(id));
+                    const nOn = ids.filter((id) => activas.has(id)).length;
+                    return (
+                      <section key={grupo.id} className={`gv-grupo${nOn ? ' gv-grupo--on' : ''}`}>
+                        <button type="button" className="gv-grupo__titulo" onClick={() => toggleAbierto(grupo.id)} aria-expanded={abierto}>
+                          <span className="gv-grupo__nombre">{grupo.etiqueta}</span>
+                          {nOn > 0 && <span className="gv-grupo__on">{nOn} en el mapa</span>}
+                          <ChevronDown size={18} aria-hidden="true" style={{ transform: abierto ? 'rotate(180deg)' : 'none' }} />
+                        </button>
+                        {abierto && (
+                          <div className="gv-grupo__capas">
+                            <div className="gv-grupo__barra">
+                              <button type="button" className="gv-enlace" onClick={() => fijarGrupo(grupo, true)}>Encender todas</button>
+                              <button type="button" className="gv-enlace" onClick={() => fijarGrupo(grupo, false)} disabled={nOn === 0}>Apagar todas</button>
+                            </div>
+                            {grupo.capas.map(fila)}
+                          </div>
+                        )}
+                      </section>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+
+            {tema === 'estrategia' && (grupoSel ? (
+              <section className="gv-grupo gv-grupo--eje gv-grupo--on gv-grupo--abierta" style={{ '--c': grupoSel.eje.color }}>
+                <p className="gv-etiqueta">Capas por grupo · Estrategia {grupoSel.eje.numero}</p>
+                <div className="gv-grupo__barra">
+                  <button type="button" className="gv-enlace" onClick={() => fijarGrupo(grupoSel, true)}>Encender todas</button>
+                  <button type="button" className="gv-enlace" onClick={() => fijarGrupo(grupoSel, false)} disabled={!grupoSel.capas.some((c) => activas.has(c.id))}>Apagar todas</button>
+                </div>
+                <div className="gv-lista">{grupoSel.capas.map(fila)}</div>
+              </section>
+            ) : (
+              <p className="gv-nota">Elige una estrategia para ver sus capas por grupo.</p>
+            ))}
           </div>
         </>
       )}
