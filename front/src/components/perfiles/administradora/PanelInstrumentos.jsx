@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { FileText, Plus, X, Info, Loader2, BadgeCheck, CornerUpLeft, Send, Lock } from 'lucide-react';
+import { FileText, Plus, X, Info, Loader2, BadgeCheck, CornerUpLeft, Send, Lock, Trash2, RotateCcw } from 'lucide-react';
 import { backend } from '../../../lib/sesim/supabase';
-import { guardarInstrumento, enviarInstrumentoARevision, dictaminarInstrumento } from '../../../lib/sesim/catalogoApi';
+import { guardarInstrumento, enviarInstrumentoARevision, dictaminarInstrumento, bajaInstrumento } from '../../../lib/sesim/catalogoApi';
 import { Fila } from '../capturista/CapturistaSidebar';
 import { fechaCorta } from '../comun/formato';
 import './VisorCampos.css';
@@ -82,6 +82,17 @@ function InstrumentoModal({ inst, titular, onClose, onCambio }) {
               </section>
             ) : <div className="aviso aviso-info"><Info size={14} aria-hidden="true" /> Solo el Administrador Titular dictamina instrumentos.</div>
           )}
+          {titular && inst && !hecho && (
+            <section className="dc-bloque" aria-label="Baja del instrumento">
+              <h4>Baja (solo Titular)</h4>
+              {inst.activo === false
+                ? <><p className="dc-nota"><Info size={14} aria-hidden="true" /> Está de baja: no se usa para vincular indicadores.</p>
+                    <div className="dc-botones"><button type="button" className="btn-base btn-secondary" disabled={ocupado} onClick={() => ejecutar(() => bajaInstrumento(inst.id, true), 'Instrumento reactivado.')}><RotateCcw size={15} aria-hidden="true" /> Reactivar</button></div></>
+                : inst.estatus === 'vigente_publico'
+                  ? <p className="dc-nota"><Info size={14} aria-hidden="true" /> Está publicado: para darlo de baja primero retíralo de publicación (botón de abajo).</p>
+                  : <div className="dc-botones"><button type="button" className="btn-base btn-tertiary dc-devolver" disabled={ocupado} onClick={() => ejecutar(() => bajaInstrumento(inst.id, false), 'Instrumento dado de baja. Quedó en la bitácora.')}><Trash2 size={15} aria-hidden="true" /> Dar de baja</button></div>}
+            </section>
+          )}
           {inst?.estatus === 'vigente_publico' && titular && !hecho && (
             <button type="button" className="btn-base btn-tertiary dc-devolver" disabled={ocupado || !motivo.trim()} onClick={() => ejecutar(() => dictaminarInstrumento(inst.id, 'rechazar', motivo), 'Instrumento devuelto a borrador.')}>Retirar de publicación (escribe el motivo arriba)</button>
           )}
@@ -92,12 +103,12 @@ function InstrumentoModal({ inst, titular, onClose, onCambio }) {
   );
 }
 
-export default function PanelInstrumentos({ titular }) {
+export default function PanelInstrumentos({ titular, inicial, onCambio: avisar, onCerrar }) {
   const [filas, setFilas] = useState(null);
   const [error, setError] = useState('');
-  const [abierto, setAbierto] = useState(undefined); // undefined = cerrado, null = nuevo, objeto = existente
+  const [abierto, setAbierto] = useState(inicial); // undefined = cerrado, null = nuevo, objeto = existente
   const cargar = useCallback(() => {
-    backend.leer('instrumento_origen', { query: 'select=*&order=id' }).then((r) => { setFilas(r); setError(''); }).catch((e) => setError(e.message));
+    backend.leer('instrumento_origen', { query: 'select=*&order=id' }).then((r) => { setFilas(r); setError(''); avisar?.(); }).catch((e) => setError(e.message));
   }, []);
   useEffect(() => { cargar(); }, [cargar]);
   const orden = useMemo(() => [...(filas ?? [])].sort((a, b) => ['revision', 'borrador', 'vigente_admin', 'vigente_publico'].indexOf(a.estatus) - ['revision', 'borrador', 'vigente_admin', 'vigente_publico'].indexOf(b.estatus) || a.id.localeCompare(b.id, 'es', { numeric: true })), [filas]);
@@ -112,7 +123,7 @@ export default function PanelInstrumentos({ titular }) {
         <Fila key={i.id} Icono={FileText} tipo="Instrumento" titulo={i.clave || i.id} detalle={i.nombre} estado={`${ESTATUS[i.estatus] ?? i.estatus}${i.activo === false ? ' · baja' : ''}`} onClick={() => setAbierto(i)} />
       ))}
       {filas && !filas.length && <p className="cap-vacio">Aún no hay instrumentos.</p>}
-      {abierto !== undefined && <InstrumentoModal key={abierto?.id ?? 'nuevo'} inst={abierto} titular={titular} onClose={() => setAbierto(undefined)} onCambio={cargar} />}
+      {abierto !== undefined && <InstrumentoModal key={abierto?.id ?? 'nuevo'} inst={abierto} titular={titular} onClose={() => { setAbierto(undefined); onCerrar?.(); }} onCambio={cargar} />}
     </div>
   );
 }

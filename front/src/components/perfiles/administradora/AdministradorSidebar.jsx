@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   History, LogOut, PanelLeftOpen, PanelLeftClose, ShieldCheck, Library, ClipboardCheck, RefreshCw, Hourglass, BadgeCheck,
-  CornerUpLeft, KeyRound, ArrowRight, CircleHelp, FileText, ChartColumn,
+  CornerUpLeft, KeyRound, ArrowRight, CircleHelp, FileText, ChartColumn, Route, Hourglass as Reloj,
 } from 'lucide-react';
 import { cerrarSesion } from '../../../lib/sesim/sesion';
+import { backend } from '../../../lib/sesim/supabase';
 import { Fila } from '../capturista/CapturistaSidebar';
 import '../capturista/Capturista.css';
 import PanelInstrumentos from './PanelInstrumentos';
@@ -43,7 +44,23 @@ export default function AdministradorSidebar({
   const titular = sesion?.perfil === 'administrador_titular';
   const [pestana, setPestana] = useState('dictaminar');
   const pendientes = useMemo(() => clasificarPendientes(capasTodas), [capasTodas]);
-  const nPend = pendientes.propuestas.length + pendientes.revision.length + pendientes.validadas.length;
+  const [items, setItems] = useState({ instrumentos: [], indicadores: [] });
+  const [abrir, setAbrir] = useState(null); // { tipo: 'instrumento' | 'indicador', obj } abierto desde la bandeja
+  const recargar = useCallback(() => {
+    Promise.all([
+      backend.leer('instrumento_origen', { query: 'select=*&order=id' }).catch(() => []),
+      backend.leer('indicador', { query: 'select=*&order=id' }).catch(() => []),
+    ]).then(([instrumentos, indicadores]) => setItems({ instrumentos, indicadores }));
+  }, []);
+  useEffect(() => { recargar(); }, [recargar]);
+  const instRev = useMemo(() => items.instrumentos.filter((i) => i.estatus === 'revision' && i.activo !== false), [items]);
+  const instVal = useMemo(() => items.instrumentos.filter((i) => i.estatus === 'vigente_admin' && i.activo !== false), [items]);
+  const indPend = useMemo(() => items.indicadores.filter((i) => !i.estatus_aprobado && i.activo !== false), [items]);
+  const nCapas = pendientes.propuestas.length + pendientes.revision.length + pendientes.validadas.length;
+  // El Titular dictamina instrumentos e indicadores; al Administrador solo le cuentan las capas (lo suyo espera al Titular).
+  const nPend = nCapas + (titular ? instRev.length + instVal.length + indPend.length : 0);
+  const nEspera = instRev.length + instVal.length + indPend.length;
+  const abrirElemento = (tipo, obj) => { setAbrir({ tipo, obj }); setPestana(tipo === 'instrumento' ? 'instrumentos' : 'indicadores'); };
   const salir = () => { cerrarSesion(); navigate('/'); };
   if (esMovil && !abierto) return null;
 
@@ -55,6 +72,7 @@ export default function AdministradorSidebar({
           <ClipboardCheck size={20} />{nPend > 0 && <span className="cap-riel__n">{nPend}</span>}
         </button>
         <button type="button" className="cap-riel__btn" onClick={onRechazos} title="Devoluciones y plazos" aria-label="Devoluciones y plazos"><CornerUpLeft size={20} />{nRechazos > 0 && <span className="cap-riel__n">{nRechazos}</span>}</button>
+        {titular && <button type="button" className="cap-riel__btn" onClick={() => navigate('/trazabilidad')} title="Trazabilidad" aria-label="Trazabilidad"><Route size={20} /></button>}
         {titular && <button type="button" className="cap-riel__btn" onClick={onInvitaciones} title="Usuarios e invitaciones" aria-label="Usuarios e invitaciones"><KeyRound size={20} /></button>}
         <button type="button" className="cap-riel__btn cap-toggle" onClick={() => setAbierto(true)} title="Abrir mi panel" aria-label="Abrir mi panel"><PanelLeftOpen size={20} /></button>
         <div className="cap-pestanas cap-pestanas--riel">
@@ -88,6 +106,11 @@ export default function AdministradorSidebar({
           <CornerUpLeft size={16} aria-hidden="true" /> Devoluciones y plazos{nRechazos > 0 && <span className="adm-acceso__n">{nRechazos}</span>}
         </button>
         {titular && (
+          <button type="button" className="adm-acceso" onClick={() => navigate('/trazabilidad')} title="La vida de una capa, un instrumento o un indicador, de principio a fin">
+            <Route size={16} aria-hidden="true" /> Trazabilidad
+          </button>
+        )}
+        {titular && (
           <button type="button" className="adm-acceso" onClick={onInvitaciones} title="Invita, da de baja o reactiva cuentas (solo el Titular)">
             <KeyRound size={16} aria-hidden="true" /> Usuarios
           </button>
@@ -108,12 +131,41 @@ export default function AdministradorSidebar({
         </div>
 
         <div className={`cap-carpeta cap-carpeta--mesa`} role="tabpanel">
-          {pestana === 'instrumentos' && <PanelInstrumentos titular={titular} />}
-          {pestana === 'indicadores' && <PanelIndicadores />}
+          {pestana === 'instrumentos' && <PanelInstrumentos titular={titular} inicial={abrir?.tipo === 'instrumento' ? abrir.obj : undefined} onCambio={recargar} onCerrar={() => setAbrir(null)} />}
+          {pestana === 'indicadores' && <PanelIndicadores titular={titular} inicial={abrir?.tipo === 'indicador' ? abrir.obj : undefined} onCambio={recargar} onCerrar={() => setAbrir(null)} />}
           {pestana === 'dictaminar' && (
             <div className="cap-mesa">
-              <p className="cap-ayuda">Lo que espera a la administración. Nada se aprueba solo: cada paso queda en la bitácora con tu nombre.</p>
-              {nPend === 0 && <p className="cap-vacio">No hay nada por dictaminar. Cuando el equipo envíe una capa o proponga una actualización aparecerá aquí.</p>}
+              <p className="cap-ayuda">{titular ? 'Todo lo que espera tu dictamen, de lo más urgente a lo menos: instrumentos, indicadores y capas.' : 'Lo que espera a la administración. Instrumentos e indicadores los dictamina el Titular.'} Nada se aprueba solo: cada paso queda en la bitácora con tu nombre.</p>
+              {nPend === 0 && nEspera === 0 && <p className="cap-vacio">No hay nada por dictaminar. Cuando el equipo envíe una capa o se suba un instrumento o indicador aparecerá aquí.</p>}
+              {titular && instRev.length > 0 && (
+                <section className="adm-grupo" aria-label="Instrumentos en revisión">
+                  <h3 className="adm-grupo__tit">Instrumentos en revisión <span>{instRev.length}</span></h3>
+                  <p className="adm-grupo__nota">Los subió la administración: valídalos o devuélvelos con el motivo.</p>
+                  {instRev.map((i) => <Fila key={i.id} Icono={Reloj} tipo="Instrumento" titulo={i.clave || i.id} detalle={i.nombre} estado="En revisión" onClick={() => abrirElemento('instrumento', i)} />)}
+                </section>
+              )}
+              {titular && instVal.length > 0 && (
+                <section className="adm-grupo" aria-label="Instrumentos validados">
+                  <h3 className="adm-grupo__tit">Instrumentos validados, falta publicar <span>{instVal.length}</span></h3>
+                  <p className="adm-grupo__nota">Ya son de uso interno. Publícalos para que se vean en el sistema.</p>
+                  {instVal.map((i) => <Fila key={i.id} Icono={BadgeCheck} tipo="Instrumento" titulo={i.clave || i.id} detalle={i.nombre} estado="Validado" onClick={() => abrirElemento('instrumento', i)} />)}
+                </section>
+              )}
+              {titular && indPend.length > 0 && (
+                <section className="adm-grupo" aria-label="Indicadores por aprobar">
+                  <h3 className="adm-grupo__tit">Indicadores por aprobar <span>{indPend.length}</span></h3>
+                  <p className="adm-grupo__nota">Los subió la administración. Aprobarlos los habilita para medirse y mostrarse.</p>
+                  {indPend.map((i) => <Fila key={i.id} Icono={ChartColumn} tipo="Indicador" titulo={i.id} detalle={i.nombre} estado="Sin aprobar" onClick={() => abrirElemento('indicador', i)} />)}
+                </section>
+              )}
+              {!titular && nEspera > 0 && (
+                <section className="adm-grupo" aria-label="Esperando al Titular">
+                  <h3 className="adm-grupo__tit">Esperando al Titular <span>{nEspera}</span></h3>
+                  <p className="adm-grupo__nota">Lo que subiste y el Administrador Titular aún no dictamina. Los ves, pero no los resuelves.</p>
+                  {[...instRev, ...instVal].map((i) => <Fila key={i.id} Icono={Reloj} tipo="Instrumento" titulo={i.clave || i.id} detalle={i.nombre} estado={i.estatus === 'revision' ? 'En revisión del Titular' : 'Validado, falta publicar'} onClick={() => abrirElemento('instrumento', i)} />)}
+                  {indPend.map((i) => <Fila key={i.id} Icono={Reloj} tipo="Indicador" titulo={i.id} detalle={i.nombre} estado="Sin aprobar" onClick={() => abrirElemento('indicador', i)} />)}
+                </section>
+              )}
               {GRUPOS.map(({ id, titulo, Icono, nota }) => pendientes[id].length > 0 && (
                 <section key={id} className="adm-grupo" aria-label={titulo}>
                   <h3 className="adm-grupo__tit">{titulo} <span>{pendientes[id].length}</span></h3>

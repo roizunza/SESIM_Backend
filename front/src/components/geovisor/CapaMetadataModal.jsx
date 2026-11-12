@@ -46,9 +46,10 @@ function Seccion({ titulo, abierta = false, children }) {
 const ICONO_CALIDAD = { true: CheckCircle2, false: AlertCircle, null: MinusCircle };
 
 function Calidad({ capa, proceso }) {
-  const { datos, error } = useDatosCapa(capa, true);
+  const { datos, error, porTeselas } = useDatosCapa(capa, true);
   const resultados = useMemo(() => (datos ? evaluarCalidad(capa, datos.features, proceso) : null), [capa, datos, proceso]);
 
+  if (porTeselas) return <p className="capa-modal-nota">La evaluación de calidad no se calcula en el navegador para capas por teselas ({Number(capa.n_elementos).toLocaleString('es-MX')} elementos).</p>;
   if (error) return <EstadoCarga estado="error" titulo="No se pudo leer el archivo de la capa" mensaje={error} compacto />;
   if (!resultados) return <EstadoCarga estado="cargando" mensaje="Evaluando los elementos de la capa…" compacto />;
   return (

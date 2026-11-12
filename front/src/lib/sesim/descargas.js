@@ -1,4 +1,5 @@
-import { geojsonDeCapa } from './api';
+import { geojsonDeCapa, geojsonPaginado } from './api';
+import { esPorTeselas } from './teselas';
 
 /** Descargas del portal: CSV (UTF-8 con BOM para Excel) y GeoJSON. Módulo puro salvo `descargar`. */
 
@@ -63,7 +64,7 @@ const capaParaGpkg = (capa, features) => ({
   features: features.map((f) => ({ geometry: f.geometry, properties: Object.fromEntries(ATRIBUTOS_PUBLICOS.map((k) => [k, f.properties?.[k]])) })),
 });
 
-const leerCapa = (capa) => geojsonDeCapa(capa).then((d) => d.features ?? []).catch((e) => { throw new Error(`No se pudo leer la capa ${capa.id}: ${e.message}`); });
+const leerCapa = (capa) => (esPorTeselas(capa) ? geojsonPaginado(capa) : geojsonDeCapa(capa)).then((d) => d.features ?? []).catch((e) => { throw new Error(`No se pudo leer la capa ${capa.id}: ${e.message}`); });
 
 /** Descarga una o varias capas en un solo GeoPackage (una tabla por capa), ya depuradas. */
 export async function descargarCapasGpkg(capas, nombre) {

@@ -31,11 +31,11 @@ import './AdminPerfil.css';
  * Pendiente (siguiente bloque): el tablero territorial, que vivirá en el geovisor con datos reales.
  */
 const PASOS_GUIA = [
-  { id: 'hacer', sel: '.cap-pestanas', titulo: 'Tres pestañas, tres tareas', texto: 'Cada pestaña es una tarea con su propia acción. Tú no subes ni actualizas capas: las dictaminas.', items: [
-    { marca: '1', texto: 'Dictaminar: validas, publicas o devuelves lo que envía el equipo, de lo más urgente a lo menos.' },
-    { marca: '2', texto: 'Instrumentos: das de alta y envías a revisión; solo el Administrador Titular los dictamina.' },
-    { marca: '3', texto: 'Indicadores: das de alta y editas el catálogo. El umbral del semáforo lo fija el Titular.' }] },
-  { id: 'accesos', sel: '.adm-accesos', titulo: 'Devoluciones y plazos', texto: 'Aquí ves todo lo que se devolvió, a quién, el motivo y los 10 días hábiles que le quedan. Lo que devolviste y lo que te devolvieron a ti. El Titular además administra usuarios e invitaciones.' },
+  { id: 'hacer', sel: '.cap-pestanas', titulo: 'Tres pestañas, tres tareas', texto: 'Cada pestaña es una tarea con su propia acción. Las capas las sube el Capturista; la administración sube instrumentos e indicadores y el Titular los dictamina.', items: [
+    { marca: '1', texto: 'Dictaminar: lo que espera dictamen, de lo más urgente a lo menos. El Titular ve instrumentos, indicadores y capas; el Administrador, las capas, y lo que subió queda «esperando al Titular».' },
+    { marca: '2', texto: 'Instrumentos: la administración los sube y envía a revisión; solo el Titular los valida, publica, devuelve y da de baja.' },
+    { marca: '3', texto: 'Indicadores: la administración los sube y edita mientras no estén aprobados; solo el Titular los aprueba, edita ya aprobados, da de baja y reactiva.' }] },
+  { id: 'accesos', sel: '.adm-accesos', titulo: 'Devoluciones y plazos', texto: 'Aquí ves todo lo que se devolvió, a quién, el motivo y los 10 días hábiles que le quedan. Lo que devolviste y lo que te devolvieron a ti. El Titular además tiene Trazabilidad (la vida de cada capa, instrumento e indicador) y administra usuarios e invitaciones.' },
   { id: 'abrir-panel', sel: '.cap-toggle', selMovil: '.panel-fab', titulo: 'Abre o pliega tu panel', texto: 'Muestra el panel completo o lo deja como barra de íconos para tener más mapa.' },
   { id: 'capas', sel: '.adm-capas-btn', titulo: 'Capas del mapa', texto: 'Junto al zoom y la simbología. Abre el catálogo de capas (Mapa base, Diagnóstico e Indicadores) para encenderlas en el mapa y abrir su ficha. Al dictaminar, la capa se enciende y se centra sola: el mapa siempre queda a la vista.' },
   { id: 'dictaminar', sel: '.adm-grupo, .cap-mesa', titulo: 'Qué espera tu dictamen', texto: 'Se ordena de lo más urgente a lo menos: actualizaciones propuestas a capas vigentes, capas nuevas en revisión y capas validadas que faltan publicar. Toca una para abrir su ficha.' },

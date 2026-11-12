@@ -235,7 +235,7 @@ function Tabla({ capa, campos, filtradas, onEnfocar }) {
 /** Panel de una capa activa: simbología (incluido apagarla), filtros por atributo y tabla de atributos. */
 export default function PanelCapa({ capa, config, onCambio, contraido = false, onAlternar, onFicha, mapa }) {
   const [pestana, setPestana] = useState('estilo');
-  const { datos, error } = useDatosCapa(capa, !contraido);
+  const { datos, error, porTeselas } = useDatosCapa(capa, !contraido);
   const features = datos?.features;
   const campos = useMemo(() => (features ? analizarCampos(features) : []), [features]);
   const filtradas = useMemo(() => (features ? features.filter((f) => cumpleFiltros(f.properties, config.filtros)) : []), [features, config.filtros]);
@@ -264,7 +264,12 @@ export default function PanelCapa({ capa, config, onCambio, contraido = false, o
         </button>
         </span>
       </header>
-      {!contraido && (<>
+      {!contraido && porTeselas && (
+        <div className="panel-capa__cuerpo">
+          <p className="gv-nota">Esta capa tiene {Number(capa.n_elementos).toLocaleString('es-MX')} elementos y se dibuja por teselas para que el mapa sea ágil. Aquí puedes ajustar su transparencia y orden, y ver su ficha; los filtros por campo y la tabla de atributos no están disponibles. Para trabajar con todos sus elementos, descárgala en GeoPackage desde la ficha.</p>
+        </div>
+      )}
+      {!contraido && !porTeselas && (<>
       <div className="panel-capa__pestanas" role="tablist" aria-label="Opciones de la capa">
         {PESTANAS.map(({ id, titulo, icono: Icono }) => (
           <button key={id} type="button" role="tab" aria-selected={pestana === id} className={pestana === id ? 'activa' : undefined} onClick={() => setPestana(id)}>

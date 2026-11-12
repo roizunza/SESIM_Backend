@@ -190,6 +190,9 @@ export function geojsonDeCapa(capa) {
   // Más de 25,000 elementos: la base no las sirve como GeoJSON (irán por teselas); se evita la petición que fallaría.
   const pesada = typeof capa === 'object' && Number(capa.n_elementos) > LIMITE_GEOJSON_BASE;
   const deBase = ORIGEN_CAPAS !== 'estatico' && !!id && !pesada && typeof cliente.leerRpc === 'function' && cliente.configurado?.() !== false;
+  if (pesada && ORIGEN_CAPAS !== 'estatico' && cliente.configurado?.() !== false) {
+    return Promise.reject(new Error('Capa servida por teselas: no se carga completa en el navegador.'));
+  }
   const llave = deBase ? `base:${id}` : url;
   if (!cacheGeojson.has(llave)) {
     const promesa = deBase
@@ -201,6 +204,25 @@ export function geojsonDeCapa(capa) {
     cacheGeojson.set(llave, promesa.catch((err) => { cacheGeojson.delete(llave); throw err; }));
   }
   return cacheGeojson.get(llave);
+}
+
+/**
+ * GeoJSON completo de una capa pesada (más de 25,000 elementos, las que el mapa dibuja por teselas): se pide por
+ * páginas a `api.geojson_capa_pagina` y se junta. Solo para descargas; el mapa nunca lo usa. `alProgreso(hechos, total)`.
+ */
+export async function geojsonPaginado(capa, alProgreso, tamano = 5000) {
+  if (typeof cliente.leerRpc !== 'function' || cliente.configurado?.() === false) throw new Error('Sin conexión con el servidor del portal.');
+  const features = [];
+  let total = Number(capa.n_elementos) || Infinity;
+  for (let desde = 0; desde < total; desde += tamano) {
+    const pag = await cliente.leerRpc('geojson_capa_pagina', { p_capa: capa.id, p_desde: desde, p_limite: tamano });
+    if (pag?.type !== 'FeatureCollection') throw new Error('El servidor no devolvió la capa por páginas (¿falta la migración 237?).');
+    total = Number(pag.n_elementos) || total;
+    features.push(...pag.features);
+    alProgreso?.(features.length, total);
+    if (pag.features.length < tamano) break;
+  }
+  return { type: 'FeatureCollection', id_capa: capa.id, titulo: capa.titulo, features };
 }
 
 /** Polígonos oficiales (unidad_territorial_geom) por nivel. */
