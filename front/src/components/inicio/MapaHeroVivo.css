@@ -1,0 +1,74 @@
+/*
+ * Mapa en vivo de la portada (MapaHeroVivo.jsx). Ocupa todo el fondo de .portada__claro.
+ * Los tokens --mapa-* salen de la paleta con color-mix. Colores propios del mapa (contexto, no de la plataforma):
+ * el azul del mar y el verde del relieve; la paleta institucional no tiene ninguno de los dos.
+ */
+.mapa-hero {
+  --mapa-azul: #1263C0;
+  --mapa-verde: #54683C;
+  --mapa-mar-hondo: color-mix(in srgb, var(--mapa-azul) 78%, black);
+  --mapa-gris: color-mix(in srgb, var(--pal-gris) 30%, var(--pal-superficie));
+  --mapa-t1: color-mix(in srgb, var(--mapa-verde) 30%, var(--mapa-gris));
+  --mapa-t2: color-mix(in srgb, var(--mapa-verde) 58%, var(--mapa-gris));
+  --mapa-t3: color-mix(in srgb, var(--mapa-verde) 85%, var(--mapa-gris));
+  --mapa-t4: var(--mapa-verde);
+  --mapa-sombra: color-mix(in srgb, var(--mapa-verde) 60%, black);
+  --mapa-luz: var(--pal-superficie);
+  --mapa-velo: var(--pal-hero-fondo);
+  --mapa-via: var(--pal-guinda);
+  --mapa-via-luz: color-mix(in srgb, var(--pal-guinda) 55%, var(--pal-superficie));
+  --mapa-urbano: color-mix(in srgb, var(--pal-gris) 78%, var(--pal-superficie));
+
+  position: absolute; inset: 0; z-index: 0; overflow: hidden;
+}
+.mapa-hero .mapa-hero__lienzo { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.9s ease; }
+.mapa-hero--listo .mapa-hero__lienzo { opacity: 1; }
+.mapa-hero .street-lines-background { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* Velo: deja legible el título a la izquierda y funde el mapa con el resto de la página. */
+.mapa-hero__velo {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(var(--pal-superficie-rgb), 0.9) 0%, rgba(var(--pal-superficie-rgb), 0.66) 22%, rgba(var(--pal-superficie-rgb), 0.16) 44%, rgba(var(--pal-superficie-rgb), 0) 58%),
+    linear-gradient(180deg, rgba(var(--pal-superficie-rgb), 0.85) 0%, rgba(var(--pal-superficie-rgb), 0) 14%),
+    linear-gradient(0deg, rgba(var(--pal-superficie-rgb), 0.92) 0%, rgba(var(--pal-superficie-rgb), 0) 10%);
+}
+
+/* Crédito del relieve: obligatorio, pero discreto. Solo se ve el icono; el texto aparece al pasar el cursor. */
+.mapa-hero .maplibregl-ctrl-bottom-right { z-index: 3; }
+.mapa-hero .maplibregl-ctrl-attrib { background: transparent; box-shadow: none; opacity: 0.4; transition: opacity 0.2s ease; }
+.mapa-hero .maplibregl-ctrl-attrib:hover { opacity: 1; background: rgba(var(--pal-superficie-rgb), 0.85); }
+.mapa-hero .maplibregl-ctrl-attrib-inner { display: none; font-size: 0.62rem; }
+.mapa-hero .maplibregl-ctrl-attrib:hover .maplibregl-ctrl-attrib-inner { display: block; }
+.mapa-hero .maplibregl-ctrl-attrib-button { background-color: transparent; }
+
+/* Cristal transparente de la sinopsis y las cifras sobre el mapa. */
+.portada .portada__intro {
+  background: linear-gradient(145deg, rgba(var(--pal-superficie-rgb), 0.5), rgba(var(--pal-superficie-rgb), 0.16));
+  -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
+  border: 1px solid rgba(var(--pal-superficie-rgb), 0.65);
+  box-shadow: 0 18px 40px -26px rgba(var(--pal-sombra-rgb), 0.55), inset 0 1px 0 rgba(var(--pal-superficie-rgb), 0.8);
+}
+.portada .portada__intro p { color: var(--pal-texto); }
+.portada .kpi {
+  background: linear-gradient(145deg, rgba(var(--pal-superficie-rgb), 0.64), rgba(var(--pal-superficie-rgb), 0.26));
+  -webkit-backdrop-filter: blur(18px) saturate(1.5); backdrop-filter: blur(18px) saturate(1.5);
+  border: 1px solid rgba(var(--pal-superficie-rgb), 0.7);
+}
+.portada .portada__pastilla--cifras {
+  background: rgba(var(--pal-superficie-rgb), 0.5);
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  border: 1px solid rgba(var(--pal-superficie-rgb), 0.7);
+}
+.portada .portada__nota-cifras { color: var(--pal-texto); text-shadow: 0 0 8px rgba(var(--pal-superficie-rgb), 0.9); }
+
+@media (max-width: 1100px) {
+  .mapa-hero__velo {
+    background:
+      linear-gradient(90deg, rgba(var(--pal-superficie-rgb), 0.9) 0%, rgba(var(--pal-superficie-rgb), 0.5) 60%, rgba(var(--pal-superficie-rgb), 0.1) 100%),
+      linear-gradient(0deg, rgba(var(--pal-superficie-rgb), 0.92) 0%, rgba(var(--pal-superficie-rgb), 0) 10%);
+  }
+}
+@media (max-width: 800px) {
+  .mapa-hero__velo { background: linear-gradient(180deg, rgba(var(--pal-superficie-rgb), 0.9) 0%, rgba(var(--pal-superficie-rgb), 0.66) 45%, rgba(var(--pal-superficie-rgb), 0.3) 100%); }
+}
