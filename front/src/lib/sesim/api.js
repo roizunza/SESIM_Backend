@@ -366,3 +366,24 @@ export function tableroTerritorio() {
   return cacheTablero;
 }
 cliente.suscribir(() => { cacheTablero = null; });
+
+/**
+ * Cifras del territorio de Campeche para la portada (Ciclo 9): extensión, habitantes, municipios y red vial.
+ * Salen de `api.estadisticas_portada()` (migración 239; solo agregados). No hay archivo de respaldo: si el RPC
+ * no existe aún o falla, devuelve null y la portada muestra «—» en lo que no pueda calcular (nada se inventa).
+ */
+let cacheEstadisticas = null;
+export function estadisticasPortada() {
+  if (!cacheEstadisticas) {
+    const posible = typeof cliente.leerRpc === 'function' && cliente.configurado?.() !== false;
+    const p = posible
+      ? cliente.leerRpc('estadisticas_portada', {}).then((d) => (d && typeof d === 'object' ? d : null)).catch((err) => {
+          console.warn(`Portada: no se pudieron leer las estadísticas de la base (${err?.message}).`);
+          return null;
+        })
+      : Promise.resolve(null);
+    cacheEstadisticas = p;
+  }
+  return cacheEstadisticas;
+}
+cliente.suscribir(() => { cacheEstadisticas = null; });

@@ -18,19 +18,19 @@
   --fuente-texto: 'Averta', 'Inter', system-ui, -apple-system, sans-serif;
   --fuente-codigo: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* Escala fluida (móvil → escritorio). Mínimo absoluto 12 px. */
-  --t-display: clamp(2.75rem, 1.6rem + 4.6vw, 4.75rem);   /* 44 → 76 px · títulos de capítulo */
-  --t-h1: clamp(1.875rem, 1.4rem + 1.6vw, 2.5rem);        /* 30 → 40 px · título de página */
-  --t-h2: clamp(1.5rem, 1.2rem + 0.8vw, 1.875rem);        /* 24 → 30 px · título de sección */
-  --t-h3: clamp(1.125rem, 1rem + 0.45vw, 1.375rem);       /* 18 → 22 px · subtítulo */
-  --t-dato: clamp(2rem, 1.5rem + 1.6vw, 2.75rem);         /* 32 → 44 px · cifras */
-  --t-sin: clamp(1rem, 0.94rem + 0.25vw, 1.125rem);       /* 16 → 18 px · sinopsis */
-  --t-h4: 1rem;                                            /* 16 px · título de ítem */
-  --t-cu: 0.9375rem;                                       /* 15 px · cuerpo */
-  --t-de: 0.8125rem;                                       /* 13 px · detalle */
-  --t-et: 0.75rem;                                         /* 12 px · etiqueta en mayúsculas */
-  --t-nota: 0.75rem;                                       /* 12 px · notas y pies (mínimo) */
-  --t-co: 0.8125rem;                                       /* 13 px · códigos */
+  /* Escala fluida (móvil → escritorio), pensada para baja visión: mínimo absoluto 14 px (nov-2026). */
+  --t-display: clamp(3rem, 1.8rem + 4.8vw, 5rem);        /* 48 → 80 px · títulos de capítulo */
+  --t-h1: clamp(2.25rem, 1.6rem + 2vw, 3.125rem);          /* 36 → 50 px · título de página */
+  --t-h2: clamp(1.875rem, 1.4rem + 1.2vw, 2.5rem);         /* 30 → 40 px · título de sección */
+  --t-h3: clamp(1.375rem, 1.15rem + 0.7vw, 1.75rem);       /* 22 → 28 px · subtítulo */
+  --t-dato: clamp(2.25rem, 1.6rem + 1.8vw, 3.25rem);       /* 36 → 52 px · cifras */
+  --t-sin: clamp(1.125rem, 1.02rem + 0.4vw, 1.3125rem);    /* 18 → 21 px · sinopsis */
+  --t-h4: 1.1875rem;                                       /* 19 px · título de ítem */
+  --t-cu: 1.125rem;                                         /* 18 px · cuerpo */
+  --t-de: 1rem;                                             /* 16 px · detalle */
+  --t-et: 0.875rem;                                        /* 14 px · etiqueta en mayúsculas */
+  --t-nota: 0.875rem;                                      /* 14 px · notas y pies (mínimo) */
+  --t-co: 0.9375rem;                                       /* 15 px · códigos */
 
   /* Interlínea, espaciado y medida */
   --lh-titulo: 1.2;

@@ -6,20 +6,20 @@
 .traza-ins__cabecera h3 { font-family: var(--font-body); font-size: 1.05rem; font-weight: 700; color: var(--c-guinda-dk); }
 .traza-ins__cabecera p { font-size: 14px; line-height: 1.6; color: var(--text-secondary); text-align: justify; hyphens: auto; }
 .traza-ins__cabecera p strong { color: var(--text-primary); }
-.traza-ins__leyenda { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12.5px; color: var(--text-secondary); }
+.traza-ins__leyenda { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 0.875rem; color: var(--text-secondary); }
 .traza-ins__leyenda li { display: inline-flex; align-items: center; gap: 6px; }
 .traza-ins__marca { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
 .traza-ins__marca--origen { background: var(--c-guinda); }
 .traza-ins__marca--directa { background: var(--c-verde); }
 .traza-ins__marca--parcial { background: var(--c-beige-lt); }
 
-.traza-ins__tabla { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.traza-ins__tabla { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
 .traza-ins__tabla th, .traza-ins__tabla td { padding: 8px 10px; border-bottom: 1px solid var(--border-color); text-align: center; vertical-align: middle; }
-.traza-ins__tabla thead th { font-size: 12px; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
+.traza-ins__tabla thead th { font-size: 0.875rem; font-weight: 600; color: var(--text-secondary); white-space: nowrap; }
 .traza-ins__tabla th[scope='row'] { text-align: left; font-weight: 400; }
 .traza-ins__tabla tfoot th { font-weight: 600; color: var(--text-primary); }
 .traza-ins__tabla tfoot td { text-align: left; }
-.traza-ins__clave { display: block; font-family: var(--font-mono, monospace); font-size: 11.5px; font-weight: 600; color: var(--c-guinda); }
+.traza-ins__clave { display: block; font-family: var(--font-mono, monospace); font-size: 0.875rem; font-weight: 600; color: var(--c-guinda); }
 .traza-ins__nombre { display: block; color: var(--text-primary); line-height: 1.35; }
 .traza-ins__col-barra { width: 34%; }
 .traza-ins__barra { display: flex; height: 12px; border-radius: 6px; overflow: hidden; background: #f1eff0; }

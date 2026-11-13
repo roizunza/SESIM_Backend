@@ -293,27 +293,27 @@ export default function SeccionMarcoJuridico({ id }) {
                   </>
                 )}
               </div>
-            </div>
 
-            {pestana !== 'documentos' && (
-              <div className="mj__pie">
-                <div className="mj__pasos">
-                  {fundamentaEn.map((f) => (
-                    <button key={`${f.nivel}-${f.texto}`} type="button" onClick={() => elegirNivel(f.nivel)}>
-                      <i>Se fundamenta en</i>{f.texto}
-                    </button>
-                  ))}
-                  {superior && (
-                    <button type="button" onClick={() => elegirNivel(superior.nivel)}>
-                      <i>Orienta a</i>{superior.titulo}
-                    </button>
-                  )}
+              {pestana !== 'documentos' && (
+                <div className="mj__pie">
+                  <div className="mj__pasos">
+                    {fundamentaEn.map((f) => (
+                      <button key={`${f.nivel}-${f.texto}`} type="button" onClick={() => elegirNivel(f.nivel)}>
+                        <i>Se fundamenta en</i>{f.texto}
+                      </button>
+                    ))}
+                    {superior && (
+                      <button type="button" onClick={() => elegirNivel(superior.nivel)}>
+                        <i>Orienta a</i>{superior.titulo}
+                      </button>
+                    )}
+                  </div>
+                  <button type="button" className="mj__cambiar" onClick={() => setPestana(pestana === 'descripcion' ? 'alineacion' : 'documentos')}>
+                    {pestana === 'descripcion' ? 'Ver alineación' : 'Ver documentos'} →
+                  </button>
                 </div>
-                <button type="button" className="mj__cambiar" onClick={() => setPestana(pestana === 'descripcion' ? 'alineacion' : 'documentos')}>
-                  {pestana === 'descripcion' ? 'Ver alineación' : 'Ver documentos'} →
-                </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
       </div>

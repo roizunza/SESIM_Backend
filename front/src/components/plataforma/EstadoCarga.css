@@ -4,14 +4,14 @@
   border: 1px dashed var(--line-strong, #d1d5db); background: var(--c-white);
   color: var(--text-secondary); font-size: 14px; line-height: 1.5;
 }
-.estado-carga--compacto { padding: 10px 12px; font-size: 13px; }
+.estado-carga--compacto { padding: 10px 12px; font-size: 0.875rem; }
 .estado-carga--error { border-style: solid; border-color: #f2c4c4; background: #fff7f7; color: #8a1c1c; }
 .estado-carga--vacio svg { color: var(--c-beige-dk); }
 .estado-carga__titulo { font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
 .estado-carga--error .estado-carga__titulo { color: #8a1c1c; }
 .estado-carga__accion {
   margin-top: 8px; background: none; border: 1px solid currentColor; border-radius: 6px;
-  padding: 4px 10px; font-size: 13px; font-weight: 600; color: var(--c-guinda); cursor: pointer;
+  padding: 4px 10px; font-size: 0.875rem; font-weight: 600; color: var(--c-guinda); cursor: pointer;
 }
 .estado-carga__accion:hover { background: var(--rol-soft, rgba(159, 34, 65, 0.06)); }
 .estado-carga__giro { animation: estado-giro 1s linear infinite; flex-shrink: 0; }

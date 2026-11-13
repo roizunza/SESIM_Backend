@@ -6,22 +6,22 @@
 }
 .vision__bloque-cabecera h3 { font-size: 1.2rem; color: var(--c-guinda-dk); }
 .vision__bloque-cabecera p { font-size: 14px; color: var(--text-secondary); line-height: 1.55; margin-top: 4px; }
-.vision__nota { font-size: 12.5px; color: var(--text-secondary); }
+.vision__nota { font-size: 0.875rem; color: var(--text-secondary); }
 .vision__nota a { color: var(--c-guinda); font-weight: 600; }
 /* Impacto territorial */
 .vision__impacto-cabecera { display: flex; justify-content: space-between; gap: 16px; align-items: flex-end; flex-wrap: wrap; }
-.vision__selector { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+.vision__selector { display: flex; flex-direction: column; gap: 4px; font-size: 0.875rem; font-weight: 600; color: var(--text-secondary); }
 .vision__selector select { height: 42px; min-width: 220px; border-radius: 8px; border: 1px solid var(--pal-linea); padding: 0 10px; font-size: 14px; background: var(--pal-superficie); }
 .impacto { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .impacto__dato { border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 4px; background: var(--pal-superficie); }
 .impacto__dato svg { color: var(--c-verde); }
 .impacto__dato strong { font-family: var(--font-heading); font-size: 1.85rem; color: var(--c-text); line-height: 1.1; }
-.impacto__dato span { font-size: 13px; color: var(--text-secondary); }
+.impacto__dato span { font-size: 0.875rem; color: var(--text-secondary); }
 .impacto__pie { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
-.impacto__pie h4 { display: flex; align-items: center; gap: 6px; font-family: var(--font-body); font-size: 13px; color: var(--text-primary); margin-bottom: 8px; }
+.impacto__pie h4 { display: flex; align-items: center; gap: 6px; font-family: var(--font-body); font-size: 0.875rem; color: var(--text-primary); margin-bottom: 8px; }
 .impacto__chips { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
 .impacto__chips a {
-  display: inline-block; font-size: 13px; padding: 5px 10px; border-radius: 999px; text-decoration: none;
+  display: inline-block; font-size: 0.875rem; padding: 5px 10px; border-radius: 999px; text-decoration: none;
   border: 1px solid var(--border-color); color: var(--c-guinda); background: var(--pal-superficie);
 }
 .impacto__chips a:hover { border-color: var(--c-guinda); }

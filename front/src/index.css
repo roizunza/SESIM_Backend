@@ -86,7 +86,7 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); color: var(--c-guinda
 /* --- TÍTULOS DE PANELES NORMALIZADOS --- */
 .panel-section-title {
   margin: 0 0 12px 0;
-  font-size: 11px;
+  font-size: 0.875rem;
   color: var(--c-guinda-dk); /* Más oscuro como pediste */
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -98,7 +98,7 @@ h1, h2, h3, h4, h5, h6 { font-family: var(--font-heading); color: var(--c-guinda
 .btn-base {
   display: flex; align-items: center; justify-content: center; gap: 8px;
   height: 44px; padding: 0 16px; border-radius: var(--radius-md);
-  font-weight: 600; font-size: 13px; font-family: var(--font-body);
+  font-weight: 600; font-size: 0.875rem; font-family: var(--font-body);
   cursor: pointer; transition: var(--transition); width: 100%;
 }
 

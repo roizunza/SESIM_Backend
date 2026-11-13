@@ -6,9 +6,9 @@
 .gv-pestanas { display: flex; gap: 4px; padding: 0 20px; border-bottom: 1px solid #ddd8cf; }
 .gv-pestanas button { min-height: 44px; padding: 0 14px; background: none; border: 0; border-bottom: 3px solid transparent; font: inherit; font-size: 0.95rem; font-weight: 600; color: #5b6168; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
 .gv-pestanas button.activo { color: #9f2241; border-bottom-color: #9f2241; }
-.gv-insignia { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: #9f2241; color: #fff; font-size: 0.78rem; display: inline-grid; place-items: center; }
+.gv-insignia { min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; background: #9f2241; color: #fff; font-size: 0.875rem; display: inline-grid; place-items: center; }
 .gv-panel__cuerpo { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 20px; display: flex; flex-direction: column; gap: 14px; }
-.gv-etiqueta { margin: 0; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7079; }
+.gv-etiqueta { margin: 0; font-size: 0.875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7079; }
 .gv-nota { margin: 0; font-size: 0.875rem; line-height: 1.45; color: #5b6168; text-align: left; }
 .gv-enlace { background: none; border: 0; padding: 0; font: inherit; font-size: 0.875rem; font-weight: 600; color: #9f2241; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 3px; }
 .gv-enlace:hover { text-decoration: underline; }
@@ -27,7 +27,7 @@
 .gv-lista { display: flex; flex-direction: column; gap: 6px; }
 .gv-fila { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 6px 10px; background: #fff; border: 1px solid #e6e1d8; border-radius: 10px; }
 .gv-fila__nombre { flex: 1; font-size: 0.9rem; font-weight: 600; line-height: 1.3; color: #24282d; }
-.gv-fila__fija { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; font-size: 0.78rem; font-weight: 500; color: #6b7079; }
+.gv-fila__fija { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; font-size: 0.875rem; font-weight: 500; color: #6b7079; }
 .gv-grupo { background: #fff; border: 1px solid #e6e1d8; border-radius: 12px; overflow: hidden; }
 .gv-grupo--eje { border-left: 6px solid var(--c); }
 .gv-grupo__cabecera { display: flex; align-items: center; gap: 12px; padding: 6px 12px; min-height: 52px; }
@@ -57,7 +57,7 @@
 .gv-tarjeta__nombre { flex: 1; font-size: 0.95rem; font-weight: 700; line-height: 1.3; color: #24282d; }
 .gv-tarjeta__quitar { width: 44px; height: 44px; margin: -6px -6px -6px 0; background: none; border: 0; color: #5b6168; cursor: pointer; display: grid; place-items: center; }
 .gv-tarjeta__quitar:hover { color: #9f2241; }
-.gv-trans { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: #5b6168; }
+.gv-trans { display: flex; align-items: center; gap: 10px; font-size: 0.875rem; color: #5b6168; }
 .gv-trans input { flex: 1; accent-color: #9f2241; min-width: 0; }
 .gv-trans b { min-width: 38px; text-align: right; color: #24282d; font-variant-numeric: tabular-nums; }
 .gv-tarjeta__acciones { display: flex; gap: 8px; }
@@ -79,19 +79,19 @@
 
 /* leyenda en cristal */
 .gl { background: rgba(255, 255, 255, 0.52) !important; backdrop-filter: blur(16px) saturate(1.35); -webkit-backdrop-filter: blur(16px) saturate(1.35); border: 1px solid rgba(255, 255, 255, 0.6) !important; }
-.gl .leyenda-flotante-header { font-size: 0.85rem; color: #24282d; min-height: 44px; border-bottom-color: rgba(0,0,0,.1); }
+.gl .leyenda-flotante-header { font-size: 0.875rem; color: #24282d; min-height: 44px; border-bottom-color: rgba(0,0,0,.1); }
 .gl .leyenda-flotante-nombre { font-size: 0.875rem; }
-.gl .capa-legend-muestra-label { font-size: 0.85rem; color: #24282d; }
-.gl .leyenda-categoria-cabecera { font-size: 0.8rem; color: #24282d; }
+.gl .capa-legend-muestra-label { font-size: 0.875rem; color: #24282d; }
+.gl .leyenda-categoria-cabecera { font-size: 0.875rem; color: #24282d; }
 .leyenda-categoria-titulo { display: inline-flex; align-items: center; gap: 4px; background: none; border: 0 !important; padding: 0 !important; font: inherit; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: inherit; cursor: pointer; }
-.gv-trans--leyenda { font-size: 0.8rem; }
+.gv-trans--leyenda { font-size: 0.875rem; }
 .leyenda-flotante { width: 300px; max-height: 70vh; }
 .columna-derecha--detalle { display: none !important; }
 
 /* detalle */
 .gd { position: absolute; top: 16px; right: 64px; bottom: 16px; width: 400px; max-width: calc(100% - 80px); z-index: 1100; display: flex; flex-direction: column; background: rgba(250, 248, 244, 0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,.65); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.18); overflow: hidden; }
 .gd__cab { display: flex; justify-content: space-between; gap: 8px; padding: 16px 16px 8px 20px; }
-.gd__etiqueta { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #9f2241; }
+.gd__etiqueta { font-size: 0.875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #9f2241; }
 .gd__cab h3 { margin: 4px 0 0; font-size: 1.15rem; line-height: 1.25; color: #24282d; }
 .gd__cerrar { width: 44px; height: 44px; flex: none; background: none; border: 0; cursor: pointer; color: #5b6168; display: grid; place-items: center; }
 .gd__pestanas { display: flex; padding: 0 12px; border-bottom: 1px solid rgba(0,0,0,.1); overflow-x: auto; }
@@ -99,13 +99,13 @@
 .gd__pestanas button.activo { color: #9f2241; border-bottom-color: #9f2241; }
 .gd__cuerpo { flex: 1; overflow-y: auto; padding: 16px 20px 20px; display: flex; flex-direction: column; gap: 16px; }
 .gd-bloque { display: flex; flex-direction: column; gap: 8px; }
-.gd-bloque h4 { margin: 0; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7079; }
+.gd-bloque h4 { margin: 0; font-size: 0.875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #6b7079; }
 .gd-p { margin: 0; font-size: 0.95rem; line-height: 1.55; color: #24282d; text-align: left; }
 .gd-kv { display: grid; grid-template-columns: 140px 1fr; gap: 8px; font-size: 0.9rem; }
 .gd-kv span { color: #6b7079; }
 .gd-kv b { font-weight: 600; color: #24282d; overflow-wrap: anywhere; }
 .gd-pills { display: flex; flex-wrap: wrap; gap: 6px; }
-.gd-pills span { padding: 4px 10px; border-radius: 999px; background: #efe9dd; font-size: 0.82rem; color: #24282d; }
+.gd-pills span { padding: 4px 10px; border-radius: 999px; background: #efe9dd; font-size: 0.875rem; color: #24282d; }
 .gd-lista { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
 .gd-lista a { font-size: 0.9rem; line-height: 1.4; }
 .gd__ubicar, .gd__tablero { align-self: flex-start; }
@@ -116,7 +116,7 @@
 .gv-popup__acciones { display: flex; gap: 8px; margin-top: 6px; }
 .gv-popup__acciones button { min-height: 36px; padding: 0 10px; border: 1px solid #cfc9be; background: #fff; border-radius: 8px; font: inherit; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
 
-.mapa-pie__aviso { pointer-events: auto; background: none; border: 0; padding: 0 0 0 4px; font: inherit; font-size: 10px; font-weight: 700; color: #9f2241; cursor: pointer; }
+.mapa-pie__aviso { pointer-events: auto; background: none; border: 0; padding: 0 0 0 4px; font: inherit; font-size: 0.875rem; font-weight: 700; color: #9f2241; cursor: pointer; }
 .gv-aviso { position: fixed; inset: 0; z-index: 5000; background: rgba(20,22,26,.55); display: grid; place-items: center; padding: 16px; }
 .gv-aviso__caja { background: #fff; border-radius: 14px; padding: 24px; max-width: 520px; display: flex; flex-direction: column; gap: 12px; }
 .gv-aviso__caja h3 { margin: 0; color: #9f2241; }
@@ -135,7 +135,7 @@
 .leyenda-flotante { position: absolute; right: 64px; bottom: 44px; left: auto; top: auto; width: 300px; max-height: min(70vh, calc(100% - 100px)); z-index: 1050; }
 .leyenda-flotante--con-detalle { right: 480px; }
 .leyenda-flotante-header { display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 0 8px 0 12px; border: 0; border-bottom: 1px solid rgba(0,0,0,.1); }
-.leyenda-asa { flex: 1; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; cursor: grab; touch-action: none; user-select: none; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; font-size: 0.85rem; color: #24282d; }
+.leyenda-asa { flex: 1; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; cursor: grab; touch-action: none; user-select: none; text-transform: uppercase; letter-spacing: 0.04em; font-weight: 700; font-size: 0.875rem; color: #24282d; }
 .leyenda-asa:active { cursor: grabbing; }
 .leyenda-asa:focus-visible, .leyenda-pliegue:focus-visible { outline: 3px solid #9f2241; outline-offset: 2px; border-radius: 6px; }
 .leyenda-pliegue { width: 44px; height: 44px; background: none; border: 0; cursor: pointer; display: grid; place-items: center; color: #24282d; }
@@ -152,21 +152,21 @@
 .leaflet-tooltip.gv-hover { display: flex; flex-direction: column; gap: 2px; padding: 8px 12px; border: 1px solid rgba(0,0,0,.08); border-radius: 10px; background: rgba(255,255,255,.96); box-shadow: 0 6px 18px rgba(0,0,0,.18); font-family: var(--font-body, inherit); font-size: 0.875rem; color: #24282d; white-space: normal; max-width: 260px; }
 .leaflet-tooltip.gv-hover strong { font-size: 0.9375rem; font-weight: 700; }
 .leaflet-tooltip.gv-hover span { color: #5b6168; }
-.leaflet-tooltip.gv-hover small { color: #9f2241; font-size: 0.75rem; font-weight: 600; }
+.leaflet-tooltip.gv-hover small { color: #9f2241; font-size: 0.875rem; font-weight: 600; }
 .leaflet-tooltip.gv-hover::before { display: none; }
 
 /* ---- Homologación tipográfica y de color (panel, leyenda, detalle) ----
    etiqueta 0.75rem/700/mayúsculas · título 1.05rem/700 · cuerpo 0.9rem · secundario 0.85rem */
 .gv-panel, .gv-panel *, .gd, .gd *, .gl, .gl *, .gv-popup, .gv-aviso { font-family: var(--font-body, inherit); }
 .gv-panel__titulo, .gd__cab h3 { font-size: 1.125rem; font-weight: 700; line-height: 1.25; color: #24282d; letter-spacing: 0; }
-.gv-etiqueta, .gd-bloque h4, .leyenda-categoria-cabecera, .leyenda-asa { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5b6168; }
+.gv-etiqueta, .gd-bloque h4, .leyenda-categoria-cabecera, .leyenda-asa { font-size: 0.875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5b6168; }
 .gv-fila__nombre, .gv-tarjeta__nombre, .gv-grupo__titulo, .gd-p, .gd-kv b { font-size: 0.9375rem; color: #24282d; }
 .gv-nota, .gd-kv span, .gv-trans, .gd__sub { font-size: 0.875rem; color: #5b6168; }
 .gd__sub { margin: 4px 0 0; font-weight: 600; }
 .gl .leyenda-flotante-nombre { font-size: 0.9375rem; font-weight: 700; color: #24282d; }
 .gl .capa-legend-muestra-label { font-size: 0.875rem; color: #3b4047; }
 .gl .leyenda-categoria-cabecera { color: #5b6168; }
-.capa-id-chip { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.75rem; padding: 1px 6px; border-radius: 6px; background: #efe9dd; color: #4e4a42; }
+.capa-id-chip { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.875rem; padding: 1px 6px; border-radius: 6px; background: #efe9dd; color: #4e4a42; }
 
 /* detalle en cajas */
 .gd__cuerpo { gap: 12px; background: transparent; }
@@ -174,13 +174,13 @@
 .gd-bloque h4 { margin: 0; padding-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,.08); }
 .gd-kv { grid-template-columns: 128px minmax(0, 1fr); align-items: baseline; }
 .gd-kv b { font-weight: 600; }
-.gd-pills span { background: #efe9dd; color: #3b4047; font-size: 0.8125rem; font-weight: 600; }
+.gd-pills span { background: #efe9dd; color: #3b4047; font-size: 0.875rem; font-weight: 600; }
 .gd-indicadores { border: 0; background: transparent; gap: 0; }
 .gd-indicadores li { padding: 8px 2px; font-size: 0.9375rem; }
 .gd-indicadores li:first-child { padding-top: 0; }
 
 /* título de categoría de la leyenda: mismo estilo para todas */
-.gl .leyenda-categoria-cabecera .leyenda-categoria-titulo { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5b6168; cursor: pointer; border-radius: 0; }
+.gl .leyenda-categoria-cabecera .leyenda-categoria-titulo { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: 0; background: none; font-size: 0.875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #5b6168; cursor: pointer; border-radius: 0; }
 .gl .leyenda-categoria-cabecera { min-height: 32px; }
 
 /* barra de desplazamiento visible en la leyenda */
@@ -203,7 +203,7 @@
 .gv-popup .leaflet-popup-content { margin: 0; width: auto !important; min-width: 300px; }
 .gv-popup__cuerpo { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 16px 40px 16px 18px; font-family: var(--font-body, inherit); min-width: 300px; }
 .gv-popup__cab { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.gv-popup__cab small { font-size: 0.8125rem; color: #5b6168; }
+.gv-popup__cab small { font-size: 0.875rem; color: #5b6168; }
 .gv-popup__cuerpo > strong { font-size: 1.0625rem; font-weight: 700; line-height: 1.3; color: #24282d; }
 .gv-popup__clase { font-size: 0.875rem; color: #5b6168; }
 .gv-popup__acciones { display: flex; flex-direction: row; gap: 8px; margin-top: 8px; width: 100%; }

@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { FileSpreadsheet, Gauge, Layers, MapPin } from 'lucide-react';
+import { MapPin, Route, Ruler, Users } from 'lucide-react';
 import { useCatalogo } from '../lib/sesim/useCatalogo';
+import { estadisticasPortada } from '../lib/sesim/api';
 import { useRevelar, prefiereMenosMovimiento } from '../lib/useRevelar';
-import StreetLinesBackground from '../components/plataforma/StreetLinesBackground';
+import MapaHeroVivo from '../components/inicio/MapaHeroVivo';
 import Contador from '../components/plataforma/Contador';
 import SeccionVision from '../components/inicio/SeccionVision';
 import SeccionMarcoJuridico from '../components/inicio/SeccionMarcoJuridico';
@@ -31,8 +32,8 @@ const SECCIONES = [
  * Página de inicio con animaciones al desplazarse:
  *  · barra de progreso de lectura y desvanecimiento del título (parallax);
  *  · cada bloque con `data-revelar` aparece al entrar en pantalla (useRevelar);
- *  · cifras del catálogo que cuentan hasta su valor real (indicador, capa,
- *    instrumento_origen, unidad_territorial);
+ *  · cifras del territorio que cuentan hasta su valor real (extensión, habitantes, municipios y red vial,
+ *    de api.estadisticas_portada y unidad_territorial);
  *  · «Estrategias y sus indicadores» (SeccionEstrategias): indicadores por Estrategia y por
  *    nivel MIR, leídos del catálogo.
  */
@@ -41,18 +42,26 @@ const Inicio = () => {
   const hero = useRef(null);
   const barra = useRef(null);
   const { hash } = useLocation();
-  const { datos } = useCatalogo(['indicador', 'capa', 'instrumento_origen', 'unidad_territorial']);
+  const { datos } = useCatalogo(['unidad_territorial']);
+  const [estadisticas, setEstadisticas] = useState(undefined);
+  useEffect(() => {
+    let vivo = true;
+    estadisticasPortada().then((d) => vivo && setEstadisticas(d));
+    return () => { vivo = false; };
+  }, []);
 
+  // Territorio de Campeche. Extensión y red vial salen de PostGIS (api.estadisticas_portada); habitantes y municipios
+  // también se pueden leer del catálogo de unidades territoriales mientras llega la respuesta (misma fuente).
   const cifras = useMemo(() => {
-    if (!datos) return null;
-    const publicas = datos.capa.filter((c) => c.estatus === 'vigente_publico');
+    if (!datos || estadisticas === undefined) return null;
+    const municipios = datos.unidad_territorial.filter((u) => u.nivel === 'municipio');
     return {
-      indicadores: datos.indicador.length,
-      capas: publicas.length,
-      instrumentos: datos.instrumento_origen.length,
-      municipios: datos.unidad_territorial.filter((u) => u.nivel === 'municipio').length,
+      extension: estadisticas?.extension_km2 ?? null,
+      habitantes: estadisticas?.habitantes ?? (municipios.length ? municipios.reduce((t, u) => t + (u.pob_tot ?? 0), 0) : null),
+      municipios: estadisticas?.municipios ?? (municipios.length || null),
+      redVial: estadisticas?.red_vial_km ?? null,
     };
-  }, [datos]);
+  }, [datos, estadisticas]);
 
   // Revelado al desplazarse (se vuelve a enlazar cuando llegan las cifras).
   useRevelar(pagina, [cifras]);
@@ -122,6 +131,9 @@ const Inicio = () => {
 
       <section className="portada" id="introduccion" ref={hero} aria-labelledby="portada-titulo">
         <div className="portada__claro">
+          <div className="portada__mapa" aria-hidden="true">
+            <MapaHeroVivo />
+          </div>
           <div className="portada__marco portada__arriba">
             <div className="portada__texto">
               <h1 id="portada-titulo" className="hero-titulo-animado" aria-label="Sistema Estatal de Seguimiento a Indicadores de Movilidad y Seguridad Vial">
@@ -142,25 +154,20 @@ const Inicio = () => {
               </div>
             </div>
 
-            <div className="portada__mapa" aria-hidden="true">
-              <StreetLinesBackground factorZoom={1.12} colorBase={[122, 84, 98]} colorPulso={[159, 34, 65]} alphaBase={0.34} grosor={1.25} />
-            </div>
-
             <div className="portada__kpis" aria-label="Cifras del sistema">
               <span className="portada__pastilla portada__pastilla--cifras">SESIM del Estado de Campeche</span>
               {[
-                [Gauge, 'Indicadores', cifras?.indicadores, false],
-                [Layers, 'Capas publicadas', cifras?.capas, true],
-                [FileSpreadsheet, 'Instrumentos de planeación', cifras?.instrumentos, true],
-                [MapPin, 'Municipios', cifras?.municipios, false],
-              ].map(([Icono, etiqueta, valor, provisional], i) => (
+                [Ruler, 'km² de extensión territorial', cifras?.extension],
+                [Users, 'habitantes', cifras?.habitantes],
+                [MapPin, 'municipios', cifras?.municipios],
+                [Route, 'km de red vial', cifras?.redVial],
+              ].map(([Icono, etiqueta, valor], i) => (
                 <div key={etiqueta} className="kpi" data-revelar style={retardo(i + 2, 120)}>
-                  <Icono size={18} className="kpi__icono" aria-hidden="true" />
+                  <Icono size={20} className="kpi__icono" aria-hidden="true" />
                   <Contador valor={valor ?? null} className="kpi__numero" />
-                  <span className="kpi__etiqueta">{etiqueta}{provisional && <span aria-label="cifra provisional">*</span>}</span>
+                  <span className="kpi__etiqueta">{etiqueta}</span>
                 </div>
               ))}
-              <p className="portada__nota-cifras">* Cifra provisional; se actualizará al conectar con la fuente única.</p>
             </div>
           </div>
         </div>

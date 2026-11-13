@@ -339,7 +339,7 @@
 .eje-ee-card p {
   font-family: var(--font-body);
   color: var(--text-secondary);
-  font-size: 0.85rem;
+  font-size: 0.875rem;
   line-height: 1.5;
   margin: 0;
 }
@@ -432,7 +432,7 @@
   align-self: flex-start;
   background: #f1efd5;
   color: var(--c-verde-dk);
-  font-size: 0.75rem;
+  font-size: 0.875rem;
   font-weight: 700;
   padding: 4px 10px;
   border-radius: 12px;
@@ -548,7 +548,7 @@
   font-family: var(--font-heading); font-size: 2.2rem; font-weight: 700; line-height: 1.1;
   color: var(--c-guinda); font-variant-numeric: tabular-nums;
 }
-.cifra-etiqueta { font-size: 0.82rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
+.cifra-etiqueta { font-size: 0.875rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.04em; }
 
 /* Objetivos: numeración y realce del ícono al aparecer */
 .objective-card { position: relative; overflow: hidden; }
@@ -570,7 +570,7 @@
 .eje-ee-card .eje-ee-icon { color: var(--eje-color, var(--c-guinda)); transition: transform 0.3s ease; }
 .eje-ee-card:hover .eje-ee-icon { transform: scale(1.12) rotate(-4deg); }
 .eje-ee-capas {
-  margin-top: 4px; font-size: 0.75rem; font-weight: 600; color: var(--eje-color, var(--c-guinda));
+  margin-top: 4px; font-size: 0.875rem; font-weight: 600; color: var(--eje-color, var(--c-guinda));
   background: color-mix(in srgb, var(--eje-color, #9F2241) 10%, white); padding: 2px 8px; border-radius: 10px;
 }
 

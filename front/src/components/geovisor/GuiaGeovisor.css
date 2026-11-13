@@ -15,7 +15,7 @@
   background: rgba(255, 255, 255, .12); color: #fff; border: 1px solid rgba(255, 255, 255, .4);
 }
 .guia-cerrar:hover { background: rgba(255, 255, 255, .24); }
-.guia-salir { position: absolute; top: 20px; right: 56px; color: rgba(255, 255, 255, .85); font-size: 11px; font-weight: 500; pointer-events: none; }
+.guia-salir { position: absolute; top: 20px; right: 56px; color: rgba(255, 255, 255, .85); font-size: 0.875rem; font-weight: 500; pointer-events: none; }
 .guia-gestos {
   position: absolute; left: 50%; top: 58%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none;
 }
@@ -31,7 +31,7 @@
 .guia-movil-lista { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .guia-movil-lista li { display: grid; gap: 2px; padding: 10px 12px; border: 1px solid #e3e8e5; border-radius: 10px; }
 .guia-movil-lista strong { font: 700 11px/1.2 var(--font-mono, ui-monospace, monospace); letter-spacing: .08em; text-transform: uppercase; color: #9f2241; }
-.guia-movil-lista span { font-size: 13px; color: #33413c; }
+.guia-movil-lista span { font-size: 0.875rem; color: #33413c; }
 
 /* Botón de la guía junto a los controles */
 .guia-boton-mapa { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 8px; cursor: pointer; background: #fff; border: 1px solid #d9dfdc; color: #10312b; }
