@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Bike, Bus, Car, Footprints, Truck } from 'lucide-react';
+import './JerarquiaMovilidad.css';
 
 /** Aclaraciones por nivel: el texto de la ley se lee distinto de la jerarquía de la NOM (5 niveles frente a 6 grupos). */
 const ACLARACIONES = {
@@ -10,127 +11,108 @@ const ACLARACIONES = {
 
 const ICONOS = { peatones: Footprints, ciclistas: Bike, transporte_publico: Bus, carga: Truck, particulares: Car };
 
-/* Rampa de izquierda (menor prioridad) a derecha (mayor): cada columna es más ancha y más alta que la anterior.
-   El borde izquierdo no termina en pico: arranca al 38 % de la altura. */
-const PESOS = [1.25, 1.25, 1.5, 1.85, 2.4];
-const ALTURA_INICIAL = 0.5;
-
-function useMedia(consulta) {
-  const [coincide, setCoincide] = useState(() => (typeof window !== 'undefined' && window.matchMedia ? window.matchMedia(consulta).matches : false));
-  useEffect(() => {
-    if (!window.matchMedia) return undefined;
-    const mq = window.matchMedia(consulta);
-    const alCambiar = () => setCoincide(mq.matches);
-    alCambiar();
-    mq.addEventListener('change', alCambiar);
-    return () => mq.removeEventListener('change', alCambiar);
-  }, [consulta]);
-  return coincide;
-}
-
 /**
- * Jerarquía de la movilidad. A la izquierda, título, introducción y la rampa de niveles (de menor a mayor
- * prioridad; las personas peatonas son la columna más ancha y alta); a la derecha, la tarjeta del nivel
- * elegido con su foto y el texto literal de la norma, y debajo la nota de la fuente. Se elige con clic,
- * toque o teclado.
+ * Jerarquía de la movilidad. Una escalera a todo el ancho: cinco escalones que suben de izquierda a derecha
+ * (de menor a mayor prioridad), cada uno con su color. Al pasar el cursor, enfocar con el teclado o tocar un
+ * escalón, éste cambia a su fotografía y crece; debajo aparece la ficha con el texto literal de la norma.
+ * En pantallas angostas los escalones se apilan como barras horizontales.
  */
 export default function JerarquiaMovilidad({ niveles, introduccion, fundamento, concordancia, nota }) {
-  const [activo, setActivo] = useState(niveles[0]?.id ?? null);
-  const compacto = useMedia('(max-width: 640px)');
-  const nivel = niveles.find((n) => n.id === activo);
-  const Icono = ICONOS[nivel?.id] ?? Footprints;
+  // Se abre con la prioridad 1 para que la ficha nunca quede vacía.
+  const primero = [...niveles].sort((a, b) => a.orden - b.orden)[0];
+  const [activo, setActivo] = useState(primero?.id ?? null);
 
   // De izquierda a derecha: la última prioridad queda a la izquierda y la primera a la derecha.
   const tramos = [...niveles].sort((a, b) => b.orden - a.orden);
-  const pesos = tramos.map((_, k) => PESOS[k] ?? 1);
-  const total = pesos.reduce((s, p) => s + p, 0);
-  let acumulado = 0;
-  const columnas = tramos.map((n, k) => {
-    const a = acumulado / total;
-    acumulado += pesos[k];
-    const b = acumulado / total;
-    const alto = (x) => ALTURA_INICIAL + (1 - ALTURA_INICIAL) * x;
-    return { n, k, peso: pesos[k], recorte: `polygon(0 ${(1 - alto(a)) * 100}%, 100% ${(1 - alto(b)) * 100}%, 100% 100%, 0 100%)` };
-  });
-  const tono = (k) => {
-    const t = tramos.length > 1 ? k / (tramos.length - 1) : 1;
-    // beige claro → verde profundo (styles/paleta.css)
-    return `color-mix(in srgb, var(--pal-verde) ${Math.round(15 + 85 * t)}%, var(--pal-beige))`;
-  };
+  const n = tramos.length;
+  // beige claro → verde profundo (styles/paleta.css)
+  const tono = (k) => `color-mix(in srgb, var(--pal-verde) ${Math.round(15 + 85 * (n > 1 ? k / (n - 1) : 1))}%, var(--pal-beige))`;
 
-  // Las imágenes de todos los niveles se descargan desde el inicio: al cambiar no hay parpadeo.
+  // Las fotos se descargan desde el inicio: al pasar de un escalón a otro no hay parpadeo.
   useEffect(() => {
-    for (const n of niveles) if (n.imagen?.archivo) new Image().src = n.imagen.archivo;
+    for (const nv of niveles) if (nv.imagen?.archivo) new Image().src = nv.imagen.archivo;
   }, [niveles]);
 
   const alTeclear = (e, k) => {
     const d = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
     if (!d) return;
     e.preventDefault();
-    const j = (k + d + columnas.length) % columnas.length;
-    setActivo(columnas[j].n.id);
-    e.currentTarget.parentElement?.querySelectorAll('button')[j]?.focus();
+    e.currentTarget.parentElement?.querySelectorAll('button')[(k + d + n) % n]?.focus();
   };
+  // El ratón cambia al pasar; el toque, al tocar (onFocus cubre el teclado).
+  const alPasar = (e, id) => { if (e.pointerType === 'mouse') setActivo(id); };
 
   return (
-    <div className={`jer${compacto ? ' jer--compacto' : ''}`}>
-      <div className="jer__izq">
-        <h3 className="jer__caja jer__titulo-caja">Jerarquía de la movilidad</h3>
-        <p className="jer__caja jer__intro">{introduccion}</p>
+    <div className="jer">
+      <header className="jer__cabecera">
+        <h3 className="jer__titulo-caja">Jerarquía de la movilidad</h3>
+        <p className="jer__intro">{introduccion}</p>
+      </header>
 
-        <div className="jer__rampa" role="group" aria-label="Niveles de la jerarquía, de menor a mayor prioridad">
-          {columnas.map(({ n, k, peso, recorte }) => (
+      <div className="jer__escalera" role="group" aria-label="Niveles de la jerarquía, de menor a mayor prioridad">
+        {tramos.map((nv, k) => {
+          const Icono = ICONOS[nv.id] ?? Footprints;
+          const sel = nv.id === activo;
+          return (
             <button
-              key={n.id}
+              key={nv.id}
               type="button"
-              className={`jer__col${n.id === activo ? ' jer__col--activa' : ''}${tramos.length > 1 && k / (tramos.length - 1) > 0.55 ? ' jer__col--oscura' : ''}`}
-              style={{ '--peso': peso, '--recorte': recorte, '--tono': tono(k), '--k': k }}
-              aria-pressed={n.id === activo}
-              aria-label={`Prioridad ${n.orden}: ${n.nombre}`}
-              onClick={() => setActivo(n.id)}
+              className={`jer__esc${sel ? ' jer__esc--activo' : ''}${n > 1 && k / (n - 1) > 0.55 ? ' jer__esc--oscuro' : ''}`}
+              style={{ '--k': k, '--n': n, '--tono': tono(k) }}
+              aria-pressed={sel}
+              aria-controls={`jer-ficha-${nv.id}`}
+              aria-label={`Prioridad ${nv.orden}: ${nv.nombre}`}
+              onPointerEnter={(e) => alPasar(e, nv.id)}
+              onFocus={() => setActivo(nv.id)}
+              onClick={() => setActivo(nv.id)}
               onKeyDown={(e) => alTeclear(e, k)}
             >
-              <span className="jer__col-num">{n.orden}</span>
-              {!compacto && <span className="jer__col-nombre">{n.nombre}</span>}
-            </button>
-          ))}
-        </div>
-        {compacto && (
-          <div className="jer__chips" role="group" aria-label="Elegir nivel">
-            {[...tramos].reverse().map((n) => (
-              <button key={n.id} type="button" className={`jer__chip${n.id === activo ? ' jer__chip--activo' : ''}`} aria-pressed={n.id === activo} onClick={() => setActivo(n.id)}>
-                <span>{n.orden}</span>{n.nombre}
-              </button>
-            ))}
-          </div>
-        )}
-        <div className="jer__eje" aria-hidden="true"><span>Menor prioridad</span><i /><span className="jer__eje-fin">Mayor prioridad</span></div>
-      </div>
-
-      <div className="jer__der">
-        {nivel && (
-          <aside className="jer__tarjeta" aria-live="polite">
-            <div key={nivel.id} className="jer__ficha">
-              {nivel.imagen && (
-                <figure className="jer__foto">
-                  <img src={nivel.imagen.archivo} alt={nivel.imagen.alt} style={{ objectPosition: nivel.imagen.enfoque }} />
-                  {nivel.imagen.credito && <figcaption>Imagen: {nivel.imagen.credito}</figcaption>}
-                </figure>
+              {nv.imagen?.archivo && (
+                <img className="jer__esc-foto" src={nv.imagen.archivo} alt="" loading="eager" decoding="async" style={{ objectPosition: nv.imagen.enfoque }} />
               )}
-              <div className="jer__cuerpo">
-                <span className="jer__prioridad">Prioridad {nivel.orden} de {niveles.length}</span>
-                <h3 className="jer__titulo"><span className="jer__icono" aria-hidden="true"><Icono size={20} /></span>{nivel.nombre}</h3>
-                <blockquote className="jer__cita">«{nivel.texto}»</blockquote>
-                {ACLARACIONES[nivel.id] && (
-                  <p className="jer__aclara" role="note"><span className="jer__aclara-i" aria-hidden="true">i</span><span>{ACLARACIONES[nivel.id]}</span></p>
-                )}
-                <p className="jer__fuente">{fundamento}{concordancia ? `. Concordancia: ${concordancia}.` : '.'}</p>
-              </div>
-            </div>
-          </aside>
-        )}
-        {nota}
+              <span className="jer__esc-velo" aria-hidden="true" />
+              <span className="jer__esc-texto">
+                <span className="jer__esc-num">{nv.orden}</span>
+                <span className="jer__esc-nombre"><Icono size={18} aria-hidden="true" />{nv.nombre}</span>
+              </span>
+            </button>
+          );
+        })}
       </div>
+      <div className="jer__eje" aria-hidden="true"><span>Menor prioridad</span><i /><span className="jer__eje-fin">Mayor prioridad</span></div>
+
+      {/* Las fichas comparten celda: la altura es la de la más larga y nada salta al cambiar de nivel. */}
+      <div className="jer__info">
+        {niveles.map((nv) => {
+          const sel = nv.id === activo;
+          const Icono = ICONOS[nv.id] ?? Footprints;
+          return (
+            <section
+              key={nv.id}
+              id={`jer-ficha-${nv.id}`}
+              className={`jer__ficha${sel ? ' jer__ficha--activa' : ''}`}
+              aria-hidden={!sel}
+              aria-label={`Prioridad ${nv.orden}: ${nv.nombre}`}
+            >
+              <div className="jer__ficha-cab">
+                <span className="jer__prioridad">Prioridad {nv.orden} de {niveles.length}</span>
+                <h4 className="jer__titulo"><span className="jer__icono" aria-hidden="true"><Icono size={22} /></span>{nv.nombre}</h4>
+              </div>
+              <div className="jer__ficha-cuerpo">
+                <blockquote className="jer__cita">«{nv.texto}»</blockquote>
+                {ACLARACIONES[nv.id] && (
+                  <p className="jer__aclara" role="note"><span className="jer__aclara-i" aria-hidden="true">i</span><span>{ACLARACIONES[nv.id]}</span></p>
+                )}
+                <p className="jer__fuente">
+                  {fundamento}{concordancia ? `. Concordancia: ${concordancia}.` : '.'}
+                  {nv.imagen?.credito && <> Imagen: {nv.imagen.credito}.</>}
+                </p>
+              </div>
+            </section>
+          );
+        })}
+      </div>
+      {nota}
     </div>
   );
 }

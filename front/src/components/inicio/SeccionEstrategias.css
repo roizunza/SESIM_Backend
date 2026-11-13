@@ -47,12 +47,12 @@
   background: linear-gradient(160deg, rgba(var(--pal-superficie-rgb), 0.78), rgba(var(--pal-superficie-rgb), 0.3));
   -webkit-backdrop-filter: blur(16px) saturate(1.6); backdrop-filter: blur(16px) saturate(1.6);
   border: 1.5px solid rgba(var(--pal-superficie-rgb), 0.85); border-radius: 120px; padding: 40px 18px 24px; min-height: 380px;
-  box-shadow: 0 16px 36px -22px rgba(var(--pal-sombra-rgb), calc(0.6 * var(--pal-sombra-k))), inset 0 1px 0 rgba(var(--pal-superficie-rgb), 0.95), inset 0 -20px 40px -30px var(--c);
+  box-shadow: 0 16px 36px -22px rgba(var(--pal-sombra-rgb), calc(0.6 * var(--pal-sombra-k))), inset 0 1px 0 rgba(var(--pal-superficie-rgb), 0.95);
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s, transform 0.2s;
 }
 .estr-pastilla::before {
   content: ''; position: absolute; z-index: -1; inset: 18% 8% 10% 8%; border-radius: 50%;
-  background: radial-gradient(closest-side, var(--c), transparent); opacity: 0.3; filter: blur(22px); pointer-events: none; transition: opacity 0.2s;
+  display: none;
 }
 .estr-pastilla:hover { transform: translateY(-3px); }
 .estr-pastilla:hover::before, .estr-pastilla--activa::before { opacity: 0.6; }

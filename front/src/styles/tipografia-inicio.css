@@ -7,17 +7,8 @@
 .inicio-page .vision h2.vision__titulo { font-family: var(--fuente-titulo); font-size: var(--t-h2); line-height: var(--lh-titulo); font-weight: 700; }
 .inicio-page .vision__sinopsis { font-size: var(--t-sin); line-height: var(--lh-texto); opacity: 1; max-width: var(--medida); }
 
-.inicio-page .jer h3.jer__titulo-caja,
-.inicio-page .jer h3.jer__titulo { font-family: var(--fuente-titulo); font-size: var(--t-h3); line-height: 1.25; font-weight: 600; }
 .inicio-page .eje__titulo { font-family: var(--fuente-texto); font-size: var(--t-h4); font-weight: 700; line-height: 1.35; }
-.inicio-page .eje__texto,
-.inicio-page .jer__caja.jer__intro { font-size: var(--t-de); line-height: var(--lh-detalle); opacity: 1; }
-.inicio-page .jer__cita { font-size: var(--t-cu); line-height: var(--lh-texto); }
-.inicio-page .jer__fuente,
-.inicio-page .jer__nota,
-.inicio-page .jer__aclara { font-size: var(--t-nota); line-height: var(--lh-detalle); }
-.inicio-page .jer__prioridad { font-size: var(--t-et); letter-spacing: var(--ls-etiqueta); }
-.inicio-page .jer__col-nombre { font-size: var(--t-nota); }
+.inicio-page .eje__texto { font-size: var(--t-de); line-height: var(--lh-detalle); opacity: 1; }
 
 /* Portada */
 .inicio-page .kpi__etiqueta { font-size: var(--t-et); letter-spacing: var(--ls-etiqueta); }
@@ -27,5 +18,4 @@
 .inicio-page .portada__nota-cifras { font-size: var(--t-nota); }
 
 /* Sin guiones ni justificado: se lee mejor en columnas angostas */
-.inicio-page .vision__sinopsis, .inicio-page .jer__intro, .inicio-page .jer__cita, .inicio-page .jer__fuente,
-.inicio-page .jer__nota, .inicio-page .jer__aclara, .inicio-page .eje__texto, .inicio-page .objetivo__texto { hyphens: manual; -webkit-hyphens: manual; text-align: left; }
+.inicio-page .vision__sinopsis, .inicio-page .eje__texto, .inicio-page .objetivo__texto { hyphens: manual; -webkit-hyphens: manual; text-align: left; }

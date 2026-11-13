@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { MapPin, Route, Ruler, Users } from 'lucide-react';
 import { useCatalogo } from '../lib/sesim/useCatalogo';
 import { estadisticasPortada } from '../lib/sesim/api';
+import { EXTENSION_KM2, RED_VIAL_KM } from '../lib/sesim/datosTerritorio';
 import { useRevelar, prefiereMenosMovimiento } from '../lib/useRevelar';
 import MapaHeroVivo from '../components/inicio/MapaHeroVivo';
 import Contador from '../components/plataforma/Contador';
@@ -14,6 +15,7 @@ import Capitulo from '../components/inicio/Capitulo';
 import FlechasPantallas from '../components/inicio/FlechasPantallas';
 import { SECCIONES_INICIO } from '../lib/rutas';
 import './Inicio.css';
+import '../styles/inicio-sistema.css';
 
 const OBJETIVOS = [
   { numero: '01', tono: 'guinda', titulo: 'Organizar y territorializar', texto: 'Organizar, homologar y territorializar indicadores derivados de la legislación aplicable, la ENAMOV y estrategias estatales.' },
@@ -50,16 +52,16 @@ const Inicio = () => {
     return () => { vivo = false; };
   }, []);
 
-  // Territorio de Campeche. Extensión y red vial salen de PostGIS (api.estadisticas_portada); habitantes y municipios
-  // también se pueden leer del catálogo de unidades territoriales mientras llega la respuesta (misma fuente).
+  // Territorio de Campeche. Extensión y red vial son datos fijos (lib/sesim/datosTerritorio); habitantes y municipios salen de
+  // api.estadisticas_portada, con el catálogo de unidades territoriales como respaldo (misma fuente).
   const cifras = useMemo(() => {
     if (!datos || estadisticas === undefined) return null;
     const municipios = datos.unidad_territorial.filter((u) => u.nivel === 'municipio');
     return {
-      extension: estadisticas?.extension_km2 ?? null,
+      extension: EXTENSION_KM2,
       habitantes: estadisticas?.habitantes ?? (municipios.length ? municipios.reduce((t, u) => t + (u.pob_tot ?? 0), 0) : null),
       municipios: estadisticas?.municipios ?? (municipios.length || null),
-      redVial: estadisticas?.red_vial_km ?? null,
+      redVial: RED_VIAL_KM,
     };
   }, [datos, estadisticas]);
 
@@ -157,14 +159,14 @@ const Inicio = () => {
             <div className="portada__kpis" aria-label="Cifras del sistema">
               <span className="portada__pastilla portada__pastilla--cifras">SESIM del Estado de Campeche</span>
               {[
-                [Ruler, 'km² de extensión territorial', cifras?.extension],
-                [Users, 'habitantes', cifras?.habitantes],
-                [MapPin, 'municipios', cifras?.municipios],
-                [Route, 'km de red vial', cifras?.redVial],
-              ].map(([Icono, etiqueta, valor], i) => (
+                [Ruler, 'km² de extensión territorial', cifras?.extension, 1],
+                [Users, 'habitantes', cifras?.habitantes, 0],
+                [MapPin, 'municipios', cifras?.municipios, 0],
+                [Route, 'km de red vial', cifras?.redVial, 1],
+              ].map(([Icono, etiqueta, valor, decimales], i) => (
                 <div key={etiqueta} className="kpi" data-revelar style={retardo(i + 2, 120)}>
                   <Icono size={20} className="kpi__icono" aria-hidden="true" />
-                  <Contador valor={valor ?? null} className="kpi__numero" />
+                  <Contador valor={valor ?? null} decimales={decimales} className="kpi__numero" />
                   <span className="kpi__etiqueta">{etiqueta}</span>
                 </div>
               ))}

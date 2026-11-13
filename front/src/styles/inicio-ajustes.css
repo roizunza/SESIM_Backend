@@ -69,8 +69,8 @@
 .objetivo__numero { color: var(--pal-realce); }
 
 /* Visión y Marco jurídico: selección en gris claro con detalle verde */
-.eje--activo, .jer__col--activa, .jer__col--activa:hover, .jer__chip--activo { background: var(--pal-realce); border-color: var(--pal-realce); color: var(--pal-sobre-accion); }
-.eje--activo .eje__icono, .jer__col--activa .jer__col-num { color: var(--pal-beige); }
+.eje--activo { background: var(--pal-realce); border-color: var(--pal-realce); color: var(--pal-sobre-accion); }
+.eje--activo .eje__icono { color: var(--pal-beige); }
 .mj { --m-oro: var(--pal-realce); --m-beige: var(--pal-realce); --m-rosa: var(--pal-guinda); --m-rosa2: var(--pal-guinda); --m-rosa3: var(--pal-guinda-hover); }
 .piramide__fila--activa .piramide__peldano { box-shadow: 0 0 0 3px var(--pal-verde), 0 12px 28px rgba(var(--pal-sombra-rgb), calc(0.5 * var(--pal-sombra-k))) !important; }
 

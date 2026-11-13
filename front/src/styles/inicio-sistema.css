@@ -1,0 +1,98 @@
+/* =====================================================================
+   SISTEMA DE ESTILO DE INICIO · homologación de la landing
+   Se carga al final (Inicio.jsx) y define UN estilo por función:
+     etiqueta · título de sección · título de bloque · título de tarjeta · subtítulo ·
+     sinopsis · cuerpo · detalle · nota/fuente · caja de fuente · cifra
+   Colores: nunca negro. Texto = gris cálido oscuro; títulos = verde profundo;
+   etiquetas = verde; citas e instrumentos = guinda oscuro; notas = gris-beige oscuro.
+   Escala tipográfica: styles/tokens.css (todo ≥ 14 px para baja visión).
+   ===================================================================== */
+
+/* Texto un punto más suave que el casi negro de la paleta (solo Inicio; el tema grafito de paleta.css está comentado). */
+.inicio-page.inicio-page { --pal-texto: #3A3935; --pal-texto-2: #57534A; }
+
+/* — Etiqueta (sobretítulo en versalitas) — */
+.inicio-page.inicio-page .portada__banda-titulo,
+.inicio-page.inicio-page .vision__etiqueta,
+.inicio-page.inicio-page .capitulo__titulo,
+.inicio-page.inicio-page .mj__nivel,
+.inicio-page.inicio-page .estr-vertiente__etiqueta,
+.inicio-page.inicio-page .jer__prioridad,
+.inicio-page.inicio-page .jer__eje,
+.inicio-page.inicio-page .portada__pastilla {
+  font-family: var(--fuente-texto); font-size: var(--t-et); font-weight: 700; line-height: 1.2;
+  letter-spacing: var(--ls-etiqueta); text-transform: uppercase; color: var(--pal-realce);
+}
+
+/* — Título de sección (h2) — */
+.inicio-page.inicio-page .sec-titulo { font-family: var(--fuente-titulo); font-weight: 700; color: var(--pal-titulo); }
+
+/* — Título de bloque (h3) y de tarjeta: misma fuente, tamaño, peso y color — */
+.inicio-page.inicio-page .estr__h3,
+.inicio-page.inicio-page .mj__nombre,
+.inicio-page.inicio-page .objetivo h3.objetivo__titulo,
+.inicio-page.inicio-page h3.jer__titulo-caja,
+.inicio-page.inicio-page h4.jer__titulo,
+.inicio-page.inicio-page .estr-pastilla__titulo,
+.inicio-page.inicio-page .estr-vertiente__titulo {
+  font-family: var(--fuente-titulo); font-size: var(--t-h3); font-weight: 700; line-height: 1.2; color: var(--pal-titulo);
+}
+
+/* — Subtítulo de sección — */
+.inicio-page.inicio-page .sec-subtitulo { font-family: var(--fuente-titulo); font-size: var(--t-h3); font-weight: 600; line-height: 1.3; color: var(--pal-realce); }
+
+/* — Sinopsis (párrafo de entrada de cada sección) — */
+.inicio-page.inicio-page .vision__sinopsis,
+.inicio-page.inicio-page .estr__sinopsis,
+.inicio-page.inicio-page .estr__d,
+.inicio-page.inicio-page .mj-traza__sinopsis,
+.inicio-page.inicio-page .mj__lema,
+.inicio-page.inicio-page .jer__intro {
+  font-family: var(--fuente-texto); font-size: var(--t-sin); font-weight: 400; line-height: var(--lh-texto); color: var(--pal-texto); text-align: left; opacity: 1;
+}
+.inicio-page.inicio-page .jer__intro { max-width: none; }
+
+/* — Cuerpo (texto de tarjetas y citas) — */
+.inicio-page.inicio-page .objetivo__texto,
+.inicio-page.inicio-page .portada__intro p,
+.inicio-page.inicio-page .estr-pastilla__texto,
+.inicio-page.inicio-page .jer__cita {
+  font-family: var(--fuente-texto); font-size: var(--t-cu); font-weight: 400; line-height: var(--lh-texto); color: var(--pal-texto);
+}
+
+/* — Detalle (texto secundario dentro de tarjetas) — */
+.inicio-page.inicio-page .estr-vertiente__texto,
+.inicio-page.inicio-page .mj-paso__texto,
+.inicio-page.inicio-page .estr__total {
+  font-family: var(--fuente-texto); font-size: var(--t-de); font-weight: 400; line-height: var(--lh-detalle); color: var(--pal-texto);
+}
+
+/* — Nota y fuente (línea suelta) — */
+.inicio-page.inicio-page .jer__fuente,
+.inicio-page.inicio-page .mj__fundamento,
+.inicio-page.inicio-page .mj__bloque-nota,
+.inicio-page.inicio-page .portada__nota-cifras {
+  font-family: var(--fuente-texto); font-size: var(--t-nota); font-weight: 400; line-height: var(--lh-detalle); color: var(--pal-texto-2); text-align: left;
+}
+
+/* — Caja de fuente (la que cita de dónde sale el texto) — */
+.inicio-page.inicio-page .jer__nota,
+.inicio-page.inicio-page .mj__fuente,
+.inicio-page.inicio-page .mj__elaborado {
+  box-sizing: border-box; margin: 0; padding: 10px 14px;
+  background: var(--pal-superficie); border: 1px solid var(--pal-linea); border-radius: 12px;
+  font-family: var(--fuente-texto); font-size: var(--t-de); font-weight: 400; line-height: var(--lh-detalle); color: var(--pal-texto-2); text-align: left;
+}
+.inicio-page.inicio-page .jer__nota a,
+.inicio-page.inicio-page .mj__fuente a:not(.cita) { color: var(--pal-verde-claro); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.inicio-page.inicio-page .mj__fuente .cita,
+.inicio-page.inicio-page a.cita { color: var(--pal-guinda-inst); font-weight: 700; }
+
+/* — Cifras — */
+.inicio-page.inicio-page .kpi__numero,
+.inicio-page.inicio-page .portada__linea { font-family: var(--fuente-titulo); color: var(--pal-titulo); }
+.inicio-page.inicio-page .kpi__etiqueta { color: var(--pal-texto); }
+
+/* Pastilla de cifras: una sola línea aunque la columna sea angosta */
+.inicio-page.inicio-page .portada__pastilla--cifras { letter-spacing: 0.06em; }
+@media (min-width: 1101px) { .inicio-page.inicio-page .portada__pastilla--cifras { white-space: nowrap; } }

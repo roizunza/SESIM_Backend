@@ -407,77 +407,22 @@ html.tema-oscuro .capitulo--pantalla { --capitulo-fondo: var(--pal-fondo); }
 
 /* Fila 3: contenedor grande con la jerarquía */
 .vision__jerarquia { background: var(--pal-fondo-2); border: 1px solid var(--v-borde); border-radius: clamp(18px, 2.4vw, 32px); padding: clamp(12px, 1.8vh, 20px) clamp(12px, 1.6vw, 22px); container-type: inline-size; }
-.jer { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(12px, 1.6vw, 22px); align-items: stretch; }
-.jer__izq { display: flex; flex-direction: column; gap: clamp(8px, 1.2vh, 12px); min-width: 0; }
-.jer__caja { margin: 0; background: var(--v-tarjeta); border: 1px solid var(--v-borde); border-radius: 12px; padding: clamp(8px, 1.2vh, 12px) clamp(12px, 1.2vw, 18px); }
-.inicio-page .jer h3.jer__titulo-caja { font-family: var(--font-heading); font-weight: 700; font-size: clamp(0.95rem, 1.3vw, 1.2rem); line-height: 1.15; color: var(--pal-titulo); }
-.jer__caja.jer__intro { background: none; border: 0; border-radius: 0; padding: 0 2px; font-size: clamp(0.7rem, 0.82vw, 0.8rem); line-height: 1.5; color: var(--pal-texto); }
 
-/* Rampa: sube de izquierda a derecha, sin terminar en pico */
-.jer__rampa { flex: 1 1 auto; min-height: clamp(150px, 24vh, 250px); display: flex; align-items: stretch; gap: 0; }
-.jer__col {
-  flex: var(--peso) 1 0; min-width: 0; position: relative; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px;
-  padding: 0 clamp(2px, 0.4vw, 8px) clamp(8px, 1.2vh, 14px); border: 0; margin: 0 1px 0 0; cursor: pointer; text-align: center;
-  background: var(--tono); color: var(--pal-texto); clip-path: var(--recorte); font: inherit;
-  transform-origin: bottom; animation: jer-sube 0.7s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--k) * 90ms + 200ms);
-  transition: background-color 0.35s ease, color 0.35s ease, filter 0.35s ease;
-}
-.jer__col:hover { filter: brightness(1.15); }
-.jer__col--activa, .jer__col--activa:hover { background: var(--pal-beige); color: var(--pal-sobre-beige); filter: none; }
-.jer__col:focus-visible { outline: 2px solid var(--oro, var(--pal-realce)); outline-offset: -3px; }
-.jer__col-num { font-family: var(--font-heading); font-size: clamp(1.2rem, 2vw, 1.9rem); line-height: 1; color: var(--pal-sobre-beige); }
-.jer__col--activa .jer__col-num { color: var(--pal-guinda); }
-.jer__col-nombre { font-size: clamp(0.54rem, 0.7vw, 0.7rem); font-weight: 700; letter-spacing: 0; text-transform: uppercase; line-height: 1.2; hyphens: none; overflow-wrap: normal; height: 3.6em; display: flex; align-items: flex-start; justify-content: center; }
-@keyframes jer-sube { from { transform: scaleY(0.2); opacity: 0; } to { transform: none; opacity: 1; } }
 
-.jer__chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.jer__chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--v-borde); background: var(--v-tarjeta); color: inherit; font: inherit; font-size: 0.875rem; cursor: pointer; }
-.jer__chip span { font-family: var(--font-heading); color: var(--oro, var(--pal-realce)); }
-.jer__chip--activo { background: var(--pal-beige); color: var(--pal-sobre-beige); border-color: var(--pal-beige); }
-.jer__chip--activo span { color: var(--pal-guinda); }
 
-.jer__eje > span:first-child { display: none; }
-.jer__eje { display: flex; align-items: center; gap: 8px; font-size: clamp(0.56rem, 0.68vw, 0.66rem); letter-spacing: 0.14em; text-transform: uppercase; color: var(--pal-texto-2); }
-.jer__eje i { flex: 1; height: 0; border-top: 2px dashed rgba(var(--pal-realce-rgb), 0.55); position: relative; }
-.jer__eje i::after { content: ''; position: absolute; right: -1px; top: -6px; border: 5px solid transparent; border-left: 8px solid rgba(var(--pal-realce-rgb), 0.8); border-right: 0; }
-.jer__eje-fin { color: var(--oro, var(--pal-realce)); font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
-.jer__eje-fin::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--oro, var(--pal-realce)); }
 
 /* Derecha: tarjeta con foto a la izquierda y nota de fuente debajo */
-.jer__der { display: flex; flex-direction: column; gap: clamp(8px, 1.2vh, 12px); min-width: 0; }
-.jer__tarjeta { flex: 1 1 auto; display: flex; background: var(--v-tarjeta); border: 1px solid var(--v-borde); border-radius: 14px; overflow: hidden; }
-.jer__ficha { display: grid; grid-template-columns: minmax(0, 0.42fr) minmax(0, 1fr); width: 100%; animation: jer-ficha 0.45s ease both; }
-@keyframes jer-ficha { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
-.jer__foto { position: relative; margin: 0; min-height: 100%; }
-.jer__foto img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-.jer__foto figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 8px 4px; font-size: 0.875rem; line-height: 1.2; color: var(--pal-texto); background: linear-gradient(0deg, rgba(var(--pal-sombra-rgb), calc(0.65 * var(--pal-sombra-k))), transparent); }
-.jer__cuerpo { display: flex; flex-direction: column; gap: clamp(5px, 0.9vh, 9px); padding: clamp(10px, 1.6vh, 16px) clamp(12px, 1.2vw, 18px); min-width: 0; }
-.jer__prioridad { font-size: clamp(0.58rem, 0.7vw, 0.68rem); font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--oro, var(--pal-realce)); }
-.inicio-page .jer h3.jer__titulo { display: flex; align-items: center; gap: 8px; margin: 0; font-family: var(--font-heading); font-weight: 700; font-size: clamp(1.05rem, 1.5vw, 1.4rem); line-height: 1.1; color: var(--pal-titulo); }
-.jer__icono { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: rgba(var(--pal-realce-rgb), 0.16); color: var(--oro, var(--pal-realce)); flex: none; }
-.jer__cita { margin: 0; padding: clamp(6px, 1vh, 10px) clamp(10px, 1vw, 14px); border-left: 3px solid var(--oro, var(--pal-realce)); background: rgba(var(--pal-sombra-rgb), calc(0.22 * var(--pal-sombra-k))); border-radius: 0 10px 10px 0; font-size: clamp(0.68rem, 0.8vw, 0.78rem); line-height: 1.45; color: var(--pal-texto); }
-.jer__fuente { margin: 0; font-size: clamp(0.58rem, 0.66vw, 0.66rem); line-height: 1.4; color: var(--pal-texto-2); }
-.jer__nota { margin: 0; padding: clamp(6px, 1vh, 10px) clamp(10px, 1vw, 14px); background: var(--v-tarjeta); border: 1px solid var(--v-borde); border-radius: 12px; font-size: clamp(0.58rem, 0.68vw, 0.68rem); line-height: 1.4; color: var(--pal-texto); }
-.jer__nota a { color: var(--oro, var(--pal-realce)); text-decoration: underline; text-underline-offset: 2px; }
 
 /* Pantallas bajas (portátiles) */
 @media (min-width: 1101px) and (max-height: 820px) {
   .vision { --v-gap: 8px; }
   .eje { --d: 62px; }
-  .jer__rampa { min-height: 140px; }
-  .jer__col-num { font-size: 1.15rem; }
-  .jer__col-nombre { font-size: 0.875rem; }
-  .jer__caja.jer__intro { font-size: 0.875rem; line-height: 1.4; }
-  .jer__caja { padding: 6px 12px; }
 }
 
 /* Tableta: se apila; los principios quedan todos abiertos */
 @media (max-width: 1100px) {
   .capitulo--pantalla { min-height: 0; padding: 1.5rem 0; }
   .vision__fila--ejes { grid-template-columns: 1fr; }
-  .jer { grid-template-columns: 1fr; }
-  .jer__ficha { grid-template-columns: minmax(0, 0.35fr) minmax(0, 1fr); }
-  .jer__foto { min-height: 220px; }
 }
 @media (max-width: 760px) {
   .vision__fila--titulo { grid-template-columns: 1fr; }
@@ -488,13 +433,8 @@ html.tema-oscuro .capitulo--pantalla { --capitulo-fondo: var(--pal-fondo); }
   .eje__titulo { white-space: normal; }
   .eje:not(.eje--activo) .eje__texto { display: block; }
   .eje__texto { animation: none !important; }
-  .jer__ficha { grid-template-columns: 1fr; }
-  .jer__foto { min-height: 0; aspect-ratio: 16 / 10; }
-  .jer__rampa { min-height: 140px; }
-  .jer__eje { font-size: 0.875rem; letter-spacing: 0.08em; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .jer__col, .jer__ficha { animation: none; }
   .eje { transition: none; } .eje__cuerpo { animation: none; }
 }
 
@@ -506,12 +446,9 @@ html.tema-oscuro .capitulo--pantalla { --capitulo-fondo: var(--pal-fondo); }
 }
 .vision__etiqueta { font-family: var(--font-heading); color: var(--marfil, var(--pal-texto)); }
 .inicio-page .vision h2.vision__titulo { font-weight: 700; font-size: clamp(1.05rem, 1.55vw, 1.5rem); color: var(--pal-titulo); }
-.vision__sinopsis, .jer__caja.jer__intro { font-size: clamp(0.74rem, 0.9vw, 0.86rem); line-height: 1.45; color: var(--pal-titulo); opacity: 0.92; }
-.jer__caja.jer__intro { padding-inline: 2px; }
-.inicio-page .jer h3.jer__titulo-caja { font-size: clamp(1rem, 1.4vw, 1.35rem); }
-.eje__texto, .jer__cita { font-size: clamp(0.7rem, 0.85vw, 0.82rem); }
+.vision__sinopsis { font-size: clamp(0.74rem, 0.9vw, 0.86rem); line-height: 1.45; color: var(--pal-titulo); opacity: 0.92; }
+.eje__texto { font-size: clamp(0.7rem, 0.85vw, 0.82rem); }
 .eje__texto { color: inherit; }
-.jer__cita { color: var(--pal-titulo); }
 @media (max-width: 1100px) { .vision { width: 100%; margin-left: 0; padding-inline: 0; } }
 
 /* Tablero de seguimiento (público): misma ropa oscura de Inicio, con aire bajo la barra */
@@ -525,11 +462,4 @@ html.tema-oscuro .capitulo--pantalla { --capitulo-fondo: var(--pal-fondo); }
 .portada__nota-cifras { grid-column: 1 / -1; margin: 2px 0 0; font-size: 0.875rem; line-height: 1.4; color: var(--pal-texto-2); text-align: left; }
 
 /* Visión: aclaración del nivel «Transporte público» */
-.jer__aclara { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: start; padding: clamp(6px, 1vh, 10px) clamp(10px, 1vw, 14px); border: 1px dashed rgba(var(--pal-velo-rgb), 0.4); border-radius: 12px; background: rgba(var(--pal-velo-rgb), 0.06); font-size: clamp(0.62rem, 0.74vw, 0.74rem); line-height: 1.45; color: var(--pal-texto); text-align: left; }
-.jer__aclara b { color: var(--oro, var(--pal-realce)); }
-.jer__aclara .jer__aclara-b { color: var(--pal-titulo); }
-.jer__aclara-i { width: 18px; height: 18px; border-radius: 50%; background: var(--oro, var(--pal-realce)); color: var(--pal-sobre-accion); font-size: 0.875rem; font-weight: 800; display: grid; place-items: center; font-family: var(--font-heading); }
 
-/* Columnas oscuras de la jerarquía: texto claro */
-.jer__col--oscura { color: var(--pal-sobre-accion); }
-.jer__col--oscura .jer__col-num { color: var(--pal-sobre-accion); }

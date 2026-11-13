@@ -5,7 +5,7 @@ import { useVisible, prefiereMenosMovimiento } from '../../lib/useRevelar';
  * Número que «cuenta» de 0 al valor final cuando entra en pantalla.
  * Si `valor` es null muestra un guion (dato aún cargando).
  */
-export default function Contador({ valor, duracion = 1400, className }) {
+export default function Contador({ valor, duracion = 1400, decimales = 0, className }) {
   const ref = useRef(null);
   const visible = useVisible(ref, 0.5);
   const [actual, setActual] = useState(0);
@@ -21,7 +21,8 @@ export default function Contador({ valor, duracion = 1400, className }) {
     const paso = (t) => {
       const p = Math.min(1, (t - inicio) / duracion);
       const suave = 1 - Math.pow(1 - p, 3); // ease-out cúbico
-      setActual(Math.round(valor * suave));
+      const f = 10 ** decimales;
+      setActual(Math.round(valor * suave * f) / f);
       if (p < 1) raf = requestAnimationFrame(paso);
     };
     raf = requestAnimationFrame(paso);
@@ -30,7 +31,7 @@ export default function Contador({ valor, duracion = 1400, className }) {
 
   return (
     <span ref={ref} className={className}>
-      {valor === null || valor === undefined ? '—' : actual.toLocaleString('es-MX')}
+      {valor === null || valor === undefined ? '—' : actual.toLocaleString('es-MX', { minimumFractionDigits: decimales, maximumFractionDigits: decimales })}
     </span>
   );
 }
