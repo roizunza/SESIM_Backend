@@ -1,6 +1,6 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Filter, MapPin, Calendar, Landmark, ChevronRight, ChevronDown, ExternalLink } from 'lucide-react';
+import { Search, Filter, MapPin, Calendar, Landmark, ChevronRight, ChevronDown, ExternalLink, FileText } from 'lucide-react';
 import { useCatalogo } from '../lib/sesim/useCatalogo';
 import { useFiltros } from '../lib/sesim/filtrosGlobales';
 import { useFiltrosEnUrl } from '../lib/sesim/useFiltrosEnUrl';
@@ -9,6 +9,7 @@ import EstadoCarga, { Esqueleto } from '../components/plataforma/EstadoCarga';
 import FichaInstrumento from '../components/catalogo/FichaInstrumento';
 import AvisoLegal from '../components/plataforma/AvisoLegal';
 import { publicables, relacionesVerificadas, fmtPublicacion, anioPublicacion } from '../lib/sesim/normativo';
+import { urlPdfInstrumento } from '../lib/sesim/api';
 import './CatalogoInstrumentos.css';
 
 const TABLAS = ['instrumento_normativo', 'relacion_normativa', 'unidad_territorial'];
@@ -238,6 +239,11 @@ export default function CatalogoInstrumentos() {
                     <button type="button" className="instrumento__ficha" onClick={() => abrir(d.id)}>
                       Ver ficha técnica <ChevronRight size={15} aria-hidden="true" />
                     </button>
+                    {d.pdf_ruta && (
+                      <a className="instrumento__doc" href={urlPdfInstrumento(d)} target="_blank" rel="noopener noreferrer">
+                        <FileText size={14} aria-hidden="true" /> Abrir PDF<span className="sr-only"> de {d.nombre} (se abre en una pestaña nueva)</span>
+                      </a>
+                    )}
                     {d.url_oficial && (
                       <a className="instrumento__doc" href={d.url_oficial} target="_blank" rel="noopener noreferrer">
                         <ExternalLink size={14} aria-hidden="true" /> Documento oficial<span className="sr-only"> de {d.nombre} (se abre en una pestaña nueva)</span>

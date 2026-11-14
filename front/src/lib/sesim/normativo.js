@@ -11,7 +11,14 @@ const MEDIOS = {
 
 export const publicables = (lista) => lista.filter((d) => d.publicable !== false);
 
-export const relacionesVerificadas = (relaciones) => relaciones.filter((r) => r.estatus === 'verificada');
+/** Relaciones con sustento validado por el Administrador Titular (`validada`; `verificada` era el nombre en el JSON anterior). */
+export const relacionesVerificadas = (relaciones) => relaciones.filter((r) => r.estatus === 'validada' || r.estatus === 'verificada');
+
+/** 941604 → «920 KB»; 145909669 → «139.2 MB». */
+export function fmtTamano(bytes) {
+  if (!Number.isFinite(bytes) || bytes <= 0) return null;
+  return bytes < 1048576 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / 1048576).toFixed(1)} MB`;
+}
 
 export function fmtFecha(iso) {
   if (!iso) return null;

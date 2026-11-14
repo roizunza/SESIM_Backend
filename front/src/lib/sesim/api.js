@@ -44,15 +44,31 @@ const TABLAS_API = {
   capa_indicador: '',
   periodo: 'order=id',
   umbral_publico: 'order=id',
+  // ER-6 (catálogo normativo en la base): con sesión la RLS deja ver también borradores; las pantallas públicas filtran por `publicable`.
+  instrumento_normativo: 'order=id',
+  relacion_normativa: 'order=id',
   // Vista pública: el filtro es explícito porque con sesión la RLS deja ver también borradores.
   medicion_publica: 'estado=eq.vigente_publico&order=id',
 };
 
 /**
- * Tablas estáticas que aún no se conectan. `instrumento_normativo`, `fuente_documental` y
- * `relacion_normativa` salen del Banco documental (scripts/datos/04_exportar_banco_documental.py).
+ * Tablas estáticas que aún no se conectan. `fuente_documental` sale del Banco documental
+ * (scripts/datos/04_exportar_banco_documental.py) y se conecta en la entrega de «Consulta oficial».
  */
-const TABLAS_ESTATICAS = ['perfil', 'unidad_territorial', 'capa', 'v_capa_por_municipio', 'instrumento_normativo', 'fuente_documental', 'relacion_normativa', 'proceso_capa', 'indice'];
+const TABLAS_ESTATICAS = ['perfil', 'unidad_territorial', 'capa', 'v_capa_por_municipio', 'fuente_documental', 'proceso_capa', 'indice'];
+
+/**
+ * Adaptadores API → forma que ya consumen las pantallas. En la base, `estatus` es el ciclo de publicación
+ * (borrador … vigente_publico) y la verificación documental se llama `estatus_verificacion`; las pantallas
+ * siguen leyendo `estatus` como verificación y `publicable` como «se muestra al público».
+ * Tolera filas con la forma anterior (JSON estático / servidor de demostración).
+ */
+const ADAPTADORES = {
+  instrumento_normativo: (f) => ('estatus_verificacion' in f
+    ? { ...f, estatus_publicacion: f.estatus, estatus: f.estatus_verificacion, publicable: f.publicado === true && f.activo !== false }
+    : f),
+  relacion_normativa: (f) => ({ ...f, instrumento_origen: f.instrumento_origen ?? f.id_origen, instrumento_destino: f.instrumento_destino ?? f.id_destino }),
+};
 
 /**
  * Recursos que el modelo v2.2 todavía no publica. Su nombre en el esquema `api` se configura en
@@ -87,6 +103,7 @@ export function tabla(nombre) {
     let promesa;
     if (nombre in TABLAS_API) {
       promesa = cliente.leer(nombre, { query: ['select=*', TABLAS_API[nombre]].filter(Boolean).join('&') });
+      if (nombre in ADAPTADORES) promesa = promesa.then((filas) => filas.map(ADAPTADORES[nombre]));
       if (TABLAS_COMPLEMENTARIAS.has(nombre)) promesa = promesa.catch(() => []);
     } else {
       promesa = fetch(`${BASE_ESTATICA}/${nombre}.json`).then((r) => {
@@ -100,6 +117,16 @@ export function tabla(nombre) {
     }));
   }
   return cache.get(nombre);
+}
+
+/**
+ * Enlace público al PDF principal vigente de una ficha normativa (bucket público `instrumentos`), o null si aún no tiene.
+ * La ruta ya lleva la clave: instrumentos/DOC-E001/DOC-E001_v01_<huella16>.pdf
+ */
+export function urlPdfInstrumento(doc) {
+  if (!doc?.pdf_ruta || !cliente.urlPublica) return null;
+  const [bucket, ...resto] = doc.pdf_ruta.split('/');
+  return cliente.urlPublica(bucket, resto.join('/'));
 }
 
 /** Lee varias tablas a la vez → objeto { nombre: filas }. */

@@ -375,6 +375,11 @@ export function crearCliente({
     return true;
   }
 
+  /** Enlace directo a un archivo de un bucket PÚBLICO (p. ej. `instrumentos`): no necesita sesión ni firma. */
+  function urlPublica(bucket, ruta) {
+    return `${base}/storage/v1/object/public/${bucket}/${ruta.split('/').map(encodeURIComponent).join('/')}`;
+  }
+
   /** Enlace temporal para abrir un archivo privado (la política de lectura del bucket decide quién puede). */
   async function urlFirmada(bucket, ruta, segundos = 300) {
     const d = await llamar(`/storage/v1/object/sign/${bucket}/${ruta.split('/').map(encodeURIComponent).join('/')}`, { metodo: 'POST', cuerpo: { expiresIn: segundos } });
@@ -402,6 +407,7 @@ export function crearCliente({
     cambiarActivo,
     subirObjeto,
     urlFirmada,
+    urlPublica,
     sesionGuardada: () => sesion,
     suscribir: (fn) => { oyentes.add(fn); return () => oyentes.delete(fn); },
     releer: () => { sesion = leerAlmacen(); },

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ExternalLink } from 'lucide-react';
-import { vCoberturaInstrumento } from '../../lib/sesim/api';
-import { fmtFecha, fmtPublicacion } from '../../lib/sesim/normativo';
+import { ExternalLink, FileText } from 'lucide-react';
+import { vCoberturaInstrumento, urlPdfInstrumento } from '../../lib/sesim/api';
+import { fmtFecha, fmtPublicacion, fmtTamano } from '../../lib/sesim/normativo';
 import { enlace } from '../../lib/rutas';
 import EstadoCarga from '../plataforma/EstadoCarga';
 import AvisoLegal from '../plataforma/AvisoLegal';
@@ -112,11 +112,28 @@ export default function FichaInstrumento({ doc, municipio, relaciones, porId }) 
         </section>
       )}
 
+      {doc.pdf_ruta && (
+        <section className="ficha-seccion">
+          <h3>Documento</h3>
+          <div className="ficha-enlaces">
+            <a href={urlPdfInstrumento(doc)} target="_blank" rel="noopener noreferrer" className="ficha-enlace">
+              <FileText size={15} aria-hidden="true" /> Abrir PDF<span className="sr-only"> de {doc.nombre} (se abre en una pestaña nueva)</span>
+            </a>
+          </div>
+          <p className="ficha-texto">
+            Versión {doc.pdf_version}
+            {doc.pdf_paginas ? ` · ${doc.pdf_paginas} páginas` : ''}
+            {fmtTamano(doc.pdf_bytes) ? ` · ${fmtTamano(doc.pdf_bytes)}` : ''}
+            {doc.pdf_hash ? <> · Huella SHA-256: <code>{doc.pdf_hash.slice(0, 16)}…</code></> : null}
+          </p>
+        </section>
+      )}
+
       <section className="ficha-seccion">
-        <h3>Distribución</h3>
+        <h3>Fuente oficial</h3>
         <div className="ficha-enlaces">
           {doc.enlaces.map((e, k) => (
-            <a key={e.url} href={e.url} target="_blank" rel="noopener noreferrer" className={`ficha-enlace${k ? ' ficha-enlace--secundario' : ''}`}>
+            <a key={e.url} href={e.url} target="_blank" rel="noopener noreferrer" className={`ficha-enlace${k || doc.pdf_ruta ? ' ficha-enlace--secundario' : ''}`}>
               <ExternalLink size={15} aria-hidden="true" /> {e.titulo}<span className="sr-only"> (se abre en una pestaña nueva)</span>
             </a>
           ))}
