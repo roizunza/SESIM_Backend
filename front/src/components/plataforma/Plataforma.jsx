@@ -42,7 +42,7 @@ const Plataforma = () => {
           <Outlet />
         </FiltrosProvider>
       </main>
-      {pathname !== '/' && pathname !== '/catalogo' && pathname !== RUTAS.acceso && (
+      {pathname !== '/' && pathname !== '/catalogo' && pathname !== '/tablero-de-seguimiento' && pathname !== RUTAS.acceso && (
         <div className="aviso-pie">
           <AvisoLegal tipo="general" discreto />
         </div>
