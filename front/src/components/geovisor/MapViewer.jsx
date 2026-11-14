@@ -56,7 +56,7 @@ const MapInstanceCapture = ({ setMapInstance }) => {
 };
 
 /** Recorrido del geovisor público: cada `sel` apunta a una zona real de la pantalla; si no está a la vista el paso se omite. */
-const CLAVE_RECORRIDO = 'sesim.geovisor.recorrido.v1';
+const CLAVE_RECORRIDO = 'sesim.geovisor.recorrido.v2';
 const PASOS_RECORRIDO = [
   { id: 'abrir-panel', selMovil: '.panel-fab', titulo: 'Abre el panel de capas', texto: 'Con el botón «Capas» abres el panel donde eliges qué ver en el mapa.' },
   { id: 'pestanas', sel: '.gv-pestanas', selMovil: '.gv-pestanas', titulo: 'Dos pestañas', texto: 'El panel tiene dos vistas, y el número junto a «En el mapa» te dice cuántas capas llevas encendidas.', items: [
@@ -67,6 +67,10 @@ const PASOS_RECORRIDO = [
   { id: 'teñidas', sel: '.gv-fila--on, .gv-grupo--on, .gv-paso .gv-lista', titulo: 'Las capas con otro color', texto: 'Una fila teñida significa que esa capa ya está encendida en el mapa. Las demás están disponibles pero apagadas.', items: [
     { marca: '●', texto: 'El interruptor de la izquierda enciende o apaga la capa.' }, { marca: '›', texto: '«Ficha» abre su detalle: sinopsis, ficha técnica y descarga.' }] },
   { id: 'escala', sel: '.gv-escala', selMovil: '.gv-escala', titulo: 'Escala de consulta', texto: 'Elige todo el estado o un municipio. Las capas muestran solo los elementos de ese municipio, lo demás se atenúa y el mapa se acerca a él.' },
+  { id: 'en-el-mapa', sel: '.gv-pestanas', selMovil: '.gv-pestanas', titulo: 'Administra lo que tienes encendido', texto: 'En la pestaña «En el mapa» cada capa tiene su tarjeta: cambia su orden de dibujo, su transparencia, abre su ficha o la quita. También puedes ver quién publica cada capa y quitar todas de una vez.', items: [
+    { marca: '▲▼', texto: 'Sube o baja una capa para decidir cuál queda encima.' }, { marca: '◑', texto: 'Transparencia por capa; el mapa base la comparte entre sus capas.' }] },
+  { id: 'clic', titulo: 'Toca un elemento del mapa', texto: 'Al pasar el cursor ves la clave de la capa y el nombre del elemento. Con un clic se abre un cuadro con dos acciones.', items: [
+    { marca: '›', texto: '«Ver detalle»: elemento, sinopsis, ficha técnica y descarga en GeoJSON; si la capa tiene indicadores, un botón te lleva al Tablero de seguimiento.' }, { marca: '⌖', texto: '«Ubicar»: centra y acerca el mapa en ese elemento.' }] },
   { id: 'leyenda', sel: '.leyenda-flotante', titulo: 'Simbología', texto: 'La leyenda explica los colores de cada capa. Sus interruptores ocultan la simbología sin apagar la capa.' },
   { id: 'controles', sel: '.map-custom-controls', titulo: 'Controles del mapa', texto: 'Aquí cambias el mapa base, acercas o alejas, descargas las capas encendidas en un GeoPackage, armas la infografía y activas la pantalla completa.', items: [
     { marca: '?', texto: 'Con el botón «?» vuelves a este recorrido.' }] },

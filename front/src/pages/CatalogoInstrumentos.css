@@ -45,6 +45,11 @@
 .catalogo__vistas button { min-height: 40px; padding: 0 16px; border: 0; border-radius: 9px; background: none; color: var(--cat-tinta2); font: 600 var(--t-de)/1 var(--fuente-texto); cursor: pointer; transition: background .15s, color .15s; }
 .catalogo__vistas button:hover { background: var(--cat-acc-suave); color: var(--cat-titulo); }
 .catalogo__vistas button[aria-selected='true'] { background: var(--cat-acc); color: var(--cat-sobre); }
+.catalogo__vistas-fila { display: flex; align-items: center; gap: 10px; margin-top: 8px; flex-wrap: wrap; }
+.catalogo__vistas-fila .catalogo__vistas { margin-top: 0; }
+.catalogo__guia { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border-radius: 12px; border: 1px solid var(--cat-linea); background: var(--cat-caja); color: var(--cat-titulo); font: 600 var(--t-de)/1 var(--fuente-texto); cursor: pointer; transition: background .15s, color .15s; }
+.catalogo__guia:hover { background: var(--cat-acc-suave); }
+.catalogo__guia:focus-visible { outline: 2px solid var(--cat-acc); outline-offset: 2px; }
 .catalogo__escalas--dos .catalogo__escala { min-width: 170px; }
 
 /* Cuerpo: filtros a la izquierda (caben sin desplazarse), una sola caja de resultados a la derecha. */
@@ -172,7 +177,7 @@
   .catalogo { padding: 14px 16px 40px; }
   .catalogo__escalas { width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
   .catalogo__escalas--dos { grid-template-columns: repeat(2, minmax(0, 1fr)); } .catalogo__escalas--dos .catalogo__escala { min-width: 0; }
-  .catalogo__vistas { display: flex; width: 100%; } .catalogo__vistas button { flex: 1; padding: 0 8px; }
+  .catalogo__vistas { display: flex; flex: 1; } .catalogo__vistas button { flex: 1; padding: 0 8px; }
   .catalogo__escala { min-width: 0; grid-template-columns: 1fr; padding: 8px 10px 10px; } .catalogo__escala b { justify-self: start; }
   .catalogo__municipio, .catalogo__municipio select { width: 100%; }
   .instrumento__clave { margin-left: 0; width: 100%; }
