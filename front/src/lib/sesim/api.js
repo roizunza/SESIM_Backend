@@ -3,7 +3,8 @@
  *
  * Los catálogos de indicadores y su trazabilidad (indicador, eje_tematico, sector,
  * fuente_informacion, instrumento_origen, matriz_instrumento, indicador_instrumento,
- * capa_indicador) se leen en VIVO de Supabase: `GET /rest/v1/<tabla>` sobre el esquema
+ * capa_indicador) y el catálogo normativo (instrumento_normativo, relacion_normativa, fuente_documental: ER-6 y ER-7)
+ * se leen en VIVO de Supabase: `GET /rest/v1/<tabla>` sobre el esquema
  * `api` (vistas security_invoker, así que la RLS decide qué ve cada quien):
  *   · sin sesión (portal público): rol `anon`, solo indicadores aprobados y activos,
  *     instrumentos publicados, etc. (migración 215);
