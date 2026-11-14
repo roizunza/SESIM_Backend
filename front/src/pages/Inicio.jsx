@@ -16,6 +16,7 @@ import FlechasPantallas from '../components/inicio/FlechasPantallas';
 import { SECCIONES_INICIO } from '../lib/rutas';
 import './Inicio.css';
 import '../styles/inicio-sistema.css';
+import '../styles/portada-oscura.css';
 
 const OBJETIVOS = [
   { numero: '01', tono: 'guinda', titulo: 'Organizar y territorializar', texto: 'Organizar, homologar y territorializar indicadores derivados de la legislación aplicable, la ENAMOV y estrategias estatales.' },
@@ -133,7 +134,7 @@ const Inicio = () => {
 
       <section className="portada" id="introduccion" ref={hero} aria-labelledby="portada-titulo">
         <div className="portada__claro">
-          <div className="portada__mapa" aria-hidden="true">
+          <div className="portada__mapa">
             <MapaHeroVivo />
           </div>
           <div className="portada__marco portada__arriba">

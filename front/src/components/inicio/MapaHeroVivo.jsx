@@ -1,74 +1,55 @@
 import React, { useEffect, useRef, useState } from 'react';
 import StreetLinesBackground from '../plataforma/StreetLinesBackground';
-import { prefiereMenosMovimiento } from '../../lib/useRevelar';
 import './MapaHeroVivo.css';
 
 /*
- * Mapa en vivo de la portada: relieve de Campeche con la red vial por jerarquía.
+ * Mapa de la portada: relieve horneado de Campeche con la red vial por jerarquía y las localidades como puntos de luz,
+ * en vista inclinada. Se puede explorar como un geovisor, pero no lo parece.
  *
  *  · MapLibre GL JS (código abierto; Mapbox GL exige token y licencia propia).
- *  · Relieve: teselas raster-dem «Terrarium» (por omisión, AWS Terrain Tiles; sin llave). Se cambia con
- *    VITE_SESIM_DEM_URL, p. ej. a un PMTiles propio, sin tocar este archivo.
- *  · Color por altitud (mar claro → tierra verde), sombreado y terreno 3D, todo con colores de la paleta
- *    (tokens --mapa-* de MapaHeroVivo.css, resueltos aquí a rgba para MapLibre).
- *  · Red vial real: /sesim/hero/red_vial.json (scripts/datos/07_exportar_red_hero.py):
- *    a = primaria (federal y de cuota), b = secundaria (estatal), c = local.
- *  · Cámara que recorre el estado; la red se dibuja poco a poco por jerarquía (line-gradient), «respira» y late en
- *    ondas desde Campeche y Carmen; anillos tenues en las localidades y un sol que mueve el sombreado.
- *    Todo es decorativo (no son datos en vivo) y se pausa fuera de pantalla y con «reducir movimiento». Si el relieve no carga o no hay WebGL, se muestra el trazo de calles de respaldo.
+ *  · El relieve NO se calcula en el navegador: es una imagen (/sesim/hero/relieve.jpg) horneada una vez con
+ *    scripts/datos/09_hornear_relieve_hero.py a partir del DEM MERIT: hillshade, curvas de nivel, hidrografía y fundido
+ *    hacia los estados vecinos (sin dibujar ningún límite). Está en Web Mercator, alineada con LIMITES.
+ *  · Red vial real (/sesim/hero/red_vial_onda.json, scripts/datos/10_red_vial_onda.py): tramos con su categoría (a = primaria,
+ *    b = secundaria, c = local) y el km de recorrido en que se enciende cada uno. La jerarquía se lee en grosor y opacidad
+ *    (blanco puro, sin líneas punteadas).
+ *  · Localidades reales (/sesim/hero/localidades.json, de Loc01 y Loc02): puntos con halo; las urbanas crecen con su área.
+ *  · Animación decorativa (no son datos en vivo), UNA sola vez al entrar a la portada: las vialidades se encienden desde las 13
+ *    localidades urbanas mayores y avanzan por la red hasta encontrarse. Cada tramo se enciende con feature-state (no se vuelve a
+ *    procesar la geometría). Además, una leve deriva de la cámara que se detiene cuando la persona toma el mapa. Corre a 30 fps,
+ *    espera a que la portada esté a la vista, se pausa con la pestaña oculta y con «reducir movimiento» la red aparece completa.
+ *  · Arrastrar mueve; clic derecho o Ctrl + arrastrar gira e inclina; Ctrl + rueda (o dos dedos en el celular) acerca, para no
+ *    secuestrar el desplazamiento de la página. «Restablecer vista» vuelve a la vista inicial.
+ *  · Vista inicial en VISTA. Para ajustarla: mover el mapa y escribir `sesimCamara()` en la consola.
+ *  · Si la imagen no carga o no hay WebGL, se muestra el trazo de calles de respaldo.
  */
-const ENV = import.meta.env ?? {};
-const URL_DEM = ENV.VITE_SESIM_DEM_URL || 'https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png';
-const URL_RED = '/sesim/hero/red_vial.json';
-const URL_EXTERIOR = '/sesim/hero/exterior_difuminado.png'; // scripts/datos/08_exportar_exterior_difuminado.py
-const ESQUINAS = [[-95, 22.6], [-87, 22.6], [-87, 16.2], [-95, 16.2]]; // NO, NE, SE, SO (deben coincidir con el script 08)
-const URL_URBANO = '/sesim/capas/Loc01.geojson';   // localidades urbanas (polígonos)
-const URL_RURAL = '/sesim/capas/Loc02.geojson';    // localidades rurales (puntos)
-const EXAGERACION = 7;
+const URL_RED = '/sesim/hero/red_vial_onda.json';
+const URL_RELIEVE = '/sesim/hero/relieve.jpg';
+const URL_LOCALIDADES = '/sesim/hero/localidades.json';
+const URL_CONTEXTO = '/sesim/hero/contexto.json'; // tierra plana de México y vecinos (script 11): contexto bajo el relieve
+// Recuadro de la imagen horneada (deben coincidir con L0, L1, A0, A1 de scripts/datos/09_hornear_relieve_hero.py).
+const LIMITES = { o: -93.25, e: -88.35, s: 17.0, n: 21.6 };
+const ESQUINAS = [[LIMITES.o, LIMITES.n], [LIMITES.e, LIMITES.n], [LIMITES.e, LIMITES.s], [LIMITES.o, LIMITES.s]]; // NO, NE, SE, SO
 
-// Cámara: cada parada se mantiene un momento y luego viaja a la siguiente (c: [lon, lat], z, b: rumbo, p: inclinación).
-const RECORRIDO = [
-  { c: [-90.55, 19.0], z: 6.85, b: -8, p: 46 },   // el estado completo
-  { c: [-90.45, 19.6], z: 7.6, b: 16, p: 62 },    // Campeche – Champotón – Hopelchén
-  { c: [-90.2, 18.4], z: 7.4, b: 6, p: 60 },      // Escárcega – Calakmul
-  { c: [-91.25, 18.7], z: 7.5, b: -22, p: 60 },   // Laguna de Términos y Carmen
-];
-const VIAJE_S = 16;
-const PAUSA_S = 3;
+// Vista inicial en perspectiva (c: [lon, lat], z: zoom, b: rumbo en grados, p: inclinación en grados).
+const VISTA = { c: [-90.7, 19.05], z: 7.0, b: -8, p: 55 };
+const VISTA_MOVIL = { c: [-90.75, 19.35], z: 6.1, b: -8, p: 42 };
+// Deriva de la cámara: va y viene entre dos posiciones, muy despacio, hasta que la persona toma el mapa.
+const DERIVA = { periodo: 36, rumbo: 0, inclinacion: 0 }; // vista congelada (Ismael): sin deriva; // segundos para ir; grados que se suman a la vista
 
-// El dibujo de la red: cada jerarquía arranca y dura distinto (segundos); luego «respira» y, al cierre del ciclo, se desvanece y vuelve a dibujarse.
-const DIBUJO = { a: { ini: 0, dur: 7 }, b: { ini: 3, dur: 8 }, c: { ini: 5.5, dur: 9 } };
-const CICLO_S = 84;
-const DESVANECE_S = 6;
+// Jerarquía lumínica de la red vial: la federal manda; el resto es un rastro que se apaga.
+const VIAS = { a: { alfa: 1, ancho: [1.6, 2.6, 4.5] }, b: { alfa: 0.7, ancho: [0.8, 1.2, 2] }, c: { alfa: 0.38, ancho: [0.5, 0.7, 1.1] } };
 
-// «Latido»: una onda suave de luz sale de Campeche y de Carmen y recorre la red (decorativo, no son datos en vivo).
-const ORIGENES = [[-90.534, 19.845], [-91.84, 18.65]];
-const LATIDO = { periodo: 11, alcanceKm: 340, bandas: 8, anchoBandaKm: 40, trozoGrados: 0.16 };
-// Anillos tenues que nacen de las localidades urbanas más grandes.
-const ANILLOS = { periodo: 9, cuantas: 140 };
-// El sol del sombreado se desplaza despacio (grados de azimut alrededor de 315°).
-const SOL = { centro: 315, amplitud: 40, periodo: 100 };
+// Encendido de la red: una sola vez. Dura `duracion` s; cada tramo brilla un momento (calor) antes de quedar fijo.
+const ONDA = { duracion: 12, retardo: 0.5, fps: 30, calor: [0.45, 1.0] }; // segundos tras encenderse en que el tramo brilla a 100 % y a 50 %
 
-const TOKENS = [
-  'mapa-azul', 'mapa-mar-hondo', 'mapa-gris', 'mapa-t1', 'mapa-t2', 'mapa-t3', 'mapa-t4',
-  'mapa-sombra', 'mapa-luz', 'mapa-velo', 'mapa-via', 'mapa-via-luz', 'mapa-urbano',
-];
+const TEXTOS = {
+  'CooperativeGesturesHandler.WindowsHelpText': 'Ctrl + rueda del ratón para acercar el mapa',
+  'CooperativeGesturesHandler.MacHelpText': '⌘ + desplazar para acercar el mapa',
+  'CooperativeGesturesHandler.MobileHelpText': 'Usa dos dedos para mover el mapa',
+};
 
-const conAlfa = (rgba, a) => rgba.replace(/rgba\(([^,]+),([^,]+),([^,]+),[^)]+\)/, `rgba($1,$2,$3,${a})`);
-
-/** Degradado a lo largo de la línea: dibujada de 0 a p con una punta más clara; p ≥ 1 = línea completa. */
-function degradado(color, luz, p) {
-  const nada = conAlfa(color, 0);
-  const base = ['interpolate', ['linear'], ['line-progress']];
-  if (p >= 0.999) return [...base, 0, color, 1, color];
-  if (p <= 0.001) return [...base, 0, nada, 1, nada];
-  const paradas = [0, color];
-  const cola = p - 0.1;
-  if (cola > 0.002) paradas.push(cola, color);
-  paradas.push(p, luz);
-  if (p < 0.998) paradas.push(p + 0.001, nada, 1, nada);
-  return [...base, ...paradas];
-}
+const TOKENS = ['mapa-fondo', 'mapa-tierra', 'mapa-via', 'mapa-via-sombra', 'mapa-luz', 'mapa-halo'];
 
 /** Resuelve tokens CSS (incluye color-mix) a rgba(), que es lo que entiende el estilo de MapLibre. */
 function resolverColores(raiz) {
@@ -91,78 +72,13 @@ function resolverColores(raiz) {
   return salida;
 }
 
-const aGeoJSON = (grupo) => ({
-  type: 'FeatureCollection',
-  features: Object.entries(grupo).flatMap(([cat, lineas]) =>
-    lineas.map((cs) => ({ type: 'Feature', properties: { cat }, geometry: { type: 'LineString', coordinates: cs } }))),
-});
-
-const kmEntre = (p, q) => Math.hypot((p[0] - q[0]) * 105, (p[1] - q[1]) * 111);
-
-/** Parte la red en trozos cortos y le da a cada uno su banda de distancia a Campeche/Carmen (para la onda del latido). */
-function trocearRed(red) {
-  const features = [];
-  for (const cat of ['a', 'b', 'c']) {
-    for (const cs of red[cat] ?? []) {
-      let ini = 0;
-      let acum = 0;
-      for (let i = 1; i < cs.length; i++) {
-        acum += Math.hypot((cs[i][0] - cs[i - 1][0]) * 0.94, cs[i][1] - cs[i - 1][1]);
-        if (acum >= LATIDO.trozoGrados || i === cs.length - 1) {
-          const trozo = cs.slice(ini, i + 1);
-          const medio = trozo[Math.floor(trozo.length / 2)];
-          const d = Math.min(...ORIGENES.map((o) => kmEntre(medio, o)));
-          features.push({ type: 'Feature', properties: { cat, b: Math.min(LATIDO.bandas - 1, Math.floor(d / LATIDO.anchoBandaKm)) }, geometry: { type: 'LineString', coordinates: trozo } });
-          ini = i;
-          acum = 0;
-        }
-      }
-    }
-  }
-  return { type: 'FeatureCollection', features };
-}
-
-/** Centro de las localidades urbanas más grandes (por caja envolvente), con una fase propia para desfasar los anillos. */
-function nodosUrbanos(urbano) {
-  const nodos = [];
-  for (const f of urbano.features ?? []) {
-    const polis = f.geometry?.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry?.coordinates ?? [];
-    for (const p of polis) {
-      const xs = p[0].map((q) => q[0]);
-      const ys = p[0].map((q) => q[1]);
-      const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
-      nodos.push({ area: (x1 - x0) * (y1 - y0), c: [(x0 + x1) / 2, (y0 + y1) / 2] });
-    }
-  }
-  nodos.sort((a, b) => b.area - a.area);
-  return {
-    type: 'FeatureCollection',
-    features: nodos.slice(0, ANILLOS.cuantas).map((n, i) => ({ type: 'Feature', properties: { f: (i * 0.6180339887) % 1 }, geometry: { type: 'Point', coordinates: n.c } })),
-  };
-}
-
-const suave = (u) => u * u * u * (u * (u * 6 - 15) + 10);
-const mezcla = (a, b, u) => a + (b - a) * u;
-
-function camaraEn(seg, movil) {
-  const n = RECORRIDO.length;
-  const ciclo = seg % (n * (VIAJE_S + PAUSA_S));
-  const i = Math.floor(ciclo / (VIAJE_S + PAUSA_S));
-  const local = ciclo - i * (VIAJE_S + PAUSA_S);
-  const A = RECORRIDO[i];
-  const B = RECORRIDO[(i + 1) % n];
-  const u = local < PAUSA_S ? 0 : suave((local - PAUSA_S) / VIAJE_S);
-  return {
-    center: [mezcla(A.c[0], B.c[0], u), mezcla(A.c[1], B.c[1], u)],
-    zoom: mezcla(A.z, B.z, u) - (movil ? 0.9 : 0),
-    bearing: mezcla(A.b, B.b, u),
-    pitch: mezcla(A.p, B.p, u) * (movil ? 0.7 : 1),
-  };
-}
-
 const MapaHeroVivo = () => {
   const lienzo = useRef(null);
+  const mapaRef = useRef(null);
+  const vistaRef = useRef(null);
+  const derivaRef = useRef({ activa: true, t0: 0 });
   const [estado, setEstado] = useState('cargando'); // cargando | listo | falla
+  const [movido, setMovido] = useState(false);
 
   useEffect(() => {
     const raiz = lienzo.current;
@@ -176,171 +92,149 @@ const MapaHeroVivo = () => {
     (async () => {
       try {
         const vacio = { type: 'FeatureCollection', features: [] };
-        const [maplibregl, { default: urlTrabajador }, , red, urbano, rural] = await Promise.all([
+        const [maplibregl, { default: urlTrabajador }, , red, localidades, contexto] = await Promise.all([
           import('maplibre-gl'),
           import('maplibre-gl/dist/maplibre-gl-worker.mjs?url'),
           import('maplibre-gl/dist/maplibre-gl.css'),
           fetch(URL_RED).then((r) => r.json()),
-          fetch(URL_URBANO).then((r) => r.json()).catch(() => vacio),
-          fetch(URL_RURAL).then((r) => r.json()).catch(() => vacio),
+          fetch(URL_LOCALIDADES).then((r) => r.json()).catch(() => vacio),
+          fetch(URL_CONTEXTO).then((r) => r.json()).catch(() => vacio),
         ]);
         if (!vivo) return;
         maplibregl.setWorkerUrl(urlTrabajador); // Vite sirve el worker como archivo aparte
 
         const c = resolverColores(raiz.parentElement);
         const movil = window.matchMedia('(max-width: 760px)').matches;
-        const quieto = prefiereMenosMovimiento();
         const ancho = () => raiz.clientWidth;
         const relleno = () => (ancho() > 900 ? { left: Math.round(ancho() * 0.3), right: Math.round(ancho() * 0.2), top: 0, bottom: 0 } : { left: 0, right: 0, top: 0, bottom: 0 });
-        const inicio = camaraEn(0, movil);
+        const v = movil ? VISTA_MOVIL : VISTA;
+        vistaRef.current = { center: v.c, zoom: v.z, bearing: v.b, pitch: v.p };
 
-        // Cada jerarquía lleva el mismo guinda con distinto peso (opacidad y grosor).
-        const VIA = {
-          a: { alfa: 1, luz: c['mapa-via-luz'] },
-          b: { alfa: 0.88, luz: c['mapa-via-luz'] },
-          c: { alfa: 0.55, luz: c['mapa-via-luz'] },
-        };
-        const colorVia = (k) => conAlfa(c['mapa-via'], VIA[k].alfa);
-        const lineaVia = (id, cat, ancho3, extra = {}) => ({
-          id, type: 'line', source: 'red', filter: ['==', ['get', 'cat'], cat], layout: { 'line-cap': 'round', 'line-join': 'round' },
-          paint: { 'line-gradient': degradado(colorVia(cat), VIA[cat].luz, quieto ? 1 : 0), 'line-width': ['interpolate', ['linear'], ['zoom'], 5, ancho3[0], 8, ancho3[1], 11, ancho3[2]], ...extra },
-        });
+        const zoomAncho = ([a, b, c3]) => ['interpolate', ['linear'], ['zoom'], 5, a, 8, b, 11, c3];
+        const lineaVia = (id, cat, paint, filtro) => ({ id, type: 'line', source: 'red', filter: filtro ?? ['==', ['get', 'c'], cat], layout: { 'line-cap': 'round', 'line-join': 'round' }, paint });
+        // Un tramo está encendido cuando la onda ya llegó a él (feature-state «l») o cuando se pide la red completa («todas»: reducir movimiento).
+        const encendido = ['any', ['global-state', 'todas'], ['boolean', ['feature-state', 'l'], false]];
+        const siEncendido = (alfa) => ['case', encendido, alfa, 0];
+        const calor = ['*', 0.5, ['/', ['coalesce', ['feature-state', 'h'], 0], 2]]; // brillo del frente: 0.5 → 0.25 → 0
+        const urbana = ['==', ['get', 't'], 'u'];
+        const rural = ['==', ['get', 't'], 'r'];
+        const raizArea = ['sqrt', ['max', ['coalesce', ['get', 'a'], 0], 0]];
 
         mapa = new maplibregl.Map({
           container: raiz,
-          interactive: false,
-          attributionControl: { compact: true },
-          maxPitch: 75,
+          attributionControl: { compact: true, customAttribution: ['Relieve: MERIT DEM', 'Hidrografía © colaboradores de OpenStreetMap'] },
+          maxPitch: v.p, // la vista inicial es el máximo de inclinación
+          minZoom: v.z, // no se puede alejar más que la vista inicial; sí acercar y volver a ella
+          
+          maxZoom: 11,
+          maxBounds: [[-94.5, 16.2], [-87.5, 22.2]],
           fadeDuration: 0,
-          ...inicio,
+          pixelRatio: Math.min(window.devicePixelRatio || 1, 1.5), // la portada no necesita nitidez de retina
+          canvasContextAttributes: { antialias: false },
+          cooperativeGestures: true,
+          keyboard: false,
+          locale: TEXTOS,
+          center: v.c, zoom: v.z, bearing: v.b, pitch: v.p,
           padding: relleno(),
           style: {
             version: 8,
             projection: { type: 'mercator' },
-            sky: { 'sky-color': c['mapa-velo'], 'horizon-color': c['mapa-velo'], 'fog-color': c['mapa-velo'], 'sky-horizon-blend': 0.6, 'horizon-fog-blend': 0.8, 'fog-ground-blend': 0.4 },
-            terrain: { source: 'dem-3d', exaggeration: EXAGERACION },
+            state: { todas: { default: false } },
             sources: {
-              dem: { type: 'raster-dem', tiles: [URL_DEM], tileSize: 256, encoding: 'terrarium', maxzoom: 12, attribution: 'Relieve: Mapzen / AWS Terrain Tiles' },
-              // Mismas teselas en otra fuente: MapLibre recomienda no compartirla entre el terreno 3D y las capas de color/sombreado.
-              'dem-3d': { type: 'raster-dem', tiles: [URL_DEM], tileSize: 256, encoding: 'terrarium', maxzoom: 12 },
-              red: { type: 'geojson', data: aGeoJSON(red), lineMetrics: true },
-              exterior: { type: 'image', url: URL_EXTERIOR, coordinates: ESQUINAS },
-              latido: { type: 'geojson', data: trocearRed(red) },
-              nodos: { type: 'geojson', data: nodosUrbanos(urbano) },
-              urbano: { type: 'geojson', data: urbano },
-              rural: { type: 'geojson', data: rural },
+              contexto: { type: 'geojson', data: contexto },
+              relieve: { type: 'image', url: URL_RELIEVE, coordinates: ESQUINAS },
+              red: { type: 'geojson', data: red },
+              localidades: { type: 'geojson', data: localidades },
             },
             layers: [
-              { id: 'mar-fondo', type: 'background', paint: { 'background-color': c['mapa-azul'] } },
-              {
-                // Tierra: llano en gris, lomeríos en verde de contexto (más intenso mientras más alto).
-                id: 'altitud', type: 'color-relief', source: 'dem',
-                paint: {
-                  'color-relief-color': ['interpolate', ['linear'], ['elevation'],
-                    -90, c['mapa-gris'], 0.5, c['mapa-gris'], 90, c['mapa-gris'], 140, c['mapa-t1'], 200, c['mapa-t2'], 265, c['mapa-t3'], 330, c['mapa-t4']],
-                },
-              },
-              {
-                id: 'sombreado', type: 'hillshade', source: 'dem',
-                paint: {
-                  'hillshade-exaggeration': 0.95, 'hillshade-illumination-direction': SOL.centro, 'hillshade-illumination-anchor': 'map',
-                  'hillshade-shadow-color': c['mapa-sombra'], 'hillshade-highlight-color': c['mapa-luz'], 'hillshade-accent-color': c['mapa-sombra'],
-                },
-              },
-              // Lo exterior al estado se apaga con un fundido continuo (imagen de distancia al contorno), sin borde duro ni contorno punteado.
-              { id: 'exterior', type: 'raster', source: 'exterior', paint: { 'raster-fade-duration': 0, 'raster-resampling': 'linear' } },
-              {
-                // Mar: encima del apagado, para que el azul llegue hasta la costa. Solo pinta elevación ≤ 0.
-                id: 'mar', type: 'color-relief', source: 'dem',
-                paint: {
-                  'color-relief-color': ['interpolate', ['linear'], ['elevation'],
-                    -100, c['mapa-mar-hondo'], -12, c['mapa-azul'], 0.3, c['mapa-azul'], 1.1, conAlfa(c['mapa-azul'], 0)],
-                },
-              },
-              { id: 'urbano-fill', type: 'fill', source: 'urbano', paint: { 'fill-color': c['mapa-urbano'], 'fill-opacity': 0.7 } },
-              { id: 'urbano-borde', type: 'line', source: 'urbano', paint: { 'line-color': c['mapa-urbano'], 'line-opacity': 0.7, 'line-width': ['interpolate', ['linear'], ['zoom'], 5, 1.2, 9, 2] } },
-              { id: 'rural', type: 'circle', source: 'rural', paint: { 'circle-color': c['mapa-urbano'], 'circle-opacity': 0.55, 'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 0.8, 9, 1.8], 'circle-pitch-alignment': 'map' } },
-              lineaVia('via-c', 'c', [0.45, 1, 1.9]),
-              lineaVia('via-b', 'b', [1.1, 2.4, 4]),
-              lineaVia('via-a-brillo', 'a', [5, 9, 14], { 'line-blur': 6, 'line-opacity': 0.22 }),
-              lineaVia('via-a', 'a', [2, 4, 6.8]),
-              // Latido: luz suave que viaja por bandas de distancia (se enciende y apaga por banda).
-              ...Array.from({ length: LATIDO.bandas }, (_, k) => ({
-                id: `latido-${k}`, type: 'line', source: 'latido', filter: ['==', ['get', 'b'], k], layout: { 'line-cap': 'round', 'line-join': 'round' },
-                paint: {
-                  'line-color': c['mapa-via-luz'], 'line-opacity': 0, 'line-blur': 2.5,
-                  'line-width': ['interpolate', ['linear'], ['zoom'],
-                    5, ['match', ['get', 'cat'], 'a', 3.5, 'b', 2.2, 1.2],
-                    8, ['match', ['get', 'cat'], 'a', 7, 'b', 4.2, 2],
-                    11, ['match', ['get', 'cat'], 'a', 11, 'b', 7, 3.4]],
-                },
-              })),
-              // Anillos tenues que nacen de las localidades urbanas.
-              { id: 'anillo', type: 'circle', source: 'nodos', paint: { 'circle-color': c['mapa-via'], 'circle-opacity': 0, 'circle-radius': 1, 'circle-stroke-color': c['mapa-via'], 'circle-stroke-width': 1.1, 'circle-stroke-opacity': 0, 'circle-pitch-alignment': 'map' } },
+              { id: 'fondo', type: 'background', paint: { 'background-color': c['mapa-fondo'] } },
+              { id: 'contexto', type: 'fill', source: 'contexto', paint: { 'fill-color': c['mapa-tierra'], 'fill-antialias': true } },
+              { id: 'relieve', type: 'raster', source: 'relieve', paint: { 'raster-fade-duration': 0, 'raster-resampling': 'linear' } },
+              // Sombra suave bajo las dos primeras jerarquías: las despega del relieve. Solo donde ya se encendió la red.
+              lineaVia('via-sombra', null, { 'line-color': c['mapa-via-sombra'], 'line-translate': [0, 2], 'line-blur': 2, 'line-width': zoomAncho([3, 4.5, 7]), 'line-opacity': siEncendido(1) }, ['in', ['get', 'c'], ['literal', ['a', 'b']]]),
+              // Resplandor del frente de la onda: solo los tramos recién encendidos.
+              lineaVia('via-frente', null, { 'line-color': c['mapa-halo'], 'line-blur': 4, 'line-width': zoomAncho([4, 6, 10]), 'line-opacity': calor }, ['has', 'c']),
+              lineaVia('via-c', 'c', { 'line-color': c['mapa-via'], 'line-opacity': siEncendido(VIAS.c.alfa), 'line-width': zoomAncho(VIAS.c.ancho) }),
+              lineaVia('via-b', 'b', { 'line-color': c['mapa-via'], 'line-opacity': siEncendido(VIAS.b.alfa), 'line-width': zoomAncho(VIAS.b.ancho) }),
+              lineaVia('via-a', 'a', { 'line-color': c['mapa-via'], 'line-opacity': siEncendido(VIAS.a.alfa), 'line-width': zoomAncho(VIAS.a.ancho) }),
+              // Localidades: halo gaussiano y núcleo. Las urbanas crecen con su área; las rurales son un punto tenue.
+              { id: 'loc-rural-halo', type: 'circle', source: 'localidades', filter: rural, paint: { 'circle-color': c['mapa-halo'], 'circle-opacity': 0.15, 'circle-blur': 1, 'circle-pitch-alignment': 'map', 'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 2.2, 9, 6] } },
+              { id: 'loc-rural', type: 'circle', source: 'localidades', filter: rural, paint: { 'circle-color': c['mapa-luz'], 'circle-opacity': 0.6, 'circle-pitch-alignment': 'map', 'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, 0.5, 9, 1.4] } },
+              { id: 'loc-urbana-halo', type: 'circle', source: 'localidades', filter: urbana, paint: { 'circle-color': c['mapa-halo'], 'circle-opacity': 0.35, 'circle-blur': 1, 'circle-pitch-alignment': 'map', 'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, ['+', 3, ['*', 0.9, raizArea]], 9, ['+', 7, ['*', 2.6, raizArea]]] } },
+              { id: 'loc-urbana', type: 'circle', source: 'localidades', filter: urbana, paint: { 'circle-color': c['mapa-luz'], 'circle-opacity': 0.95, 'circle-pitch-alignment': 'map', 'circle-radius': ['interpolate', ['linear'], ['zoom'], 5, ['+', 0.8, ['*', 0.22, raizArea]], 9, ['+', 1.8, ['*', 0.6, raizArea]]] } },
             ],
           },
         });
+        mapaRef.current = mapa;
+        mapa.getCanvas().setAttribute('tabindex', '-1'); // el mapa es de exploración con ratón o tacto; el teclado sigue el orden de la página
+        window.sesimCamara = () => {
+          const m = mapa;
+          const r = (x, n = 2) => Number(x.toFixed(n));
+          const { lng, lat } = m.getCenter();
+          const texto = `{ c: [${r(lng, 3)}, ${r(lat, 3)}], z: ${r(m.getZoom())}, b: ${r(m.getBearing(), 0)}, p: ${r(m.getPitch(), 0)} }`;
+          console.log(texto);
+          return texto;
+        };
 
-        // Respaldo: si el relieve no llega o WebGL falla, vuelve el trazo de calles.
-        let errores = 0;
-        let exitos = 0;
-        mapa.on('sourcedata', (e) => { if ((e.sourceId === 'dem' || e.sourceId === 'dem-3d') && e.tile) exitos += 1; });
-        mapa.on('error', (e) => {
-          if (e.sourceId === 'dem' || e.sourceId === 'dem-3d') errores += 1;
-          if (vivo && exitos === 0 && errores >= 6) setEstado('falla');
-        });
+        // Respaldo: si la imagen del relieve no llega o WebGL falla, vuelve el trazo de calles.
+        mapa.on('error', (e) => { console.warn('[SESIM mapa]', e.sourceId, e.error?.message); if (vivo && e.sourceId === 'relieve') setEstado('falla'); });
         mapa.on('load', () => { if (vivo) setEstado('listo'); });
+        // Solo cuenta como «movido» lo que hace la persona (los movimientos del código no traen evento original).
+        mapa.on('movestart', (e) => {
+          if (!vivo || !e.originalEvent) return;
+          derivaRef.current.activa = false;
+          setMovido(true);
+        });
 
-        let visible = true;
-        observador = new IntersectionObserver(([en]) => { visible = en.isIntersecting; });
-        observador.observe(raiz);
-
-        // Dibujo progresivo de la red + «respiración» suave; sin pulsos que corran por encima.
-        const ultimoP = {};
-        const pintarRed = (t) => {
-          const ciclo = t % CICLO_S;
-          const fuera = ciclo > CICLO_S - DESVANECE_S ? suave((ciclo - (CICLO_S - DESVANECE_S)) / DESVANECE_S) : 0;
-          const respira = 0.5 + 0.5 * Math.sin((t / 5.5) * Math.PI * 2);
-          for (const k of ['a', 'b', 'c']) {
-            const p = suave(Math.min(1, Math.max(0, (ciclo - DIBUJO[k].ini) / DIBUJO[k].dur)));
-            const pr = Math.round(p * 500) / 500;
-            if (ultimoP[k] !== pr) {
-              ultimoP[k] = pr;
-              for (const id of k === 'a' ? ['via-a', 'via-a-brillo'] : [`via-${k}`]) mapa.setPaintProperty(id, 'line-gradient', degradado(colorVia(k), VIA[k].luz, pr));
+        // Animación decorativa, UNA vez: la red se enciende desde las localidades mayores (tramos ordenados por km de recorrido, red.features),
+        // más una leve deriva de cámara. Espera a que la portada esté a la vista y se pausa con la pestaña oculta.
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          mapa.on('load', () => mapa.setGlobalStateProperty('todas', true)); // sin movimiento: la red aparece completa
+        } else {
+          const tramos = red.features ?? [];
+          const tmax = red.tmax || 1;
+          const calientes = []; // [id, momento] en orden de encendido (cola: el más viejo primero)
+          const tibios = [];
+          let siguiente = 0;
+          let inicio = 0;
+          let cargado = false;
+          let visible = false;
+          observador = new IntersectionObserver(([en]) => { visible = en.isIntersecting; });
+          observador.observe(raiz);
+          mapa.on('load', () => { cargado = true; });
+          const estado1 = (id, h, l) => mapa.setFeatureState({ source: 'red', id }, l ? { l: true, h } : { h });
+          derivaRef.current.t0 = performance.now();
+          let ultimo = 0;
+          const cuadro = (ahora) => {
+            raf = requestAnimationFrame(cuadro);
+            if (document.hidden || ahora - ultimo < 1000 / ONDA.fps) return;
+            ultimo = ahora;
+            if (!inicio && cargado && visible) inicio = ahora + ONDA.retardo * 1000;
+            if (inicio && ahora >= inicio) {
+              const T = tmax * Math.min(1, (ahora - inicio) / (ONDA.duracion * 1000));
+              while (siguiente < tramos.length && tramos[siguiente].properties.s <= T) {
+                const id = tramos[siguiente].id;
+                estado1(id, 2, true);
+                calientes.push([id, ahora]);
+                siguiente += 1;
+              }
+              while (calientes.length && ahora - calientes[0][1] > ONDA.calor[0] * 1000) {
+                const [id, t] = calientes.shift();
+                estado1(id, 1, false);
+                tibios.push([id, t]);
+              }
+              while (tibios.length && ahora - tibios[0][1] > ONDA.calor[1] * 1000) estado1(tibios.shift()[0], 0, false);
             }
-            const base = k === 'a' ? 1 : k === 'b' ? 0.9 : 0.8;
-            mapa.setPaintProperty(`via-${k}`, 'line-opacity', (base - 0.14 * respira * (k === 'c' ? 0.5 : 1)) * (1 - fuera));
-          }
-          mapa.setPaintProperty('via-a-brillo', 'line-opacity', (0.16 + 0.16 * respira) * (1 - fuera));
-
-          // Latido: el frente avanza por distancia desde Campeche/Carmen; cada banda se enciende cuando el frente la cruza.
-          const listo = Math.min(1, Math.max(0, (ciclo - (DIBUJO.c.ini + DIBUJO.c.dur)) / 2));
-          const frente = ((t % LATIDO.periodo) / LATIDO.periodo) * (LATIDO.alcanceKm + 2 * LATIDO.anchoBandaKm) - LATIDO.anchoBandaKm;
-          for (let k = 0; k < LATIDO.bandas; k++) {
-            const centro = LATIDO.anchoBandaKm * (k + 0.5);
-            const inten = Math.exp(-(((centro - frente) / (LATIDO.anchoBandaKm * 0.9)) ** 2));
-            mapa.setPaintProperty(`latido-${k}`, 'line-opacity', 0.55 * inten * listo * (1 - fuera));
-          }
-
-          // Anillos desfasados por localidad (fase propia) que crecen y se desvanecen.
-          const u = ['%', ['+', t / ANILLOS.periodo, ['get', 'f']], 1];
-          mapa.setPaintProperty('anillo', 'circle-radius', ['interpolate', ['linear'], ['zoom'], 5, ['*', u, 9], 9, ['*', u, 26]]);
-          mapa.setPaintProperty('anillo', 'circle-stroke-opacity', ['*', 0.42, ['^', ['-', 1, u], 2]]);
-
-          // El sol del relieve se mueve muy despacio.
-          mapa.setPaintProperty('sombreado', 'hillshade-illumination-direction', SOL.centro + SOL.amplitud * Math.sin((t / SOL.periodo) * Math.PI * 2));
-        };
-
-        const t0 = performance.now();
-        let ultimoPintado = 0;
-        const cuadro = (ahora) => {
+            const d = derivaRef.current;
+            if (d.activa && ahora > d.t0) {
+              const u = (1 - Math.cos((2 * Math.PI * (ahora - d.t0)) / 1000 / (2 * DERIVA.periodo))) / 2; // 0 → 1 → 0, suave
+              const vi = vistaRef.current;
+              mapa.jumpTo({ bearing: vi.bearing + DERIVA.rumbo * u, pitch: vi.pitch + DERIVA.inclinacion * u });
+            }
+          };
           raf = requestAnimationFrame(cuadro);
-          if (!visible || document.hidden) return;
-          const seg = Math.max(0, (ahora - t0) / 1000); // el primer cuadro puede traer una marca anterior a t0
-          mapa.jumpTo({ ...camaraEn(seg, movil), padding: relleno() });
-          if (ahora - ultimoPintado > 50) { ultimoPintado = ahora; pintarRed(seg); }
-        };
-        if (!quieto) raf = requestAnimationFrame(cuadro);
+        }
+
         alRedimensionar = () => mapa?.resize();
         window.addEventListener('resize', alRedimensionar);
       } catch (error) {
@@ -354,16 +248,27 @@ const MapaHeroVivo = () => {
       cancelAnimationFrame(raf);
       observador?.disconnect();
       if (alRedimensionar) window.removeEventListener('resize', alRedimensionar);
+      delete window.sesimCamara;
       mapa?.remove();
+      mapaRef.current = null;
     };
   }, []);
 
+  const restablecer = () => {
+    mapaRef.current?.easeTo({ ...vistaRef.current, duration: 900 });
+    derivaRef.current = { activa: true, t0: performance.now() + 1000 };
+    setMovido(false);
+  };
+
   return (
-    <div className={`mapa-hero mapa-hero--${estado}`} aria-hidden="true">
+    <div className={`mapa-hero mapa-hero--${estado}`}>
       {estado === 'falla'
-        ? <StreetLinesBackground factorZoom={1.12} colorBase={[122, 84, 98]} colorPulso={[159, 34, 65]} alphaBase={0.34} grosor={1.25} />
-        : <div ref={lienzo} className="mapa-hero__lienzo" />}
-      <div className="mapa-hero__velo" />
+        ? <div aria-hidden="true"><StreetLinesBackground factorZoom={1.12} colorBase={[233, 228, 216]} colorPulso={[255, 255, 255]} alphaBase={0.3} grosor={1.25} /></div>
+        : <div ref={lienzo} className="mapa-hero__lienzo" role="img" aria-label="Relieve de Campeche con su red carretera y sus localidades. Se puede mover con el ratón; con Ctrl y la rueda se acerca." />}
+      <div className="mapa-hero__velo" aria-hidden="true" />
+      {estado === 'listo' && movido && (
+        <button type="button" className="mapa-hero__reiniciar" onClick={restablecer}>Restablecer vista</button>
+      )}
     </div>
   );
 };

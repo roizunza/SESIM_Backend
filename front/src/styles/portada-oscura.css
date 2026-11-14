@@ -1,0 +1,33 @@
+/*
+ * Portada oscura: el relieve del hero es verde oscuro (opción G de la maqueta), el resto de Inicio es claro.
+ * En vez de reescribir cada regla, dentro de .portada__claro se reasignan las variables de la paleta: las reglas que ya usan
+ * rgba(var(--pal-superficie-rgb), …), var(--pal-texto), etc. (vidrio.css, inicio-sistema.css, MapaHeroVivo.css) se vuelven oscuras
+ * solas. Se importa DESPUÉS de inicio-sistema.css. La banda de objetivos de abajo (.portada__banda) queda fuera de este ámbito.
+ */
+.inicio-page.inicio-page .portada__claro {
+  --pal-hero-fondo: #1E2B34;            /* = --mapa-fondo: el mismo verde del fondo del mapa */
+  --pal-superficie: #1E2B34;
+  --pal-superficie-rgb: 30,43,52;
+  --pal-sombra-rgb: 8, 14, 11;
+  --pal-texto: #E9E4D8;
+  --pal-texto-2: #CFC9BA;
+  --pal-titulo: #F3EEE2;
+  --pal-linea: rgba(233, 228, 216, 0.2);
+  --pal-guinda-inst: var(--pal-beige);  /* iconos de las cifras: beige sobre verde oscuro */
+  background-image: none;
+  background-color: var(--pal-hero-fondo);
+}
+.inicio-page.inicio-page .portada__claro .kpi:hover,
+.inicio-page.inicio-page .portada__claro .kpi.revelado:hover { background: rgba(var(--pal-superficie-rgb), 0.85); }
+.inicio-page.inicio-page .portada__claro .portada__nota-cifras { color: var(--pal-texto-2); }
+.inicio-page.inicio-page .portada__claro .portada__pastilla--cifras { color: var(--pal-beige); border-color: rgba(var(--pal-superficie-rgb), 0.4); }
+.inicio-page.inicio-page .portada__claro .kpi .kpi__icono { color: var(--pal-beige); }
+
+/* Composición de la portada (Ismael): título, sinopsis y cifras más arriba, para que el mapa de contexto plano
+ * (tierra sin relieve en el borde de la imagen) quede detrás de los elementos y pase desapercibido.
+ * Solo en pantalla ancha; en celular y tableta se conserva la composición original. */
+@media (min-width: 1101px) {
+  .inicio-page.inicio-page .portada__claro .portada__texto { transform: translateY(clamp(-90px, -9vh, -40px)); }
+  .inicio-page.inicio-page .portada__claro .portada__intro { max-width: min(100%, 31rem); }
+  .inicio-page.inicio-page .portada__claro .portada__kpis { transform: translateY(clamp(-120px, -12vh, -50px)); }
+}

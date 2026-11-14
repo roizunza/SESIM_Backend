@@ -1,23 +1,15 @@
 /*
  * Mapa en vivo de la portada (MapaHeroVivo.jsx). Ocupa todo el fondo de .portada__claro.
- * Los tokens --mapa-* salen de la paleta con color-mix. Colores propios del mapa (contexto, no de la plataforma):
- * el azul del mar y el verde del relieve; la paleta institucional no tiene ninguno de los dos.
+ * Relieve verde oscuro con vialidades y localidades en blanco; los colores del relieve van horneados en la imagen
+ * (scripts/datos/09_hornear_relieve_hero.py). El tema oscuro de toda la portada está en styles/portada-oscura.css.
  */
 .mapa-hero {
-  --mapa-azul: #1263C0;
-  --mapa-verde: #54683C;
-  --mapa-mar-hondo: color-mix(in srgb, var(--mapa-azul) 78%, black);
-  --mapa-gris: color-mix(in srgb, var(--pal-gris) 30%, var(--pal-superficie));
-  --mapa-t1: color-mix(in srgb, var(--mapa-verde) 30%, var(--mapa-gris));
-  --mapa-t2: color-mix(in srgb, var(--mapa-verde) 58%, var(--mapa-gris));
-  --mapa-t3: color-mix(in srgb, var(--mapa-verde) 85%, var(--mapa-gris));
-  --mapa-t4: var(--mapa-verde);
-  --mapa-sombra: color-mix(in srgb, var(--mapa-verde) 60%, black);
-  --mapa-luz: var(--pal-superficie);
-  --mapa-velo: var(--pal-hero-fondo);
-  --mapa-via: var(--pal-guinda);
-  --mapa-via-luz: color-mix(in srgb, var(--pal-guinda) 55%, var(--pal-superficie));
-  --mapa-urbano: color-mix(in srgb, var(--pal-gris) 78%, var(--pal-superficie));
+  --mapa-fondo: #1E2B34;                    /* debe coincidir con BG del script de horneado y con --pal-hero-fondo de la portada */
+  --mapa-tierra: #658673;                   /* tierra plana de contexto (México y vecinos); ≈ tono medio del relieve horneado */
+  --mapa-via: #FFFFFF;                      /* vialidades: blanco puro (la jerarquía va en grosor y opacidad) */
+  --mapa-via-sombra: rgba(10, 18, 14, 0.5); /* sombra suave que despega las vías del relieve */
+  --mapa-luz: rgba(255, 255, 255, 0.95);
+  --mapa-halo: rgba(255, 255, 255, 0.22);   /* resplandor gaussiano de las localidades */
 
   position: absolute; inset: 0; z-index: 0; overflow: hidden;
 }
@@ -25,13 +17,11 @@
 .mapa-hero--listo .mapa-hero__lienzo { opacity: 1; }
 .mapa-hero .street-lines-background { position: absolute; inset: 0; width: 100%; height: 100%; }
 
-/* Velo: deja legible el título a la izquierda y funde el mapa con el resto de la página. */
+/* Velo: solo deja legible el título a la izquierda. Abajo NO hay degradado: el hero termina en corte limpio contra la banda de objetivos. */
 .mapa-hero__velo {
   position: absolute; inset: 0; pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(var(--pal-superficie-rgb), 0.9) 0%, rgba(var(--pal-superficie-rgb), 0.66) 22%, rgba(var(--pal-superficie-rgb), 0.16) 44%, rgba(var(--pal-superficie-rgb), 0) 58%),
-    linear-gradient(180deg, rgba(var(--pal-superficie-rgb), 0.85) 0%, rgba(var(--pal-superficie-rgb), 0) 14%),
-    linear-gradient(0deg, rgba(var(--pal-superficie-rgb), 0.92) 0%, rgba(var(--pal-superficie-rgb), 0) 10%);
+    linear-gradient(90deg, rgba(var(--pal-superficie-rgb), 0.94) 0%, rgba(var(--pal-superficie-rgb), 0.72) 24%, rgba(var(--pal-superficie-rgb), 0.18) 46%, rgba(var(--pal-superficie-rgb), 0) 58%);
 }
 
 /* Crédito del relieve: obligatorio, pero discreto. Solo se ve el icono; el texto aparece al pasar el cursor. */
@@ -74,10 +64,24 @@
 @media (max-width: 1100px) {
   .mapa-hero__velo {
     background:
-      linear-gradient(90deg, rgba(var(--pal-superficie-rgb), 0.9) 0%, rgba(var(--pal-superficie-rgb), 0.5) 60%, rgba(var(--pal-superficie-rgb), 0.1) 100%),
-      linear-gradient(0deg, rgba(var(--pal-superficie-rgb), 0.92) 0%, rgba(var(--pal-superficie-rgb), 0) 10%);
+      linear-gradient(90deg, rgba(var(--pal-superficie-rgb), 0.9) 0%, rgba(var(--pal-superficie-rgb), 0.5) 60%, rgba(var(--pal-superficie-rgb), 0.1) 100%);
   }
 }
 @media (max-width: 800px) {
   .mapa-hero__velo { background: linear-gradient(180deg, rgba(var(--pal-superficie-rgb), 0.9) 0%, rgba(var(--pal-superficie-rgb), 0.66) 45%, rgba(var(--pal-superficie-rgb), 0.3) 100%); }
 }
+
+/* Mapa explorable: las zonas vacías de la portada dejan pasar el ratón al mapa; solo el texto, la sinopsis y las cifras lo captan. */
+.portada .portada__marco { pointer-events: none; }
+.portada .portada__marco h1, .portada .portada__intro, .portada .portada__kpis, .portada .portada__kpis * { pointer-events: auto; }
+.mapa-hero .mapa-hero__lienzo canvas { cursor: grab; }
+.mapa-hero .mapa-hero__lienzo canvas:active { cursor: grabbing; }
+.mapa-hero .maplibregl-cooperative-gesture-screen { z-index: 2; font-family: var(--font-body, inherit); font-size: var(--t-cu); }
+.mapa-hero__reiniciar {
+  position: absolute; right: clamp(16px, 2.5vw, 56px); bottom: 28px; z-index: 3; cursor: pointer;
+  padding: 8px 16px; border-radius: 999px; font: inherit; font-size: var(--t-de); font-weight: 600;
+  color: var(--pal-titulo); background: rgba(var(--pal-superficie-rgb), 0.92); border: 1px solid var(--pal-linea);
+  box-shadow: 0 8px 20px -12px rgba(var(--pal-sombra-rgb), 0.6);
+}
+.mapa-hero__reiniciar:hover { border-color: var(--pal-realce); }
+.mapa-hero__reiniciar:focus-visible { outline: 3px solid var(--oro, var(--pal-realce)); outline-offset: 2px; }

@@ -32,3 +32,6 @@ dist-ssr
 _to_delete/
 _respaldo*/
 front_anterior*/
+
+# Insumos pesados del relieve de la portada (DEM, hidrografía): se regeneran con scripts/datos/09_hornear_relieve_hero.py
+scripts/datos/insumos_hero/
