@@ -1,0 +1,78 @@
+CONCORDANCIA clave <-> archivo <-> objeto en el bucket
+
+DOC-E001 principal         941604 B    100 pag  txt=True  Ley de Movilidad y Seguridad Vial del Estado de Campeche.pdf
+    -> instrumentos/DOC-E001/DOC-E001_v01_bea144a13e6a2039.pdf
+DOC-E002 principal         697323 B     61 pag  txt=True  Ley de Vialidad, Tránsito y Control Vehicular del Estado de Campeche.pdf
+    -> instrumentos/DOC-E002/DOC-E002_v01_6aff61b02971f9d4.pdf
+DOC-E003 principal         857165 B     87 pag  txt=True  Reglamento en Materia de Transporte de la Ley de Movilidad y Seguridad Vial del Estado de Campeche.pdf
+    -> instrumentos/DOC-E003/DOC-E003_v01_2b9e7800362d529b.pdf
+DOC-E004 principal        1543806 B    182 pag  txt=True  Constitución Política del Estado de Campeche.pdf
+    -> instrumentos/DOC-E004/DOC-E004_v01_9de514f54e886f3c.pdf
+DOC-E005 principal         406706 B     32 pag  txt=True  Reglamento Interior de la Agencia Reguladora del Transporte del Estado de Campeche (ARTEC).pdf
+    -> instrumentos/DOC-E005/DOC-E005_v01_bb24e48578db4276.pdf
+DOC-E006 complemento     13831191 B     50 pag  txt=False  EEMSV_RESUMEN EJECUTIVO.pdf
+    -> instrumentos/DOC-E006/DOC-E006_c01_892a70608f05e515.pdf
+DOC-E006 principal       19409432 B    322 pag  txt=True  Estrategia Estatal de Movilidad y Seguridad Vial de Campeche.pdf
+    -> instrumentos/DOC-E006/DOC-E006_v01_0cd4c8d68b7ad817.pdf
+DOC-E007 principal       27234604 B    277 pag  txt=True  Plan Estatal de Desarrollo de Campeche 2024–2027 (PED).pdf
+    -> instrumentos/DOC-E007/DOC-E007_v01_8e2ee25bb7b4bd29.pdf
+DOC-E008 principal       60823542 B    724 pag  txt=True  Programa Estatal de Ordenamiento Territorial y Desarrollo Urbano de Campeche (PEOTDU).pdf
+    -> instrumentos/DOC-E008/DOC-E008_v01_cc8f87ba21be60ed.pdf
+DOC-E009 principal        3678752 B    148 pag  txt=True  Programa Sectorial Desarrollo Económico con Visión al Futuro 2024–2027.pdf
+    -> instrumentos/DOC-E009/DOC-E009_v01_5f44ce289cebef04.pdf
+DOC-F001 principal        3146661 B    416 pag  txt=True  Constitución Política de los Estados Unidos Mexicanos.pdf
+    -> instrumentos/DOC-F001/DOC-F001_v01_cefb525ae8dfc97a.pdf
+DOC-F002 principal         639876 B     50 pag  txt=True  Ley General de Movilidad y Seguridad Vial (LGMSV).pdf
+    -> instrumentos/DOC-F002/DOC-F002_v01_79f2b255a142d175.pdf
+DOC-F003 principal         653615 B     58 pag  txt=True  Ley General de Asentamientos Humanos, Ordenamiento Territorial y Desarrollo Urbano (LGAHOTDU).pdf
+    -> instrumentos/DOC-F003/DOC-F003_v01_dd294df803cf4a31.pdf
+DOC-F004 principal        1357460 B    154 pag  txt=True  Ley General del Equilibrio Ecológico y la Protección al Ambiente (LGEEPA).pdf
+    -> instrumentos/DOC-F004/DOC-F004_v01_0574853d06020030.pdf
+DOC-F005 principal        8908335 B    212 pag  txt=True  Estrategia Nacional de Movilidad y Seguridad Vial 2023-2042.pdf
+    -> instrumentos/DOC-F005/DOC-F005_v01_e979df2c69d356cd.pdf
+DOC-F006 principal       19487397 B    268 pag  txt=True  Estrategia Nacional de Ordenamiento Territorial 2020-2040.pdf
+    -> instrumentos/DOC-F006/DOC-F006_v01_11759348dc5b1c4b.pdf
+DOC-F007 principal        8052330 B     82 pag  txt=True  Plan Nacional de Desarrollo 2025–2030 (PND).pdf
+    -> instrumentos/DOC-F007/DOC-F007_v01_f2c0db050783f6b5.pdf
+DOC-M001 principal        4679966 B    320 pag  txt=True  Programa Municipal de Desarrollo Urbano de Campeche 2020-2040.pdf
+    -> instrumentos/DOC-M001/DOC-M001_v01_e1c39d3be7d23178.pdf
+DOC-M002 principal       16029232 B    380 pag  txt=True  Programa Municipal de Desarrollo Urbano de Champotón 2024-2040.pdf
+    -> instrumentos/DOC-M002/DOC-M002_v01_97722e187c602978.pdf
+DOC-M003 principal       17069157 B    252 pag  txt=True  Programa Municipal de Desarrollo Urbano de Calkiní.pdf
+    -> instrumentos/DOC-M003/DOC-M003_v01_5dee48626f1227db.pdf
+DOC-M004 principal       23817872 B    548 pag  txt=True  Programa Municipal de Desarrollo Urbano (PMDU) de Escárcega, Campeche.pdf
+    -> instrumentos/DOC-M004/DOC-M004_v01_1fe9b76271e52ae0.pdf
+DOC-M005 principal       32558847 B    688 pag  txt=True  Programa Municipal de Desarrollo Urbano de Calakmul.pdf
+    -> instrumentos/DOC-M005/DOC-M005_v01_74cc2442a7013153.pdf
+DOC-M006 principal       36406227 B    372 pag  txt=True  Programa Municipal de Desarrollo Urbano de Candelaria.pdf
+    -> instrumentos/DOC-M006/DOC-M006_v01_c58539bc50ee65bb.pdf
+DOC-M007 principal       12904946 B    253 pag  txt=True  Programa Municipal de Desarrollo Urbano de Hecelchakán.pdf
+    -> instrumentos/DOC-M007/DOC-M007_v01_f311b6ecd98be2c9.pdf
+DOC-M008 principal       12729185 B    344 pag  txt=True  Programa Municipal de Desarrollo Urbano de Hopelchén.pdf
+    -> instrumentos/DOC-M008/DOC-M008_v01_d36d1805e0b661c5.pdf
+DOC-M009 principal        9651537 B     30 pag  txt=False  Programa Municipal de Desarrollo Urbano de Palizada.pdf
+    -> instrumentos/DOC-M009/DOC-M009_v01_10cb16296709262b.pdf
+DOC-M010 principal       17237896 B    384 pag  txt=True  Programa Municipal de Desarrollo Urbano de Seybaplaya.pdf
+    -> instrumentos/DOC-M010/DOC-M010_v01_8da1e88add9645b3.pdf
+DOC-M011 principal      145909669 B    657 pag  txt=False  PIMUS_Campeche.pdf
+    -> instrumentos/DOC-M011/DOC-M011_v01_17e0cdf3da7ebdf1.pdf
+DOC-M012 principal      120427889 B    550 pag  txt=False  PIMUS_Carmen.pdf
+    -> instrumentos/DOC-M012/DOC-M012_v01_74edbc02b3c70b6a.pdf
+DOC-M013 principal       75040602 B    641 pag  txt=True  PIMUS_CHAMPOTÓN.pdf
+    -> instrumentos/DOC-M013/DOC-M013_v01_efb2dfb17cc3c131.pdf
+DOC-M014 principal      104131284 B    545 pag  txt=False  PIMUS_Escárcega.pdf
+    -> instrumentos/DOC-M014/DOC-M014_v01_fc2da75796697e90.pdf
+DOC-M015 principal      127407868 B    680 pag  txt=True  PIMUS_Calkiní.pdf
+    -> instrumentos/DOC-M015/DOC-M015_v01_fd51e8f14e415506.pdf
+DOC-N001 principal        8448627 B    122 pag  txt=True  NOM-004-SEDATU-2023, Estructura y diseño para vías urbanas. Especificaciones y aplicación.pdf
+    -> instrumentos/DOC-N001/DOC-N001_v01_d684a347ac408684.pdf
+DOC-N002 principal        2790969 B     72 pag  txt=True  NOM-034-SCT2 SEDATU-2022, Señalización y dispositivos viales para calles y carreteras.pdf
+    -> instrumentos/DOC-N002/DOC-N002_v01_07ecf59bea490b82.pdf
+DOC-N003 principal        2133886 B     33 pag  txt=True  NOM-086-SCT2-2023, Señalamiento y dispositivos para protección en zonas de obras viales.pdf
+    -> instrumentos/DOC-N003/DOC-N003_v01_4404718026bcf0cf.pdf
+DOC-N004 principal        1024311 B     28 pag  txt=True  NOM-194-SE-2021, Dispositivos de seguridad para vehículos ligeros nuevos. Requisitos y especificaciones.pdf
+    -> instrumentos/DOC-N004/DOC-N004_v01_b8a1e0c1db6c8faf.pdf
+DOC-N005 principal         772397 B     24 pag  txt=True  NOM-001-SEDATU-2021, Espacios públicos en los asentamientos humanos.pdf
+    -> instrumentos/DOC-N005/DOC-N005_v01_3f49ba8b3ba0cd69.pdf
+
+37 documentos; problemas: 0

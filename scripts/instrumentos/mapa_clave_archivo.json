@@ -1,0 +1,202 @@
+{
+ "descripcion": "Que archivo de la carpeta Catalogo_Instrumentos corresponde a que clave DOC-xxxx del catalogo (ER-6). El nombre canonico en el bucket se calcula con la clave; este mapa es la unica tabla de correspondencia.",
+ "carpeta_sugerida": "Arquitectura de datos/Catalogo_Instrumentos",
+ "documentos": [
+  {
+   "clave": "DOC-E001",
+   "rol": "principal",
+   "archivo": "Ley de Movilidad y Seguridad Vial del Estado de Campeche.pdf"
+  },
+  {
+   "clave": "DOC-E002",
+   "rol": "principal",
+   "archivo": "Ley de Vialidad, Tránsito y Control Vehicular del Estado de Campeche.pdf"
+  },
+  {
+   "clave": "DOC-E003",
+   "rol": "principal",
+   "archivo": "Reglamento en Materia de Transporte de la Ley de Movilidad y Seguridad Vial del Estado de Campeche.pdf"
+  },
+  {
+   "clave": "DOC-E004",
+   "rol": "principal",
+   "archivo": "Constitución Política del Estado de Campeche.pdf"
+  },
+  {
+   "clave": "DOC-E005",
+   "rol": "principal",
+   "archivo": "Reglamento Interior de la Agencia Reguladora del Transporte del Estado de Campeche (ARTEC).pdf"
+  },
+  {
+   "clave": "DOC-E006",
+   "rol": "principal",
+   "archivo": "Estrategia Estatal de Movilidad y Seguridad Vial de Campeche.pdf"
+  },
+  {
+   "clave": "DOC-E006",
+   "rol": "complemento",
+   "archivo": "EEMSV_RESUMEN EJECUTIVO.pdf"
+  },
+  {
+   "clave": "DOC-E007",
+   "rol": "principal",
+   "archivo": "Plan Estatal de Desarrollo de Campeche 2024–2027 (PED).pdf"
+  },
+  {
+   "clave": "DOC-E008",
+   "rol": "principal",
+   "archivo": "Programa Estatal de Ordenamiento Territorial y Desarrollo Urbano de Campeche (PEOTDU).pdf"
+  },
+  {
+   "clave": "DOC-E009",
+   "rol": "principal",
+   "archivo": "Programa Sectorial Desarrollo Económico con Visión al Futuro 2024–2027.pdf"
+  },
+  {
+   "clave": "DOC-F001",
+   "rol": "principal",
+   "archivo": "Constitución Política de los Estados Unidos Mexicanos.pdf"
+  },
+  {
+   "clave": "DOC-F002",
+   "rol": "principal",
+   "archivo": "Ley General de Movilidad y Seguridad Vial (LGMSV).pdf"
+  },
+  {
+   "clave": "DOC-F003",
+   "rol": "principal",
+   "archivo": "Ley General de Asentamientos Humanos, Ordenamiento Territorial y Desarrollo Urbano (LGAHOTDU).pdf"
+  },
+  {
+   "clave": "DOC-F004",
+   "rol": "principal",
+   "archivo": "Ley General del Equilibrio Ecológico y la Protección al Ambiente (LGEEPA).pdf"
+  },
+  {
+   "clave": "DOC-F005",
+   "rol": "principal",
+   "archivo": "Estrategia Nacional de Movilidad y Seguridad Vial 2023-2042.pdf"
+  },
+  {
+   "clave": "DOC-F006",
+   "rol": "principal",
+   "archivo": "Estrategia Nacional de Ordenamiento Territorial 2020-2040.pdf"
+  },
+  {
+   "clave": "DOC-F007",
+   "rol": "principal",
+   "archivo": "Plan Nacional de Desarrollo 2025–2030 (PND).pdf"
+  },
+  {
+   "clave": "DOC-M001",
+   "rol": "principal",
+   "archivo": "Programa Municipal de Desarrollo Urbano de Campeche 2020-2040.pdf"
+  },
+  {
+   "clave": "DOC-M002",
+   "rol": "principal",
+   "archivo": "Programa Municipal de Desarrollo Urbano de Champotón 2024-2040.pdf"
+  },
+  {
+   "clave": "DOC-M003",
+   "rol": "principal",
+   "archivo": "Programa Municipal de Desarrollo Urbano de Calkiní.pdf"
+  },
+  {
+   "clave": "DOC-M004",
+   "rol": "principal",
+   "archivo": "Programa Municipal de Desarrollo Urbano (PMDU) de Escárcega, Campeche.pdf"
+  },
+  {
+   "clave": "DOC-M005",
+   "rol": "principal",
+   "archivo": "Programa Municipal de Desarrollo Urbano de Calakmul.pdf"
+  },
+  {
+   "clave": "DOC-M006",
+   "rol": "principal",
+   "archivo": "Programa Municipal de Desarrollo Urbano de Candelaria.pdf"
+  },
+  {
+   "clave": "DOC-M007",
+   "rol": "principal",
+   "archivo": "Programa Municipal de Desarrollo Urbano de Hecelchakán.pdf"
+  },
+  {
+   "clave": "DOC-M008",
+   "rol": "principal",
+   "archivo": "Programa Municipal de Desarrollo Urbano de Hopelchén.pdf"
+  },
+  {
+   "clave": "DOC-M009",
+   "rol": "principal",
+   "archivo": "Programa Municipal de Desarrollo Urbano de Palizada.pdf"
+  },
+  {
+   "clave": "DOC-M010",
+   "rol": "principal",
+   "archivo": "Programa Municipal de Desarrollo Urbano de Seybaplaya.pdf"
+  },
+  {
+   "clave": "DOC-M011",
+   "rol": "principal",
+   "archivo": "PIMUS_Campeche.pdf"
+  },
+  {
+   "clave": "DOC-M012",
+   "rol": "principal",
+   "archivo": "PIMUS_Carmen.pdf"
+  },
+  {
+   "clave": "DOC-M013",
+   "rol": "principal",
+   "archivo": "PIMUS_CHAMPOTÓN.pdf"
+  },
+  {
+   "clave": "DOC-M014",
+   "rol": "principal",
+   "archivo": "PIMUS_Escárcega.pdf"
+  },
+  {
+   "clave": "DOC-M015",
+   "rol": "principal",
+   "archivo": "PIMUS_Calkiní.pdf"
+  },
+  {
+   "clave": "DOC-N001",
+   "rol": "principal",
+   "archivo": "NOM-004-SEDATU-2023, Estructura y diseño para vías urbanas. Especificaciones y aplicación.pdf"
+  },
+  {
+   "clave": "DOC-N002",
+   "rol": "principal",
+   "archivo": "NOM-034-SCT2 SEDATU-2022, Señalización y dispositivos viales para calles y carreteras.pdf"
+  },
+  {
+   "clave": "DOC-N003",
+   "rol": "principal",
+   "archivo": "NOM-086-SCT2-2023, Señalamiento y dispositivos para protección en zonas de obras viales.pdf"
+  },
+  {
+   "clave": "DOC-N004",
+   "rol": "principal",
+   "archivo": "NOM-194-SE-2021, Dispositivos de seguridad para vehículos ligeros nuevos. Requisitos y especificaciones.pdf"
+  },
+  {
+   "clave": "DOC-N005",
+   "rol": "principal",
+   "archivo": "NOM-001-SEDATU-2021, Espacios públicos en los asentamientos humanos.pdf"
+  }
+ ],
+ "duplicados_conocidos": [
+  {
+   "archivo": "POE-PMDU-CANDELARIA.pdf",
+   "mismo_que": "Programa Municipal de Desarrollo Urbano de Candelaria.pdf",
+   "clave": "DOC-M006",
+   "nota": "Mismo tamano (36406227 bytes); el inventario confirma por SHA-256. No se sube dos veces."
+  }
+ ],
+ "no_son_instrumentos": [
+  "SESIM_URL_catalogo_y_consulta_oficial.pdf"
+ ]
+}

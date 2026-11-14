@@ -207,8 +207,8 @@ begin
     (select count(*) from api.relaciones)::text);
   perform pg_temp.reg('C37 core.verificar_integridad(): todos los chequeos en verde',
     not exists (select 1 from core.verificar_integridad() v where not v.ok), '');
-  perform pg_temp.reg('C38 24 tablas del modelo + control de migraciones + 2 del Ciclo 4 (ER-4: dia_inhabil, rechazo_seguimiento) = 27 en core', (select count(*) from pg_class c join pg_namespace s on s.oid=c.relnamespace
-        where s.nspname='core' and c.relkind='r') = 27, (select count(*) from pg_class c join pg_namespace s on s.oid=c.relnamespace
+  perform pg_temp.reg('C38 24 tablas del modelo + control de migraciones + 2 del Ciclo 4 (ER-4) + 3 del Ciclo 10 (ER-6: instrumento_normativo, documento_instrumento, relacion_normativa) = 30 en core', (select count(*) from pg_class c join pg_namespace s on s.oid=c.relnamespace
+        where s.nspname='core' and c.relkind='r') = 30, (select count(*) from pg_class c join pg_namespace s on s.oid=c.relnamespace
         where s.nspname='core' and c.relkind='r')::text);
   ------------------------------------------------------------------ LECTURA PUBLICA (anon) Y D-16
   execute 'reset role';
