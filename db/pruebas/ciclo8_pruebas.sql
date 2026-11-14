@@ -342,8 +342,8 @@ begin
         and p.proname in ('fn_guardar_medicion','fn_enviar_medicion_revision','fn_dictaminar_medicion','fn_mediciones_devueltas')
         and obj_description(p.oid, 'pg_proc') is not null) = 4, '');
   perform pg_temp.sin_identidad();
-  perform pg_temp.reg('S05 Sin cambios al ER: el Ciclo 8 no agrega tablas a core (el Ciclo 8 no agrega ninguna: quedan las 30 con ER-6 del Ciclo 10)',
-    (select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'core' and c.relkind = 'r') = 30, '');
+  perform pg_temp.reg('S05 Sin cambios al ER: el Ciclo 8 no agrega tablas a core (el Ciclo 8 no agrega ninguna: quedan las 32 con ER-6 y ER-7 del Ciclo 10)',
+    (select count(*) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'core' and c.relkind = 'r') = 32, '');
 end $$;
 
 select n, case when ok then 'PASA' else 'FALLA' end as resultado, caso, detalle from resultados order by n;

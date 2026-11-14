@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ExternalLink, FileText } from 'lucide-react';
 import { vCoberturaInstrumento, urlPdfInstrumento } from '../../lib/sesim/api';
-import { fmtFecha, fmtPublicacion, fmtTamano } from '../../lib/sesim/normativo';
+import { fmtFecha, fmtPublicacion } from '../../lib/sesim/normativo';
 import { enlace } from '../../lib/rutas';
 import EstadoCarga from '../plataforma/EstadoCarga';
 import AvisoLegal from '../plataforma/AvisoLegal';
@@ -117,15 +117,9 @@ export default function FichaInstrumento({ doc, municipio, relaciones, porId }) 
           <h3>Documento</h3>
           <div className="ficha-enlaces">
             <a href={urlPdfInstrumento(doc)} target="_blank" rel="noopener noreferrer" className="ficha-enlace">
-              <FileText size={15} aria-hidden="true" /> Abrir PDF<span className="sr-only"> de {doc.nombre} (se abre en una pestaña nueva)</span>
+              <FileText size={15} aria-hidden="true" /> Documentación en PDF<span className="sr-only"> de {doc.nombre} (se abre en una pestaña nueva)</span>
             </a>
           </div>
-          <p className="ficha-texto">
-            Versión {doc.pdf_version}
-            {doc.pdf_paginas ? ` · ${doc.pdf_paginas} páginas` : ''}
-            {fmtTamano(doc.pdf_bytes) ? ` · ${fmtTamano(doc.pdf_bytes)}` : ''}
-            {doc.pdf_hash ? <> · Huella SHA-256: <code>{doc.pdf_hash.slice(0, 16)}…</code></> : null}
-          </p>
         </section>
       )}
 

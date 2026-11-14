@@ -47,15 +47,16 @@ const TABLAS_API = {
   // ER-6 (catálogo normativo en la base): con sesión la RLS deja ver también borradores; las pantallas públicas filtran por `publicable`.
   instrumento_normativo: 'order=id',
   relacion_normativa: 'order=id',
+  // ER-7 (fuentes oficiales de la Consulta oficial): la vista pública trae `enlaces` (JSON, en orden) y `url_oficial`.
+  fuente_documental: 'order=id',
   // Vista pública: el filtro es explícito porque con sesión la RLS deja ver también borradores.
   medicion_publica: 'estado=eq.vigente_publico&order=id',
 };
 
 /**
- * Tablas estáticas que aún no se conectan. `fuente_documental` sale del Banco documental
- * (scripts/datos/04_exportar_banco_documental.py) y se conecta en la entrega de «Consulta oficial».
+ * Tablas estáticas que aún no se conectan.
  */
-const TABLAS_ESTATICAS = ['perfil', 'unidad_territorial', 'capa', 'v_capa_por_municipio', 'fuente_documental', 'proceso_capa', 'indice'];
+const TABLAS_ESTATICAS = ['perfil', 'unidad_territorial', 'capa', 'v_capa_por_municipio', 'proceso_capa', 'indice'];
 
 /**
  * Adaptadores API → forma que ya consumen las pantallas. En la base, `estatus` es el ciclo de publicación

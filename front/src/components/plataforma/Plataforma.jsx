@@ -18,7 +18,7 @@ function useInicioDePagina() {
 }
 
 /** Tono oscuro (guinda profundo) del portal: Inicio, Tablero y Catálogo; el resto de las páginas se migra por etapas. */
-const RUTAS_OSCURAS = new Set(['/', '/tablero-de-seguimiento', '/catalogo']);
+const RUTAS_OSCURAS = new Set(['/', '/tablero-de-seguimiento']);
 function useTonoOscuro() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -42,7 +42,7 @@ const Plataforma = () => {
           <Outlet />
         </FiltrosProvider>
       </main>
-      {pathname !== '/' && pathname !== RUTAS.acceso && (
+      {pathname !== '/' && pathname !== '/catalogo' && pathname !== RUTAS.acceso && (
         <div className="aviso-pie">
           <AvisoLegal tipo="general" discreto />
         </div>

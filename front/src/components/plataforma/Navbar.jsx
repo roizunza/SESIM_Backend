@@ -6,7 +6,7 @@ const ENTRADAS = [
   { etiqueta: 'Inicio', ruta: RUTAS.inicio, fin: true },
   { etiqueta: 'Tablero de seguimiento', corta: 'Tablero', ruta: RUTAS.tableroPublico },
   { etiqueta: 'Geovisor', ruta: RUTAS.geovisor },
-  { etiqueta: 'Catálogo de instrumentos', corta: 'Catálogo', ruta: RUTAS.catalogo },
+  { etiqueta: 'Normativa', corta: 'Normativa', ruta: RUTAS.catalogo },
 ];
 
 export default function Navbar() {

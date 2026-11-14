@@ -158,7 +158,7 @@ export default function SeccionMarcoJuridico({ id }) {
   const modulos = indice ? [
     { a: RUTAS.inicio, titulo: 'Portal SESIM', texto: 'Inicio del sistema' },
     { a: RUTAS.geovisor, titulo: 'Geovisor de movilidad', texto: `${fmtNumero(indice.capas)} capas publicadas` },
-    { a: RUTAS.catalogo, titulo: 'Catálogo de instrumentos', texto: `${fmtNumero(indice.enCatalogo)} instrumentos con documento oficial` },
+    { a: RUTAS.catalogo, titulo: 'Normativa', texto: `${fmtNumero(indice.enCatalogo)} instrumentos con documento oficial` },
     { a: RUTAS.tablero, titulo: 'Tablero de seguimiento', texto: `${fmtNumero(indice.indicadores)} indicadores en seguimiento` },
     { a: RUTAS.proyectos, titulo: 'Proyectos y reportes', texto: 'Metas, avance y series históricas', institucional: true },
   ] : [];
