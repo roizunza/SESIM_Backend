@@ -18,3 +18,5 @@ respaldo_front_*.zip
 .env.*
 !.env.example
 respaldo_geovisor_v7/
+_to_delete/
+respaldo_*/
