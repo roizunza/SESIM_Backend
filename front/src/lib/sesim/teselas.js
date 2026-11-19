@@ -24,13 +24,32 @@ export function urlTeselas(idCapa) {
 }
 
 /**
- * Encabezados de cada tesela. Mientras la migración 231 las deje públicas se piden siempre como `anon`:
- * así una sesión con el token vencido no deja la capa en blanco. Al revertir la 231, usar el token de la
- * sesión (backend.sesionGuardada()?.access_token) y renovarlo antes de vencer.
+ * Encabezados de cada tesela. Con la migración 244 api.tesela_capa corre con los permisos de quien la pide
+ * (RLS D-17), así que cada petición lleva el token de la sesión: el público ve las capas públicas; cada perfil,
+ * las que le corresponden. Sin sesión se manda la llave `anon`.
+ * Si el token está por vencer se renueva en segundo plano (las teselas siguientes ya salen con el nuevo); si ya
+ * venció del todo se manda `anon` mientras tanto, para no recibir 401 en cada tesela.
  */
+const MARGEN_RENOVAR_SEG = 60;
 export function cabecerasTeselas() {
   const anon = env.VITE_SUPABASE_ANON_KEY ?? '';
-  return { apikey: anon, Authorization: `Bearer ${anon}`, 'Accept-Profile': 'api', Accept: 'application/vnd.mapbox-vector-tile' };
+  const sesion = backend.sesionGuardada?.();
+  const ahora = Math.floor(Date.now() / 1000);
+  let token = anon;
+  if (sesion?.access_token) {
+    const resta = (sesion.expires_at ?? 0) - ahora;
+    if (resta < MARGEN_RENOVAR_SEG) backend.refrescar?.().catch(() => {});
+    if (resta > 0) token = sesion.access_token;
+  }
+  return { apikey: anon, Authorization: `Bearer ${token}`, 'Accept-Profile': 'api', Accept: 'application/vnd.mapbox-vector-tile' };
+}
+
+/** Renueva el token de la sesión si está por vencer, antes de pedir las primeras teselas de una capa. */
+export async function prepararTokenTeselas() {
+  const sesion = backend.sesionGuardada?.();
+  if (!sesion?.access_token) return;
+  const resta = (sesion.expires_at ?? 0) - Math.floor(Date.now() / 1000);
+  if (resta < MARGEN_RENOVAR_SEG) await backend.refrescar().catch(() => {});
 }
 
 let promesaPlugin = null;

@@ -3,7 +3,7 @@ import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { useDatosCapa } from '../../lib/sesim/useDatosCapa';
 import { cumpleFiltros } from '../../lib/sesim/estiloCapa';
-import { cabecerasTeselas, cargarVectorGrid, urlTeselas } from '../../lib/sesim/teselas';
+import { cabecerasTeselas, cargarVectorGrid, prepararTokenTeselas, urlTeselas } from '../../lib/sesim/teselas';
 import { useEstiloCapa } from './useEstiloCapa';
 
 const esc = (t) => String(t).replace(/[&<>"']/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch]);
@@ -31,7 +31,7 @@ export default function CapaTeselas({ capa, config, opacidad = 1, municipio = ''
     let vivo = true;
     let vg = null;
     let tip = null;
-    cargarVectorGrid().then((fabrica) => {
+    Promise.all([cargarVectorGrid(), prepararTokenTeselas()]).then(([fabrica]) => {
       if (!vivo) return;
       const estiloDe = (props) => {
         if (municipio && props.id_unidad !== municipio) return [];
