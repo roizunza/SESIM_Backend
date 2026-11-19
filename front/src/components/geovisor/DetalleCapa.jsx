@@ -41,7 +41,6 @@ export default function DetalleCapa({ datos, pestanaInicial, onCerrar, onUbicar 
   const [pestana, setPestana] = useState(pestanaInicial ?? (hayElemento ? 'elemento' : 'sinopsis'));
   const [indicadores, setIndicadores] = useState(null);
   const [unidad, setUnidad] = useState(null);
-  const [proceso, setProceso] = useState(null);
   const [errorDescarga, setErrorDescarga] = useState(null);
   const meta = capa.metadatos_extra ?? {};
 
@@ -57,7 +56,6 @@ export default function DetalleCapa({ datos, pestanaInicial, onCerrar, onUbicar 
     let vivo = true;
     setIndicadores(null);
     fnIndicadoresDeCapa(capa.id).then((r) => vivo && setIndicadores(r)).catch(() => vivo && setIndicadores('error'));
-    tabla('proceso_capa').then((p) => vivo && setProceso(p.find((x) => x.id_capa === capa.id) ?? null)).catch(() => {});
     return () => { vivo = false; };
   }, [capa.id]);
 
@@ -155,10 +153,9 @@ export default function DetalleCapa({ datos, pestanaInicial, onCerrar, onUbicar 
             </Bloque>
             <Bloque titulo="Trazabilidad">
               <Fila k="Fuente" v={meta.fuente_origen} />
-              <Fila k="Archivo de origen" v={proceso?.origen ?? capa.archivo} />
+              <Fila k="Archivo de origen" v={capa.archivo} />
               <Fila k="Fecha de corte" v={meta.fecha_corte} />
-              <Fila k="Elementos" v={`${Number(proceso?.n_elementos ?? capa.n_elementos).toLocaleString('es-MX')} en la fuente · ${Number(capa.n_elementos).toLocaleString('es-MX')} publicados`} />
-              {proceso && <Fila k="Proceso de publicación" v={`Generalización con ${proceso.herramienta}: resolución ${proceso.resolucion_m} m, coordenadas a ${proceso.decimales} decimales.`} />}
+              <Fila k="Elementos" v={Number(capa.n_elementos).toLocaleString('es-MX')} />
             </Bloque>
           </>
         )}

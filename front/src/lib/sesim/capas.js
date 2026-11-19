@@ -31,8 +31,7 @@ export function estatusVisibles(perfil) {
   return ['vigente_publico'];
 }
 
-import { tablas, simbologias } from './api';
-import { backend } from './supabase.js';
+import { tabla, capasVivas, simbologias } from './api';
 import { construirSimbologia, COLOR_POR_GRUPO, PALETA_NATURAL, PALETA_CATEGORICA } from './simbologia';
 import { EJES_ESTRATEGICOS } from '../ejesEstrategicos';
 
@@ -78,39 +77,18 @@ function limpiarGrupo(g) {
   return (g || '').replace(/^EEMSV\s+/i, '');
 }
 
-const GEOM_DE_TIPO = { Punto: 'point', Línea: 'line', Polígono: 'polygon' };
-const COLUMNAS_VIVAS = 'id,titulo,proposito,tipo_geometria,estatus,responsable,conjunto_datos,id_instrumento,metadatos_extra,archivo,grupos,nomenclatura,n_elementos,updated_at';
-
-/** Funde la tabla `capa` leída de la base (sin geometría) sobre el catálogo estático. */
-async function fusionarCapasVivas(estaticas) {
-  let vivas;
-  try { vivas = await backend.leer('capa', { query: `select=${COLUMNAS_VIVAS}&order=id` }); } catch { return estaticas; }
-  if (!Array.isArray(vivas) || !vivas.length) return estaticas;
-  const porId = new Map(estaticas.map((c) => [c.id, c]));
-  for (const v of vivas) {
-    const base = porId.get(v.id);
-    if (base) {
-      porId.set(v.id, { ...base, ...v, metadatos_extra: v.metadatos_extra ?? base.metadatos_extra, geom: base.geom, categoria: base.categoria, grupos_lista: base.grupos_lista, clases: base.clases, tiene_simbologia: base.tiene_simbologia });
-    } else {
-      const categoria = v.metadatos_extra?.categoria ?? 'diagnostico';
-      porId.set(v.id, { ...v, categoria, geom: GEOM_DE_TIPO[v.tipo_geometria] ?? 'polygon', grupos_lista: v.grupos ? [{ grupo: v.grupos }] : [], clases: [], tiene_simbologia: false });
-    }
-  }
-  return [...porId.values()];
-}
-
 /**
  * @param {{ incluirBorrador?: boolean }} opciones
  * @returns {Promise<{ categorias: Array, capasPorId: Map, ejes: Array }>}
  */
 export async function cargarArbolCapas({ incluirBorrador = false, perfil = null } = {}) {
-  const [{ capa: capaEstatica, instrumento_origen }, simb] = await Promise.all([
-    tablas(['capa', 'instrumento_origen']),
+  // El catálogo sale de la base (api.capa) y la RLS decide qué ve cada rol. Las vistas de operación (captura, dictamen)
+  // lo leen fresco para ver el estado actual; el geovisor usa la lectura memoizada.
+  const [capa, instrumento_origen, simb] = await Promise.all([
+    incluirBorrador ? capasVivas() : tabla('capa'),
+    tabla('instrumento_origen'),
     simbologias(),
   ]);
-  // Vistas de operación (captura, dictamen): el estado y las capas nuevas salen EN VIVO de la base; el catálogo estático
-  // solo aporta lo derivado (categoría, grupos, clases). Si la lectura falla se usa el estático.
-  const capa = incluirBorrador ? await fusionarCapasVivas(capaEstatica) : capaEstatica;
   const instrumentos = new Map(instrumento_origen.map((i) => [i.id, i]));
   const permitidos = new Set(incluirBorrador ? Object.keys(ESTATUS_CAPA) : estatusVisibles(perfil));
   const visibles = capa.filter((c) => permitidos.has(c.estatus));

@@ -14,7 +14,7 @@ function medida(elemento, nombre, valor, total, { umbral = 100, descripcion } = 
 }
 
 /** @returns {Array<{ elemento, nombre, valor?, total?, porcentaje?, conforme: boolean|null, descripcion }>} */
-export function evaluarCalidad(capa, features, proceso) {
+export function evaluarCalidad(capa, features) {
   const total = features.length;
   const esperados = Number(capa.n_elementos) || 0;
   const tipos = TIPOS[capa.geom] ?? [];
@@ -44,9 +44,7 @@ export function evaluarCalidad(capa, features, proceso) {
       elemento: 'Exactitud posicional',
       nombre: 'Exactitud absoluta',
       conforme: null,
-      descripcion: proceso
-        ? `No evaluada por el SESIM: depende de la fuente. Coordenadas almacenadas con ${proceso.decimales} decimales (≈ 1.1 m) y simplificación de ${proceso.resolucion_m} m para su publicación web.`
-        : 'No evaluada por el SESIM: depende de la escala y el método de la fuente.',
+      descripcion: 'No evaluada por el SESIM: depende de la escala y el método de la fuente.',
     },
     {
       elemento: 'Exactitud temática',

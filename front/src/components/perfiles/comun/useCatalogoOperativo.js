@@ -8,7 +8,7 @@ import { indexar } from '../../../lib/sesim/api';
  */
 export function useCatalogoOperativo() {
   const { datos, error } = useCatalogo([
-    'indicador', 'unidad_territorial', 'eje_tematico', 'instrumento_origen', 'indicador_instrumento', 'capa', 'perfil',
+    'indicador', 'unidad_territorial', 'eje_tematico', 'instrumento_origen', 'indicador_instrumento', 'capa',
   ]);
   const catalogo = useMemo(() => {
     if (!datos) return null;

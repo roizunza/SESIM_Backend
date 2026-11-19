@@ -3,18 +3,17 @@
  *
  * Las capas de más de 25,000 elementos no se sirven como GeoJSON: el navegador pide solo las teselas
  * que ve (api.tesela_capa, MVT con la capa interna «capa» y las propiedades id, nombre, clasif, cve_mun, id_unidad).
- * `VITE_SESIM_CAPAS_ORIGEN=estatico` fuerza los archivos de respaldo. `VITE_SESIM_TESELAS_DESDE` baja el umbral (pruebas).
+ * `VITE_SESIM_TESELAS_DESDE` baja el umbral (pruebas).
  */
 import L from 'leaflet';
 import { backend } from './supabase';
 
 const env = import.meta.env ?? {};
 export const TESELAS_DESDE = Number(env.VITE_SESIM_TESELAS_DESDE) || 25000;
-const ORIGEN = (env.VITE_SESIM_CAPAS_ORIGEN || 'base').toLowerCase();
 
 /** ¿Esta capa se dibuja con teselas? (id real, backend configurado y más elementos que el tope del GeoJSON). */
 export function esPorTeselas(capa) {
-  return ORIGEN !== 'estatico' && !!capa?.id && Number(capa.n_elementos) > TESELAS_DESDE && backend.configurado?.() !== false;
+  return !!capa?.id && Number(capa.n_elementos) > TESELAS_DESDE && backend.configurado?.() !== false;
 }
 
 /** Plantilla de URL de VectorGrid ({z}/{x}/{y}); PostgREST acepta la función estable también por GET. */

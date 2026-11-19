@@ -45,9 +45,9 @@ function Seccion({ titulo, abierta = false, children }) {
 
 const ICONO_CALIDAD = { true: CheckCircle2, false: AlertCircle, null: MinusCircle };
 
-function Calidad({ capa, proceso }) {
+function Calidad({ capa }) {
   const { datos, error, porTeselas } = useDatosCapa(capa, true);
-  const resultados = useMemo(() => (datos ? evaluarCalidad(capa, datos.features, proceso) : null), [capa, datos, proceso]);
+  const resultados = useMemo(() => (datos ? evaluarCalidad(capa, datos.features) : null), [capa, datos]);
 
   if (porTeselas) return <p className="capa-modal-nota">La evaluación de calidad no se calcula en el navegador para capas por teselas ({Number(capa.n_elementos).toLocaleString('es-MX')} elementos).</p>;
   if (error) return <EstadoCarga estado="error" titulo="No se pudo leer el archivo de la capa" mensaje={error} compacto />;
@@ -81,7 +81,6 @@ const CapaMetadataModal = ({ datos, onClose }) => {
   const [indicadores, setIndicadores] = useState(null);
   const [porMunicipio, setPorMunicipio] = useState(null);
   const [unidad, setUnidad] = useState(null);
-  const [aux, setAux] = useState({ proceso: null, indice: null });
   const [errorDescarga, setErrorDescarga] = useState(null);
 
   const capa = datos?.capa;
@@ -98,9 +97,6 @@ const CapaMetadataModal = ({ datos, onClose }) => {
     let vivo = true;
     fnIndicadoresDeCapa(capa.id).then((r) => vivo && setIndicadores(r));
     vCapaPorMunicipio(capa.id).then((r) => vivo && setPorMunicipio(r));
-    Promise.all([tabla('proceso_capa').catch(() => []), tabla('indice').catch(() => null)]).then(([proc, ind]) => {
-      if (vivo) setAux({ proceso: proc.find((p) => p.id_capa === capa.id) ?? null, indice: ind });
-    });
     return () => {
       vivo = false;
     };
@@ -117,8 +113,7 @@ const CapaMetadataModal = ({ datos, onClose }) => {
   if (!capa) return null;
   const meta = capa.metadatos_extra ?? {};
   const escala = meta.denominador_escala ? `1:${Number(meta.denominador_escala).toLocaleString('es-MX')}${meta.escala_nominal ? ` (${meta.escala_nominal})` : ''}` : meta.escala_nominal;
-  const proceso = aux.proceso;
-  const fechaCatalogo = aux.indice?.generado ? fmtFecha(aux.indice.generado.slice(0, 10)) : null;
+  const fechaCatalogo = capa.updated_at ? fmtFecha(String(capa.updated_at).slice(0, 10)) : null;
 
   return (
     <>
@@ -181,18 +176,12 @@ const CapaMetadataModal = ({ datos, onClose }) => {
           </Seccion>
 
           <Seccion titulo="Calidad (ISO 19157-1)">
-            <Calidad capa={capa} proceso={proceso} />
+            <Calidad capa={capa} />
           </Seccion>
 
           <Seccion titulo="Linaje">
             <Campo etiqueta="Linaje de la fuente" valor={meta.linaje} />
-            {proceso && (
-              <Campo
-                etiqueta="Paso de proceso para su publicación"
-                valor={`Generalización con ${proceso.herramienta}: resolución ${proceso.resolucion_m} m, coordenadas a ${proceso.decimales} decimales; ${proceso.mb_origen} MB → ${proceso.mb_final} MB; ${Number(proceso.n_elementos).toLocaleString('es-MX')} elementos ${proceso.conteo_coincide ? '(conteo igual al de la fuente)' : '(conteo distinto al de la fuente)'}.`}
-              />
-            )}
-            <Campo etiqueta="Archivo fuente" valor={proceso?.origen ?? capa.archivo} />
+            <Campo etiqueta="Archivo fuente" valor={capa.archivo} />
           </Seccion>
 
           <Seccion titulo="Distribución">
@@ -241,7 +230,7 @@ const CapaMetadataModal = ({ datos, onClose }) => {
 
           <footer className="capa-modal-control">
             <span>Metadatos: estructura ISO 19115-1 · calidad ISO 19157-1 · idioma español · UTF-8</span>
-            <span>Información documentada: {capa.id}{fechaCatalogo ? ` · catálogo generado el ${fechaCatalogo}` : ''}</span>
+            <span>Información documentada: {capa.id}{fechaCatalogo ? ` · actualizada el ${fechaCatalogo}` : ''}</span>
           </footer>
         </div>
       </div>

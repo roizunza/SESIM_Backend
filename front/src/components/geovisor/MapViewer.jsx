@@ -33,8 +33,8 @@ import { CONFIG_INICIAL } from '../../lib/sesim/estiloCapa';
  *
  * Todo el árbol sale del catálogo `capa` (ver lib/sesim/capas.js): ninguna
  * capa está escrita a mano aquí. Cada capa se identifica por su ID corto
- * (Inf09, DIt01, E2Tpp05…), que es también el nombre de su GeoJSON
- * (`/sesim/capas/<id>.geojson`) y la llave de `capa_indicador`.
+ * (Inf09, DIt01, E2Tpp05…), que es también su llave en
+ * `capa_indicador`, en la RPC `geojson_capa` y en las teselas.
  *
  * Rutas (deep-links) que entiende:
  *   /geovisor?estrategia=eje2      aísla las capas de una Estrategia

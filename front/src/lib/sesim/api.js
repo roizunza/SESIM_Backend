@@ -12,9 +12,9 @@
  * Ya NO existen JSON estáticos de esas tablas: si el backend no está configurado o no
  * responde, el front lo dice, no inventa datos.
  *
- * Siguen estáticos (se conectan en su ciclo): capa y v_capa_por_municipio (Ciclo 9),
- * unidad_territorial (2,785 filas, Ciclo 9) y perfil. Se generan con
- * `scripts/datos/01_exportar_catalogos.py` en `public/sesim/catalogo/`.
+ * Ciclo 11: el catálogo de capas (api.capa + api.capa_clases), las unidades territoriales (api.unidad_territorial),
+ * la cobertura por municipio (api.v_capa_por_municipio) y los polígonos oficiales (api.geojson_unidades) también salen
+ * de la base. No hay archivos de respaldo: si el servidor no responde, el front lo dice.
  *
  * Las funciones `fn*` y `v*` replican las del esquema `api` (sección 7 del documento,
  * "Funciones derivadas"); hoy se calculan aquí con las tablas leídas.
@@ -23,8 +23,6 @@
  */
 
 import { backend } from './supabase.js';
-
-const BASE_ESTATICA = '/sesim/catalogo';
 
 /**
  * Lecturas complementarias: si fallan (p. ej. un backend sin la migración que las crea) se tratan
@@ -52,12 +50,10 @@ const TABLAS_API = {
   fuente_documental: 'order=id',
   // Vista pública: el filtro es explícito porque con sesión la RLS deja ver también borradores.
   medicion_publica: 'estado=eq.vigente_publico&order=id',
+  // Ciclo 11: unidades territoriales (2,785 filas: municipios y localidades) y cobertura de las capas por municipio.
+  unidad_territorial: 'order=id',
+  v_capa_por_municipio: 'order=id_capa,id_unidad',
 };
-
-/**
- * Tablas estáticas que aún no se conectan.
- */
-const TABLAS_ESTATICAS = ['perfil', 'unidad_territorial', 'capa', 'v_capa_por_municipio', 'proceso_capa', 'indice'];
 
 /**
  * Adaptadores API → forma que ya consumen las pantallas. En la base, `estatus` es el ciclo de publicación
@@ -82,13 +78,13 @@ export const RECURSOS_OPCIONALES = {
   puntoCritico: env.VITE_SESIM_RPC_PUNTO_CRITICO || '',
 };
 
-export const TABLAS = [...Object.keys(TABLAS_API), ...TABLAS_ESTATICAS];
+export const TABLAS = [...Object.keys(TABLAS_API), 'capa'];
 
 const cache = new Map();
 let cliente = backend;
 
 // Al entrar o salir de la sesión cambia lo que la RLS deja ver: se descarta lo leído.
-const olvidarLecturasApi = () => { for (const n of Object.keys(TABLAS_API)) cache.delete(n); };
+const olvidarLecturasApi = () => { for (const n of [...Object.keys(TABLAS_API), 'capa']) cache.delete(n); };
 let desuscribir = cliente.suscribir(olvidarLecturasApi);
 
 /** Solo para pruebas en Node: cambia el cliente (p. ej. uno apuntando al mock o al Supabase real). */
@@ -99,19 +95,64 @@ export function _usarCliente(otro) {
   cache.clear();
 }
 
+const CATEGORIA_DE = { mapabase: 'mapa_base', mapa_base: 'mapa_base', diagnostico: 'diagnostico', estrategia: 'estrategia' };
+const GEOM_DE_TIPO = { Punto: 'point', Línea: 'line', Polígono: 'polygon' };
+const GRUPO_MAPA_BASE = {
+  LIM: 'Límites administrativos',
+  LOC: 'Localidades y asentamientos',
+  INF: 'Red de transportes e infraestructura',
+  NAT: 'Medio físico y conservación',
+};
+
+/** `grupos` de la base («Diagnóstico › EEMSV X | Estrategia › Eje 2») → [{ categoria, grupo }]. */
+function gruposDe(texto) {
+  return String(texto ?? '')
+    .split('|')
+    .map((g) => g.trim())
+    .filter(Boolean)
+    .map((g) => {
+      const [categoria, ...resto] = g.split('›');
+      return resto.length ? { categoria: categoria.trim(), grupo: resto.join('›').trim() } : { categoria: '', grupo: g };
+    });
+}
+
+/**
+ * Fila de api.capa → forma que consumen las pantallas: `categoria` (mapa_base | diagnostico | estrategia, de
+ * metadatos_extra), `geom` (point | line | polygon, de tipo_geometria), `grupos_lista` y `clases` (de api.capa_clases).
+ * En el Mapa Base el subgrupo sale de la nomenclatura de la capa (LIM, LOC, INF, NAT).
+ */
+export function adaptarCapa(fila, clases = []) {
+  const categoria = CATEGORIA_DE[String(fila.metadatos_extra?.categoria ?? '').toLowerCase()] ?? 'diagnostico';
+  const grupos_lista = categoria === 'mapa_base'
+    ? [{ categoria: 'Mapa Base', grupo: GRUPO_MAPA_BASE[fila.nomenclatura] ?? 'Otras capas' }]
+    : gruposDe(fila.grupos);
+  return { ...fila, categoria, geom: GEOM_DE_TIPO[fila.tipo_geometria] ?? 'polygon', grupos_lista, clases };
+}
+
+/**
+ * Catálogo `capa` leído EN VIVO (sin caché): lo que la RLS deja ver al rol de la sesión. Las vistas de operación
+ * (captura, dictamen) lo usan para ver el estado actual; el geovisor usa `tabla('capa')`, que lo memoiza.
+ */
+export async function capasVivas() {
+  const [filas, clases] = await Promise.all([
+    cliente.leer('capa', { query: 'select=*&order=id' }),
+    cliente.leer('capa_clases', { query: 'select=*' }),
+  ]);
+  const porCapa = new Map(clases.map((c) => [c.id_capa, c.clases ?? []]));
+  return filas.map((f) => adaptarCapa(f, porCapa.get(f.id) ?? []));
+}
+
 /** Lee una tabla completa (memoizada hasta que cambie la sesión). */
 export function tabla(nombre) {
   if (!cache.has(nombre)) {
+    if (nombre !== 'capa' && !(nombre in TABLAS_API)) return Promise.reject(new Error(`Tabla desconocida: ${nombre}`));
     let promesa;
-    if (nombre in TABLAS_API) {
+    if (nombre === 'capa') {
+      promesa = capasVivas();
+    } else {
       promesa = cliente.leer(nombre, { query: ['select=*', TABLAS_API[nombre]].filter(Boolean).join('&') });
       if (nombre in ADAPTADORES) promesa = promesa.then((filas) => filas.map(ADAPTADORES[nombre]));
       if (TABLAS_COMPLEMENTARIAS.has(nombre)) promesa = promesa.catch(() => []);
-    } else {
-      promesa = fetch(`${BASE_ESTATICA}/${nombre}.json`).then((r) => {
-        if (!r.ok) throw new Error(`${nombre}: HTTP ${r.status}`);
-        return r.json();
-      });
     }
     cache.set(nombre, promesa.catch((err) => {
       cache.delete(nombre); // permite reintentar
@@ -190,46 +231,37 @@ export async function rpcOpcional(clave, args) {
 const cacheGeojson = new Map();
 
 /**
- * Origen de las capas vectoriales (Ciclo 9). Por omisión salen de la base (`api.geojson_capa`, PostGIS);
- * `VITE_SESIM_CAPAS_ORIGEN=estatico` fuerza los archivos de `public/sesim/capas/` (respaldo).
- * Las capas de más de 25,000 elementos (la base responde 54000) y cualquier falla de la lectura caen a
- * los archivos estáticos con un aviso en consola: el mapa se ve igual que antes.
+ * Las capas vectoriales salen SIEMPRE de la base (`api.geojson_capa`, PostGIS), bajo la RLS del rol de la sesión.
+ * No hay archivos de respaldo: si la lectura falla, el error llega a la pantalla (nada se inventa ni se lee de disco).
+ * Las capas de más de 25,000 elementos no se sirven como GeoJSON: se dibujan por teselas (ver teselas.js).
  */
 const LIMITE_GEOJSON_BASE = 25000; // mismo tope que api.geojson_capa
-const ORIGEN_CAPAS = (env.VITE_SESIM_CAPAS_ORIGEN || 'base').toLowerCase();
 
 // Al entrar o salir de la sesión cambia qué capas deja ver la RLS: se descarta lo leído de la base.
 cliente.suscribir(() => { for (const k of [...cacheGeojson.keys()]) if (k.startsWith('base:')) cacheGeojson.delete(k); });
 
-function leerEstatico(url) {
-  return fetch(url).then((r) => {
-    if (!r.ok) throw new Error(`${url}: HTTP ${r.status}`);
-    return r.json();
-  });
+function sinServidor() {
+  return typeof cliente.leerRpc !== 'function' || cliente.configurado?.() === false;
 }
 
 /**
- * GeoJSON de una capa (MICRO · capa_vector serializado), con las propiedades id, nombre, clasif, cve_mun
- * e id_unidad. Con `capa.id` y backend sale de `api.geojson_capa`; el archivo `capa.geojson`
- * (`/sesim/capas/<id_capa>.geojson`) queda como respaldo y para las capas sin id (unidades territoriales).
+ * GeoJSON de una capa (MICRO · capa_vector serializado), con las propiedades id, nombre, clasif, cve_mun e id_unidad.
+ * Acepta la fila de la capa o su id.
  */
 export function geojsonDeCapa(capa) {
-  const id = typeof capa === 'string' ? capa : capa.id;
-  const url = typeof capa === 'string' ? `/sesim/capas/${capa}.geojson` : capa.geojson;
-  // Más de 25,000 elementos: la base no las sirve como GeoJSON (irán por teselas); se evita la petición que fallaría.
-  const pesada = typeof capa === 'object' && Number(capa.n_elementos) > LIMITE_GEOJSON_BASE;
-  const deBase = ORIGEN_CAPAS !== 'estatico' && !!id && !pesada && typeof cliente.leerRpc === 'function' && cliente.configurado?.() !== false;
-  if (pesada && ORIGEN_CAPAS !== 'estatico' && cliente.configurado?.() !== false) {
+  const id = typeof capa === 'string' ? capa : capa?.id;
+  if (!id) return Promise.reject(new Error('Capa sin identificador.'));
+  // Más de 25,000 elementos: la base no las sirve como GeoJSON (van por teselas); se evita la petición que fallaría.
+  if (typeof capa === 'object' && Number(capa.n_elementos) > LIMITE_GEOJSON_BASE) {
     return Promise.reject(new Error('Capa servida por teselas: no se carga completa en el navegador.'));
   }
-  const llave = deBase ? `base:${id}` : url;
+  if (sinServidor()) return Promise.reject(new Error('Sin conexión con el servidor del portal.'));
+  const llave = `base:${id}`;
   if (!cacheGeojson.has(llave)) {
-    const promesa = deBase
-      ? cliente.leerRpc('geojson_capa', { p_capa: id }).then((d) => (d?.type === 'FeatureCollection' ? d : leerEstatico(url ?? `/sesim/capas/${id}.geojson`))).catch((err) => {
-          if (err?.codigo !== '54000') console.warn(`Capa ${id}: no se pudo leer de la base (${err?.message}); se usa el archivo estático.`);
-          return leerEstatico(url ?? `/sesim/capas/${id}.geojson`);
-        })
-      : leerEstatico(url);
+    const promesa = cliente.leerRpc('geojson_capa', { p_capa: id }).then((d) => {
+      if (d?.type === 'FeatureCollection') return d;
+      throw new Error(`La capa ${id} no se sirve como GeoJSON (va por teselas o no está disponible para su perfil).`);
+    });
     cacheGeojson.set(llave, promesa.catch((err) => { cacheGeojson.delete(llave); throw err; }));
   }
   return cacheGeojson.get(llave);
@@ -240,7 +272,7 @@ export function geojsonDeCapa(capa) {
  * páginas a `api.geojson_capa_pagina` y se junta. Solo para descargas; el mapa nunca lo usa. `alProgreso(hechos, total)`.
  */
 export async function geojsonPaginado(capa, alProgreso, tamano = 5000) {
-  if (typeof cliente.leerRpc !== 'function' || cliente.configurado?.() === false) throw new Error('Sin conexión con el servidor del portal.');
+  if (sinServidor()) throw new Error('Sin conexión con el servidor del portal.');
   const features = [];
   let total = Number(capa.n_elementos) || Infinity;
   for (let desde = 0; desde < total; desde += tamano) {
@@ -254,9 +286,18 @@ export async function geojsonPaginado(capa, alProgreso, tamano = 5000) {
   return { type: 'FeatureCollection', id_capa: capa.id, titulo: capa.titulo, features };
 }
 
-/** Polígonos oficiales (unidad_territorial_geom) por nivel. */
+/** Polígonos oficiales por nivel (`municipios` | `localidades`), de `api.geojson_unidades` (core.unidad_territorial_geom). */
 export function geojsonUnidades(nivel = 'municipios') {
-  return geojsonDeCapa({ geojson: `/sesim/capas/unidad_territorial/${nivel}.geojson` });
+  if (sinServidor()) return Promise.reject(new Error('Sin conexión con el servidor del portal.'));
+  const llave = `unidades:${nivel}`;
+  if (!cacheGeojson.has(llave)) {
+    const promesa = cliente.leerRpc('geojson_unidades', { p_nivel: nivel }).then((d) => {
+      if (d?.type === 'FeatureCollection' && d.features?.length) return d;
+      throw new Error(`La base aún no tiene los polígonos de ${nivel} (core.unidad_territorial_geom): cárguelos con db/cargador/cargar_geometrias_ciclo9.py.`);
+    });
+    cacheGeojson.set(llave, promesa.catch((err) => { cacheGeojson.delete(llave); throw err; }));
+  }
+  return cacheGeojson.get(llave);
 }
 
 /** Simbología QGIS convertida, con llave id_capa. */
@@ -313,14 +354,15 @@ export async function fnIndicadoresDeCapa(idCapa) {
 
 /**
  * F08 · v_capa_por_municipio
- * Elementos de una capa por municipio (precalculado por el pipeline; con
- * PostGIS agregará km de línea y km² de polígono).
+ * Elementos de una capa por municipio (api.v_capa_por_municipio, bajo la RLS del rol).
  */
 export async function vCapaPorMunicipio(idCapa) {
-  const { v_capa_por_municipio, unidad_territorial } = await tablas(['v_capa_por_municipio', 'unidad_territorial']);
+  const [filas, unidad_territorial] = await Promise.all([
+    cliente.leer('v_capa_por_municipio', { query: `select=*&id_capa=eq.${encodeURIComponent(idCapa)}` }),
+    tabla('unidad_territorial'),
+  ]);
   const unidades = indexar(unidad_territorial);
-  return v_capa_por_municipio
-    .filter((r) => r.id_capa === idCapa)
+  return filas
     .map((r) => ({ ...r, nom_mun: r.id_unidad ? unidades.get(r.id_unidad)?.nom_mun : 'Fuera de Campeche' }))
     .sort((a, b) => b.n_elementos - a.n_elementos);
 }
@@ -376,20 +418,14 @@ export async function localidadesDe(idMunicipio) {
 
 /**
  * Estadística territorial del tablero público (Ciclo 9): km y elementos por capa, municipio y clasificación.
- * Sale de `api.tablero_territorio()` (PostGIS); si el RPC no existe aún o falla, se lee el archivo estático
- * `public/sesim/catalogo/tablero_territorio.json` (generado de las mismas capas por scripts/datos/05_exportar_tablero_territorio.py).
+ * Sale de `api.tablero_territorio()` (PostGIS) bajo la RLS del rol. Sin archivo de respaldo: si falla, el error llega a la pantalla.
  */
 let cacheTablero = null;
 export function tableroTerritorio() {
   if (!cacheTablero) {
-    const estatico = () => leerEstatico(`${BASE_ESTATICA}/tablero_territorio.json`);
-    const deBase = ORIGEN_CAPAS !== 'estatico' && typeof cliente.leerRpc === 'function' && cliente.configurado?.() !== false;
-    const p = deBase
-      ? cliente.leerRpc('tablero_territorio', {}).then((d) => (Array.isArray(d?.filas) && d.filas.length ? d : estatico())).catch((err) => {
-          console.warn(`Tablero: no se pudo leer de la base (${err?.message}); se usa el archivo estático.`);
-          return estatico();
-        })
-      : estatico();
+    const p = sinServidor()
+      ? Promise.reject(new Error('Sin conexión con el servidor del portal.'))
+      : cliente.leerRpc('tablero_territorio', {}).then((d) => (Array.isArray(d?.filas) ? d : { filas: [] }));
     cacheTablero = p.catch((err) => { cacheTablero = null; throw err; });
   }
   return cacheTablero;
