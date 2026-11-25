@@ -91,7 +91,8 @@ export async function cargarArbolCapas({ incluirBorrador = false, perfil = null 
   ]);
   const instrumentos = new Map(instrumento_origen.map((i) => [i.id, i]));
   const permitidos = new Set(incluirBorrador ? Object.keys(ESTATUS_CAPA) : estatusVisibles(perfil));
-  const visibles = capa.filter((c) => permitidos.has(c.estatus));
+  // Las capas dadas de baja (activo = false) no se muestran en el geovisor; las vistas de operación (incluirBorrador) las conservan para poder reactivarlas.
+  const visibles = capa.filter((c) => permitidos.has(c.estatus) && (incluirBorrador || c.activo !== false));
 
   const capasPorId = new Map();
   const grupos = { mapa_base: new Map(), diagnostico: new Map(), estrategia: new Map() };

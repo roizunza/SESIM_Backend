@@ -43,6 +43,8 @@ export function construirTerritorio(filas, municipios) {
       case 'DTp01': { const i = idxTP(r.clasif); if (i >= 0) t.tp[i] += n; break; }
       case 'DIt02': t.cic += km; break;
       case 'DTc05': t.carga += km; break;
+      // DSin01 es E4SegVial01 renumerada (migración 251). La función de la base devuelve una u otra, nunca las dos: así el orden en que se aplican la migración y el front no importa.
+      case 'DSin01':
       case 'E4SegVial01': t.fed += km; break;
       case 'E4SegVial08': t.sv8 += km; break;
       case 'E4SegVial07': t.sv7 += n; break;

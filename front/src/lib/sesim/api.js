@@ -339,7 +339,7 @@ export async function fnTrazabilidadNormativa(idIndicador) {
 export async function fnCapasDeIndicador(idIndicador, { soloPublicas = true } = {}) {
   const { capa, capa_indicador } = await tablas(['capa', 'capa_indicador']);
   const ids = new Set(capa_indicador.filter((v) => v.id_indicador === idIndicador).map((v) => v.id_capa));
-  return capa.filter((c) => ids.has(c.id) && (!soloPublicas || c.estatus === 'vigente_publico'));
+  return capa.filter((c) => ids.has(c.id) && (!soloPublicas || (c.estatus === 'vigente_publico' && c.activo !== false)));
 }
 
 /**

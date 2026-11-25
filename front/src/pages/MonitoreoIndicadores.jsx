@@ -183,7 +183,7 @@ export default function MonitoreoIndicadores() {
       vinculos.get(v.id_indicador).push(v);
     }
     // Solo cuentan las capas publicadas (con sesión la RLS deja ver también las de uso interno y borradores).
-    const capasPublicas = new Set(datos.capa.filter((c) => c.estatus === 'vigente_publico').map((c) => c.id));
+    const capasPublicas = new Set(datos.capa.filter((c) => c.estatus === 'vigente_publico' && c.activo !== false).map((c) => c.id));
     const nCapas = new Map();
     for (const v of datos.capa_indicador) if (capasPublicas.has(v.id_capa)) nCapas.set(v.id_indicador, (nCapas.get(v.id_indicador) ?? 0) + 1);
     // Todos los ejes de cada indicador (indicador_eje, 127 vínculos), el principal primero.
