@@ -67,6 +67,10 @@ services:
       # Nombre del ambiente: lo devuelve GET /health y bloquea las semillas
       # de desarrollo en produccion.
       APP_ENV: ${APP_ENV:-desarrollo}
+      # Carpeta donde se guarda el archivo de una actualizacion de capa hasta que se dictamina (Bloque A, flujo 2)
+      STAGING_DIR: /data/staging
+    volumes:
+      - ingesta_staging:/data/staging
     ports:
       - "${PROCESOS_BIND_ADDR:-127.0.0.1}:${PROCESOS_PORT:-8001}:8000"
 
@@ -78,3 +82,7 @@ services:
     ports:
       - "127.0.0.1:8025:8025" # interfaz web para ver los correos capturados
       - "127.0.0.1:1025:1025" # puerto SMTP que usa GoTrue (servicio "auth")
+
+# Volumen del servicio de procesos: archivos de actualizaciones de capa en espera de dictamen.
+volumes:
+  ingesta_staging:

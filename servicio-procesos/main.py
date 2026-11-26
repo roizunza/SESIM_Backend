@@ -59,6 +59,11 @@ ROLES_VALIDOS = {"capturista", "administrador", "administrador_titular", "audito
 
 app = FastAPI(title="SESIM - servicio de procesos")
 
+# Ingesta de capas (Bloque A, flujos 1-3): ver ingesta.py
+from ingesta import router as ingesta_router  # noqa: E402
+
+app.include_router(ingesta_router)
+
 
 class AltaUsuarioIn(BaseModel):
     correo: EmailStr
