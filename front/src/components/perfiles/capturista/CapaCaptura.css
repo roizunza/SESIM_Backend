@@ -77,3 +77,10 @@
 .cc-chips button { border: 0; background: transparent; cursor: pointer; color: #9f2241; display: inline-flex; padding: 2px; }
 
 .cc-enlace { border: 0; background: none; padding: 0; color: #9f2241; font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+
+/* Reclamar capa sin dueño (Bloque A) */
+.cc-reclamables { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.cc-reclamables li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; border: 1px solid #ddd3bd; border-radius: 10px; background: #fff; }
+.cc-reclamables li > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.cc-reclamables small { color: #5b564b; }
+.cc-reclamables .btn-base { width: auto; flex: none; }

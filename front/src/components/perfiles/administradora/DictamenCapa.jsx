@@ -6,7 +6,7 @@ import VisorCampos from './VisorCampos';
 import './VisorCampos.css';
 import { ESTATUS_CAPA } from '../../../lib/sesim/capas';
 import { fechaCorta } from '../comun/formato';
-import { dictaminarCapa, resolverActualizacionCapa, definirRestriccionCapa } from './dictamenApi';
+import { dictaminarCapa, resolverActualizacionCapa, definirRestriccionCapa, bajaCapa } from './dictamenApi';
 import './AdminPerfil.css';
 
 /**
@@ -39,6 +39,7 @@ export default function DictamenCapa({ capa, onClose, onHecho, onVerEnMapa, solo
   const [error, setError] = useState('');
   const [hecho, setHecho] = useState('');
   const [campos, setCampos] = useState(false);
+  const [confirmaBaja, setConfirmaBaja] = useState(false);
   const [ancho, setAncho] = useState(null);
   const redim = (e) => {
     e.preventDefault();
@@ -127,7 +128,7 @@ export default function DictamenCapa({ capa, onClose, onHecho, onVerEnMapa, solo
                 {prop.variacion_elementos && <><dt>Variación</dt><dd>{prop.variacion_elementos}</dd></>}
               </dl>
               <blockquote><Quote size={13} aria-hidden="true" /><p>{prop.justificacion}</p><footer>Justificación de quien propone{prop.propuesta_en ? ` · ${fechaCorta(prop.propuesta_en)}` : ''}</footer></blockquote>
-              <p className="dc-nota"><Info size={14} aria-hidden="true" /> Al aprobar se actualizan el conteo y la fecha de corte; los elementos del archivo se cargan en la siguiente carga a la base.</p>
+              <p className="dc-nota"><Info size={14} aria-hidden="true" /> Al aprobar, el sistema carga en la base las geometrías del archivo (reemplazan a las actuales) y actualiza el conteo y la fecha de corte, todo en un solo paso: si algo falla, no cambia nada.</p>
             </section>
           )}
 
@@ -168,6 +169,27 @@ export default function DictamenCapa({ capa, onClose, onHecho, onVerEnMapa, solo
                 </button>
               </div>
               {!prop && capa.estatus === 'vigente_admin' && !publica && <p className="dc-nota"><Info size={14} aria-hidden="true" /> «Publicar» se activa cuando la restricción de uso es «pública».</p>}
+            </section>
+          )}
+          {!soloLectura && !hecho && capa.estatus !== 'vigente_publico' && (
+            <section className="dc-bloque" aria-label="Baja de la capa">
+              <h4>{capa.activo === false ? 'Capa dada de baja' : 'Baja de la capa'}</h4>
+              <p className="dc-nota">
+                {capa.activo === false
+                  ? 'Esta capa está dada de baja: no aparece en el catálogo. Puedes reactivarla; todo queda en la bitácora.'
+                  : 'Una capa dada de baja deja de mostrarse en el catálogo, pero no se borra: puedes reactivarla y todo queda en la bitácora. Una capa publicada primero debe retirarse del público (Devolver).'}
+              </p>
+              {confirmaBaja ? (
+                <div className="dc-botones">
+                  <button type="button" className="btn-base btn-primary" disabled={ocupado}
+                    onClick={() => ejecutar(() => bajaCapa(capa.id, capa.activo === false), capa.activo === false ? 'Capa reactivada. Quedó registrada en la bitácora.' : 'Capa dada de baja. Quedó registrada en la bitácora.')}>
+                    {capa.activo === false ? 'Sí, reactivar' : 'Sí, dar de baja'}
+                  </button>
+                  <button type="button" className="btn-base btn-secondary" disabled={ocupado} onClick={() => setConfirmaBaja(false)}>Cancelar</button>
+                </div>
+              ) : (
+                <button type="button" className="btn-base btn-tertiary" disabled={ocupado} onClick={() => setConfirmaBaja(true)}>{capa.activo === false ? 'Reactivar la capa' : 'Dar de baja la capa'}</button>
+              )}
             </section>
           )}
           {soloLectura && (

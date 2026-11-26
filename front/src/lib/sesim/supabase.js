@@ -336,8 +336,41 @@ export function crearCliente({
     return r.datos;
   };
 
-  /** Llamada a servicio-procesos (alta de usuarios, cargas). */
-  const procesos = (ruta, { metodo = 'POST', cuerpo } = {}) => llamar(ruta, { metodo, cuerpo, raiz: baseProcesos });
+  /** Llamada a servicio-procesos (alta de usuarios, cargas). `mensajeServidor`: conserva el texto del servidor también en un 403 (cuatro ojos, etc.). */
+  const procesos = (ruta, { metodo = 'POST', cuerpo, mensajeServidor = false } = {}) => llamar(ruta, { metodo, cuerpo, raiz: baseProcesos, mensajeServidor });
+
+  /**
+   * Sube un archivo (multipart) a servicio-procesos con la sesión de la persona (Bloque A: ingesta de capas).
+   * `campos` van como campos del formulario y `query` como parámetros de la URL. El servicio verifica el JWT y la base decide
+   * quién puede; el texto de error que devuelve el servidor ya está en español y se conserva tal cual.
+   */
+  const procesosArchivo = async (ruta, archivo, { campos = {}, query = '' } = {}) => {
+    exigirConfig();
+    const fd = new FormData();
+    fd.append('archivo', archivo, archivo.name);
+    Object.entries(campos).forEach(([k, v]) => { if (v !== null && v !== undefined && v !== '') fd.append(k, v); });
+    const enviar = async (token) => {
+      try {
+        return await fetchImpl(baseProcesos + ruta + query, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
+      } catch {
+        throw new ErrorSesim('No se pudo conectar con el servicio de procesos. Verifique que el backend esté en marcha.', { codigo: 'red' });
+      }
+    };
+    let r = await enviar(await tokenVigente());
+    if (r.status === 401 && sesion) r = await enviar((await refrescar()).access_token);
+    const texto = await r.text();
+    let datos = null;
+    if (texto) { try { datos = JSON.parse(texto); } catch { datos = texto; } }
+    if (!r.ok) {
+      const d = datos && typeof datos === 'object' ? datos : {};
+      const det = Array.isArray(d.detail) ? d.detail.map((x) => x?.msg ?? JSON.stringify(x)).join('; ') : d.detail;
+      const msg = r.status === 413 ? 'El archivo es demasiado grande para el servidor.'
+        : r.status === 401 ? 'Su sesión expiró. Inicie sesión de nuevo.'
+        : (typeof det === 'string' && det ? det.replace(/^(archivo_no_valido|formato_no_soportado|archivo_demasiado_grande):\s*/, '') : `Error ${r.status}`);
+      throw new ErrorSesim(msg, { status: r.status, codigo: typeof d.detail === 'string' ? d.detail.split(':')[0] : null });
+    }
+    return datos;
+  };
 
   /** Alta DIRECTA de cuenta (solo Administrador Titular; la valida servicio-procesos). */
   const altaUsuario = ({ correo, password, nombre, rol, ambito = 'estatal', cve_mun = null, dependencia = null }) =>
@@ -402,6 +435,7 @@ export function crearCliente({
     leerRpc,
     rpc,
     procesos,
+    procesosArchivo,
     procesosPublico,
     altaUsuario,
     cambiarActivo,

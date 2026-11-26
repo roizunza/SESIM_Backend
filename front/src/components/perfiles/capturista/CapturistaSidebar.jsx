@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   History, LogOut, CircleHelp, CornerUpLeft, PencilLine, Hourglass, ClipboardList, PanelLeftOpen, PanelLeftClose,
-  ShieldCheck, Paperclip, Library, Briefcase, UploadCloud, RefreshCw, Search, ChevronRight, ChartColumn, ArrowRight,
+  ShieldCheck, Paperclip, Library, Briefcase, UploadCloud, RefreshCw, Search, ChevronRight, ChartColumn, ArrowRight, UserCheck,
 } from 'lucide-react';
 import { cerrarSesion } from '../../../lib/sesim/sesion';
 import { ESTATUS_CAPA } from '../../../lib/sesim/capas';
@@ -134,7 +134,7 @@ function Mesa({ lista, onAbrirRechazos }) {
 export default function CapturistaSidebar({
   abierto, setAbierto, esMovil, sesion, catalogo, mediciones, periodosPorId, evidencias = [], seleccion,
   rechazosCapas = [], capasMias = [], arbol, activas, onAlternarCapa,
-  onSubirCapa, onActualizarCapa, onNueva, onSeleccionar, onRechazos, onGuia, pestanaInicial = 'catalogo',
+  onSubirCapa, onActualizarCapa, onReclamarCapa, onNueva, onSeleccionar, onRechazos, onGuia, pestanaInicial = 'catalogo',
 }) {
   const navigate = useNavigate();
   const [pestana, setPestana] = useState(pestanaInicial);
@@ -171,6 +171,7 @@ export default function CapturistaSidebar({
         <span className="cap-insignia" aria-hidden="true"><ClipboardList size={24} /></span>
         <button type="button" className="cap-riel__btn cap-riel__btn--activo cap-subir" onClick={() => onSubirCapa()} disabled={!catalogo} title="Subir capa" aria-label="Subir capa"><UploadCloud size={20} /></button>
         <button type="button" className="cap-riel__btn cap-actualizar" onClick={() => onActualizarCapa()} disabled={!catalogo} title="Actualizar capa" aria-label="Actualizar capa"><RefreshCw size={20} /></button>
+        {onReclamarCapa && <button type="button" className="cap-riel__btn cap-reclamar" onClick={onReclamarCapa} title="Reclamar capa sin dueño" aria-label="Reclamar capa sin dueño"><UserCheck size={20} /></button>}
         {CAPTURA_MEDICIONES && <button type="button" className="cap-riel__btn cap-nuevo-med" onClick={onNueva} disabled={!catalogo} title="Capturar medición" aria-label="Capturar medición"><ChartColumn size={20} /></button>}
         <button type="button" className="cap-riel__btn cap-toggle" onClick={() => setAbierto(true)} title="Abrir mi panel" aria-label="Abrir mi panel"><PanelLeftOpen size={20} /></button>
         <div className="cap-pestanas cap-pestanas--riel">
@@ -211,6 +212,12 @@ export default function CapturistaSidebar({
           <RefreshCw size={20} aria-hidden="true" />
           <span><strong>Actualizar capa</strong><small>Sube la versión nueva de una capa y justifica el cambio.</small></span>
         </button>
+        {onReclamarCapa && (
+        <button type="button" className="cap-accion-card cap-reclamar" onClick={onReclamarCapa}>
+          <UserCheck size={20} aria-hidden="true" />
+          <span><strong>Reclamar capa sin dueño</strong><small>Toma un borrador que nadie ha dado de alta, para completarlo y enviarlo a revisión.</small></span>
+        </button>
+        )}
         {CAPTURA_MEDICIONES && (
         <button type="button" className="cap-accion-card cap-nuevo-med" onClick={onNueva} disabled={!catalogo}>
           <ChartColumn size={20} aria-hidden="true" />

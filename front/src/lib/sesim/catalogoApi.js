@@ -33,6 +33,19 @@ export const dictaminarCapa = (id, decision, comentario = null) =>
 export const vincularCapaIndicador = (capa, indicador) => rpc('fn_vincular_capa_indicador', { p_capa: capa, p_indicador: indicador });
 export const quitarCapaIndicador = (capa, indicador) => rpc('fn_quitar_capa_indicador', { p_capa: capa, p_indicador: indicador });
 export const bajaCapa = (id, activo = false) => rpc('fn_baja_capa', { p_id: id, p_activo: activo });
+/** Bloque A (F-01). Solo el Capturista: borradores sin creador (sembrados u huérfanos) que puede reclamar; gana la primera solicitud. */
+export const capasReclamables = () => rpc('fn_capas_reclamables', {});
+export const reclamarCapa = (id) => rpc('fn_reclamar_capa', { p_id: id });
+/**
+ * Bloque A: el navegador nunca escribe geometrías; sube el .gpkg a servicio-procesos, que las ingiere en UNA transacción
+ * a nombre de la persona (reemplaza las anteriores del borrador, no las duplica). `soloValidar` corre todo y revierte.
+ * Devuelve { guardado, insertados, n_elementos, por_metodo, ... }.
+ */
+export const subirGeometrias = (id, archivo, { columna = null, soloValidar = false } = {}) =>
+  backend.procesosArchivo(`/capas/${encodeURIComponent(id)}/geometrias`, archivo, { campos: { columna_id_origen: columna }, query: soloValidar ? '?solo_validar=true' : '' });
+/** Guarda en el servicio el archivo de una actualización de capa VIGENTE (la base no se toca hasta que la administración aprueba). */
+export const guardarArchivoActualizacion = (id, archivo, { columna = null } = {}) =>
+  backend.procesosArchivo(`/capas/${encodeURIComponent(id)}/actualizacion/archivo`, archivo, { campos: { columna_id_origen: columna } });
 
 /* ---------- Instrumentos (D-20) ---------- */
 export const guardarInstrumento = (datos) => rpc('fn_guardar_instrumento', { p_datos: datos });

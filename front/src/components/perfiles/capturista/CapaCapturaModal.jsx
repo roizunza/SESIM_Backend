@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import {
   X, UploadCloud, ArrowLeft, ArrowRight, CheckCircle2, XCircle, Send, Save, Map as MapaIcono, Info, FileCheck2, Loader2, CircleDashed, FlaskConical,
 } from 'lucide-react';
-import { guardarCapa, enviarCapaARevision, vincularCapaIndicador } from '../../../lib/sesim/catalogoApi';
+import { guardarCapa, enviarCapaARevision, vincularCapaIndicador, subirGeometrias, guardarArchivoActualizacion } from '../../../lib/sesim/catalogoApi';
 import { useCatalogo } from '../../../lib/sesim/useCatalogo';
 import { ESTATUS_CAPA } from '../../../lib/sesim/capas';
 import { proponerActualizacionCapa } from './actualizacionApi';
@@ -27,7 +27,10 @@ import './CapaCaptura.css';
  * `MODO_REVISION_DISENO` (candados.js) abre el botón «Siguiente» para recorrer el diseño sin cumplir los requisitos;
  * guardar y enviar siguen exigiendo todo, para no crear registros incompletos en la base real.
  *
- * Hoy se guarda la FICHA y el conteo de elementos; los elementos llegan a PostGIS con el servicio de ingesta (Ciclo 9).
+ * Bloque A: al guardar, el archivo se sube a servicio-procesos, que ingiere las geometrías a PostGIS (core.capa_vector) en una sola
+ * transacción y a nombre de la persona; si se vuelve a subir un archivo corregido REEMPLAZA las geometrías del borrador (no las duplica).
+ * El identificador de una capa nueva lo asigna el SERVIDOR (prefijo del grupo + siguiente número libre); aquí solo se muestra una vista previa.
+ * Una actualización de capa vigente guarda el archivo en el servicio y viaja como propuesta; las geometrías entran al aprobarse.
  */
 const GEOM_LEAFLET = { Punto: 'point', Línea: 'line', Polígono: 'polygon' };
 const PERIODICIDADES = ['Anual', 'Bienal', 'Quinquenal', 'Decenal', 'Irregular', 'No planeada'];
@@ -53,7 +56,10 @@ export default function CapaCapturaModal({ modo = 'nueva', capaInicial = null, c
   const [revisando, setRevisando] = useState(false);
   const [colId, setColId] = useState('');
   const [ficha, setFicha] = useState({ titulo: '', custodio: '', fuente: '', periodicidad: '', corte: '', proposito: '', pasos: [], notaLinaje: '', motivo: '', justificacion: '' });
-  const [estado, setEstado] = useState({ ocupado: false, error: '', hecho: '', aviso: '' });
+  const [estado, setEstado] = useState({ ocupado: false, error: '', hecho: '', aviso: '', n: null });
+  // Id que el servidor asignó a la capa nueva. Si algo falla DESPUÉS de crearla (carga del archivo, envío), el siguiente intento
+  // reutiliza este id en lugar de crear otra capa (nunca se duplica ni se reutiliza una clave).
+  const [creada, setCreada] = useState(null);
   const { datos: rel } = useCatalogo(['capa_indicador']);
 
   const capas = useMemo(() => catalogo?.capa ?? [], [catalogo]);
@@ -82,11 +88,12 @@ export default function CapaCapturaModal({ modo = 'nueva', capaInicial = null, c
     const max = Math.max(0, ...mismas.map((c) => Number(c.id.match(/(\d+)$/)?.[1] ?? 0)));
     return `${prefijo}${String(max + 1).padStart(2, '0')}`;
   }, [capas, nomenclatura]);
+  const prefijoNuevo = idNuevo.replace(/\d+$/, '');   // el servidor asigna el número definitivo con este prefijo
   const instrumento = destino.cat && destino.cat !== 'mapa_base' ? (catalogo?.instrumento_origen ?? []).find((i) => /eemsv01/i.test(i.id)) ?? null : null;
   const custodios = useMemo(() => unicos(capas.map((c) => c.responsable)), [capas]);
   // Solo nombres de institución breves: las citas bibliográficas largas del catálogo no son opciones de lista.
   const fuentes = useMemo(() => unicos(capas.map((c) => c.metadatos_extra?.fuente_origen)).filter((f) => f.length <= 90), [capas]);
-  const tituloRepetido = capas.some((c) => c.titulo.trim().toLowerCase() === ficha.titulo.trim().toLowerCase());
+  const tituloRepetido = capas.some((c) => c.id !== creada && c.titulo.trim().toLowerCase() === ficha.titulo.trim().toLowerCase());
 
   // ---- Archivo ----
   const ident = revision?.identificadores?.[colId] ?? null;
@@ -137,15 +144,27 @@ export default function CapaCapturaModal({ modo = 'nueva', capaInicial = null, c
   const puedeSeguir = MODO_REVISION_DISENO || pasoCompleto(paso);
 
   const guardar = async (enviar) => {
-    setEstado({ ocupado: true, error: '', hecho: '', aviso: '' });
+    setEstado({ ocupado: true, error: '', hecho: '', aviso: '', n: null });
     try {
-      let id = idBase; let aviso = '';
+      let id = idBase; let aviso = ''; let cargados = null;
+      // Sube el archivo a servicio-procesos. Si falla, la ficha ya quedó guardada: se dice con claridad y se puede reintentar aquí mismo o desde «Sin enviar».
+      const cargarGeometrias = async (idCapa) => {
+        try {
+          const r = await subirGeometrias(idCapa, archivo, { columna: colId });
+          return r.n_elementos;
+        } catch (e) {
+          onGuardada?.(idCapa);
+          throw new Error(`La ficha quedó guardada como borrador ${idCapa}, pero el archivo no se pudo cargar: ${e.message} Pulsa de nuevo el botón para reintentar, o ábrela después desde «Sin enviar».`);
+        }
+      };
       if (actualizar && vigente) {
+        // 1) el archivo se guarda en el servicio (se revisa completo, la base no se toca); 2) se propone con el conteo real que devolvió.
+        const guardado = await guardarArchivoActualizacion(base.id, archivo, { columna: colId });
         await proponerActualizacionCapa(base.id, {
-          archivo: archivo.name, n_elementos: revision.n, fecha_corte: ficha.corte, motivo: ficha.motivo, justificacion: ficha.justificacion.trim(),
+          archivo: archivo.name, n_elementos: guardado.n_elementos, fecha_corte: ficha.corte, motivo: ficha.motivo, justificacion: ficha.justificacion.trim(),
           columna_id_origen: colId, variacion_elementos: Number(variacion.toFixed(3)), indicadores_agregar: extra, campos: revision.campos,
         });
-        setEstado({ ocupado: false, error: '', aviso: '', hecho: `Tu propuesta de actualización de ${base.id} quedó enviada. La capa sigue vigente hasta que la administración la apruebe o la rechace.` });
+        setEstado({ ocupado: false, error: '', aviso: '', n: null, hecho: `Tu propuesta de actualización de ${base.id} quedó enviada. La capa sigue vigente hasta que la administración la apruebe o la rechace.` });
         onGuardada?.(base.id);
         return;
       }
@@ -154,13 +173,13 @@ export default function CapaCapturaModal({ modo = 'nueva', capaInicial = null, c
           id: base.id, n_elementos: revision.n, archivo: archivo.name,
           metadatos_extra: { fecha_corte: ficha.corte, motivo_actualizacion: ficha.motivo, justificacion_actualizacion: ficha.justificacion.trim(), columna_id_origen: colId, campos: revision.campos, variacion_elementos: Number(variacion.toFixed(3)) },
         });
+        cargados = await cargarGeometrias(base.id);
         for (const ind of extra) {
           try { await vincularCapaIndicador(base.id, ind); } catch { aviso = `El vínculo con ${ind} queda pendiente: lo registra la administración.`; }
         }
       } else {
-        id = idNuevo;
-        await guardarCapa({
-          id, titulo: ficha.titulo.trim(), proposito: ficha.proposito.trim(), tipo_geometria: revision.tipo, srid_origen: 4326,
+        const fila = await guardarCapa({
+          ...(creada ? { id: creada } : { prefijo_id: prefijoNuevo }), titulo: ficha.titulo.trim(), proposito: ficha.proposito.trim(), tipo_geometria: revision.tipo, srid_origen: 4326,
           responsable: ficha.custodio, id_instrumento: instrumento?.id ?? null, nomenclatura, grupos: grupoDestino || null,
           n_elementos: revision.n, archivo: archivo.name,
           metadatos_extra: {
@@ -168,15 +187,18 @@ export default function CapaCapturaModal({ modo = 'nueva', capaInicial = null, c
             periodicidad: ficha.periodicidad, fecha_corte: ficha.corte, categoria: destino.cat, columna_id_origen: colId, campos: revision.campos,
           },
         });
+        id = fila.id;                       // el identificador definitivo lo asignó el servidor
+        setCreada(id);
+        cargados = await cargarGeometrias(id);
         if (indicador) {
           try { await vincularCapaIndicador(id, indicador.id); } catch { aviso = `El vínculo con el indicador ${indicador.id} queda pendiente: lo registra la administración.`; }
         }
       }
       if (enviar) await enviarCapaARevision(id);
-      setEstado({ ocupado: false, error: '', aviso, hecho: enviar ? `La capa ${id} quedó enviada a revisión de la administración.` : `La capa ${id} quedó guardada como borrador.` });
+      setEstado({ ocupado: false, error: '', aviso, n: cargados, hecho: enviar ? `La capa ${id} quedó enviada a revisión de la administración.` : `La capa ${id} quedó guardada como borrador.` });
       onGuardada?.(id);
     } catch (err) {
-      setEstado({ ocupado: false, error: err.message, hecho: '', aviso: '' });
+      setEstado({ ocupado: false, error: err.message, hecho: '', aviso: '', n: null });
     }
   };
 
@@ -241,7 +263,9 @@ export default function CapaCapturaModal({ modo = 'nueva', capaInicial = null, c
               <CheckCircle2 size={40} aria-hidden="true" />
               <p>{estado.hecho}</p>
               {estado.aviso && <small>{estado.aviso}</small>}
-              <small>Los elementos del archivo se cargarán a la base cuando el servicio de ingesta esté habilitado; la administración ya puede revisar la ficha.</small>
+              <small>{estado.n != null
+                ? `Las geometrías ya están cargadas en la base: ${estado.n.toLocaleString('es-MX')} elementos. Puedes verlas en el mapa.`
+                : 'El archivo quedó guardado; sus geometrías entran a la base cuando la administración apruebe la actualización.'}</small>
               <button type="button" className="btn-base btn-primary" onClick={onClose}>Listo</button>
             </div>
           ) : (
@@ -253,7 +277,7 @@ export default function CapaCapturaModal({ modo = 'nueva', capaInicial = null, c
                   {selectorDestino()}
                   {grupoDestino && (
                     <div className="cc-ya">
-                      <p><b>Se registrará como {idNuevo || '—'}</b> en «{grupoDestino}».</p>
+                      <p><b>Se registrará como {idNuevo || '—'}</b> en «{grupoDestino}».<br /><small>El número definitivo lo asigna el sistema al guardar.</small></p>
                       {(destino.cat === 'estrategia' ? capasDelIndicador : capasDelGrupo).length > 0 ? (
                         <>
                           <small>{destino.cat === 'estrategia' ? 'Capas que ya alimentan este indicador' : 'Capas que ya están en este grupo'} — revisa que la tuya no esté repetida:</small>

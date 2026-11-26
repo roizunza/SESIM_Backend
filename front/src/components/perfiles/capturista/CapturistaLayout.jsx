@@ -6,6 +6,7 @@ import CapturistaSidebar from './CapturistaSidebar';
 import MedicionModal from './MedicionModal';
 import { CAPTURA_MEDICIONES } from './candados';
 import CapaCapturaModal from './CapaCapturaModal';
+import ReclamarCapaModal from './ReclamarCapaModal';
 import MapaCaptura from './MapaCaptura';
 import DetalleMedicion from '../comun/DetalleMedicion';
 import { useCatalogoOperativo } from '../comun/useCatalogoOperativo';
@@ -69,6 +70,7 @@ const CapturistaLayout = () => {
   const [panelAbierto, setPanelAbierto, esMovil] = usePanelLateral();
   const [modal, setModal] = useState({ abierto: false, id: null });
   const [modalCapa, setModalCapa] = useState(null); // { modo, id, n }
+  const [reclamando, setReclamando] = useState(false);
   const [vistaPrevia, setVistaPrevia] = useState(null);
   const [mapa, setMapa] = useState(null);
   const [seleccion, setSeleccion] = useState(null);
@@ -202,6 +204,7 @@ const CapturistaLayout = () => {
           onAlternarCapa={alternarCapa}
           onSubirCapa={() => abrirCapa('nueva')}
           onActualizarCapa={(id) => abrirCapa('actualizar', id)}
+          onReclamarCapa={() => { setReclamando(true); if (esMovil) setPanelAbierto(false); }}
           onNueva={() => { setModal({ abierto: true, id: null }); if (esMovil) setPanelAbierto(false); }}
           onSeleccionar={abrir}
           onRechazos={() => { setRechazos(true); if (esMovil) setPanelAbierto(false); }}
@@ -231,6 +234,10 @@ const CapturistaLayout = () => {
           No se pudieron leer sus mediciones: {api.error}
           <button type="button" className="btn-base btn-secondary" style={{ width: 'auto', height: 28 }} onClick={() => api.recargar()}>Reintentar</button>
         </div>
+      )}
+
+      {reclamando && (
+        <ReclamarCapaModal onClose={() => setReclamando(false)} onReclamada={() => setVersion((v) => v + 1)} />
       )}
 
       {catalogoCapas && modalCapa && (
